@@ -12,7 +12,7 @@ theme = "hugo-tanka"
 
 googleAnalytics = "UA-132686713-1"
 disqusShortname = ""
-disable_mathjax = true
+disable_mathjax = false
 
 pygmentsstyle      = "vs"
 pygmentscodefences = true
