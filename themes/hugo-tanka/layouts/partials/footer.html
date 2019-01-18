@@ -1,5 +1,16 @@
-  {{ template "_internal/google_analytics_async.html" . }}
-  {{ partial "footer_mathjax.html" . }}
+<footer class="footer">
+  <ul class="footer-links">
+    <li>
+      <a href="https://gohugo.io/" class="footer-links-kudos">Build with <img src="{{ "images/hugo-logo.png" | relURL }}" alt="Img link to Hugo website" width="22" height="22"></a>
+    </li>
+  </ul>
+</footer>
+
+</div>
+
+
+{{ partial "footer_mathjax" . }}
+{{ template "_internal/google_analytics.html" . }}
 
 </body>
 </html>
