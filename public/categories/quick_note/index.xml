@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Quick_note on IFF自留地</title>
+    <link>/categories/quick_note/</link>
+    <description>Recent content in Quick_note on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 02 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/quick_note/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>sf &#43; ggplot2 最简步骤实现中国地图数据展示</title>
+      <link>/post/sf-ggplot2-%E6%9C%80%E7%AE%80%E6%AD%A5%E9%AA%A4%E5%AE%9E%E7%8E%B0%E4%B8%AD%E5%9B%BD%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA/</link>
+      <pubDate>Wed, 02 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/sf-ggplot2-%E6%9C%80%E7%AE%80%E6%AD%A5%E9%AA%A4%E5%AE%9E%E7%8E%B0%E4%B8%AD%E5%9B%BD%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA/</guid>
+      <description>本文作为一个快速记录，R为工具的数据分析过程中的尝试，将最为集中的记录相关主题内容，其他延展性内容则以链接形式作为参考。 要实现的需求 以行政区</description>
+    </item>
+    
+  </channel>
+</rss>

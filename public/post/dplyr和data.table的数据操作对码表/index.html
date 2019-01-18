@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  
+
+  <link rel="icon" type="image/png" href="../../favicon.png">
+
+  <title>
+    
+    
+     dplyr和data.table的数据操作对码表 
+    
+  </title>
+  <link rel="canonical" href="../../post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/">
+
+  <link rel="stylesheet" href="../../css/fonts.css" />
+  <link rel="stylesheet" href="../../css/style.css" />
+
+  
+</head>
+
+<body>
+<section id=nav>
+  <h1><a href="../../">IFF自留地</a></h1>
+  <ul>
+    
+    <li><a href="../../">Home</a></li>
+    
+    <li><a href="../../categories/">Categories</a></li>
+    
+    <li><a href="../../tags/">Tags</a></li>
+    
+    <li><a href="../../about/">About</a></li>
+    
+  </ul>
+</section>
+
+
+<section id=content>
+  <h1> dplyr和data.table的数据操作对码表 </h1>
+
+  <div id=sub-header>
+    pauke · 2018/01/29 · 3427 words ·  7 minutes read
+  </div>
+
+  <div class="entry-content">
+    
+
+<h2 id="缘起">缘起</h2>
+
+<p>作为R中两个被讨论最多的数据操作包，dplyr 和data.table因其各具特色设计哲学俘获一批忠实用户。二者在整体风格和机制上的明显区别和完整的功能函数体系，也让二者的拥趸都能在各自舒适区呆着。</p>
+
+<p>既然都摆脱了之前的舒适区，从其他数据分析工具来到R，再从basic的方案来到第三方的包，那为何不再走出当前的舒适区，了解兼通另一方呢？正所谓最好的拥趸是知己知彼，各相活用的。</p>
+
+<h2 id="概述">概述</h2>
+
+<h3 id="data-table">data.table</h3>
+
+<p>先来看data.table包作者对于该包的目的预设和定位：
+&gt; data.table inherits from data.frame. It offers fast and nemory efficient: file reader and writer, aggregations, updates, equi, non-equi, rolling, range and interval joins, in a short and flexible syntax, for faster development.
+It is inspired by A[B] syntax in R where A is a matrix and B is a 2-column matrix. Since a data.table is a data.frame, it is compatible with R functions and packages that accept only data.frames.</p>
+
+<p>上面这段的重点：</p>
+
+<ul>
+<li>data.table是继承自data frame的操作风格；</li>
+<li>data.table的主干功能包括：文件读写、聚合、更新、互联（包括相等、滚动、范围、区间等）；</li>
+<li>data.table同时具有data.table和 data frame两种属性</li>
+</ul>
+
+<p>data.table整体操作结构</p>
+
+<p><img src="http://img.blog.csdn.net/20180107112657664?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDUzMTcxNA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" /></p>
+
+<h3 id="dplyr">dplyr</h3>
+
+<p>dplyr包作者的预设与目标：</p>
+
+<blockquote>
+<p>dplyr provides a flexible grammar of data manipulation. It’s the next iteration of plyr, focused on tools for working with data frames (hence the d in the name).
+It has three main goals:
+• Identify the most important data manipulation verbs and make them easy to use from R.
+• Provide blazing fast performance for in-memory data by writing key pieces in C++ (using Rcpp)
+• Use the same interface to work with data no matter where it’s stored, whether in a data frame, a data table or database.</p>
+</blockquote>
+
+<p>重点：</p>
+
+<ul>
+<li>dplyr是plyr的延伸和拓展；</li>
+<li>通过五个关键动词：filter， select，mutate，arrange和summarise，一个副词 group_by和重要操作符管道符号『%&gt;%』 来构成整体框架；</li>
+<li>dplyr追求运算方面的速度，同样也希望有更清晰的代码可读性</li>
+</ul>
+
+<p>dplyr的一般使用结构：</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">    df %&gt;% 
+    filter(var1 == 5) %&gt;% 
+    group_by(var2) %&gt;%
+    select(var2,var3,var4) %&gt;%
+    mutate(newVar = var2*var3) %&gt;%
+    summarise(varMean = 
+    <span style="color:#00f">mean</span>(newVar, na.rm = <span style="color:#00f">TRUE</span>)) %&gt;%
+    arrange(desc(varMean))</code></pre></div>
+<h2 id="对比">对比</h2>
+
+<h3 id="data-table转换">data.table转换</h3>
+
+<p>与dplyr相比，data.table的操作需要操作对象具有data.table这个特定的属性，在开始之前需要需要经过相应转换。data.table有这么几类转化方式：</p>
+
+<ul>
+<li><p>data.table()是类似于data.frame直接构成data.table数据的函数；</p></li>
+
+<li><p>as.data.table()则是将已有数据框通过复制转化为可供操作的函数；</p></li>
+
+<li><p>setDT()则是直接将已有数据框转换为data.table属性的数据框函数；</p></li>
+</ul>
+
+<p>一般而言，setDT()是最为常用的函数，因为相比于as.data.table()，前者能够更快的完成操作，并且能够和直接的data.table操作并行执行，关于这两个函数的对比，可参考<a href="https://stackoverflow.com/questions/41917887/when-should-i-use-setdt-instead-of-data-table-to-create-a-data-table">此文</a>。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#008000">#实质上，d，e两个在属性上没有区别，只是二者所花费的时间和内存存在差异，这种差异在数据量大时候尤其明显</span>
+a &lt;- <span style="color:#00f">letters</span>[<span style="color:#2b91af">c</span>(19,20,1,3,11,15,22,5,18,6,12,15,23)]
+b &lt;- <span style="color:#00f">seq</span>(1,41,<span style="color:#00f">pi</span>)
+ab &lt;- <span style="color:#2b91af">data.frame</span>(a,b)
+d &lt;- data.table(ab)
+e &lt;- setDT(ab)
+<span style="color:#008000">#setDT还可与操作并行进行</span>
+f &lt;- setDT(ab)[a &gt; 20,]</code></pre></div>
+<p>此外，data.table还会涉及到设置key variable的情况（setkey(DT,a,b)），key主要实现两个功能，一是作为索引依据，进一步加快处理计算速度，二是作为数据框的排序依据。关于key的功效可以进一步看<a href="https://stackoverflow.com/questions/20039335/what-is-the-purpose-of-setting-a-key-in-data-table">这篇文章</a>。</p>
+
+<p>以下对比会用到的数据框</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">df &lt;- <span style="color:#2b91af">data.frame</span>(v1=1:40,
+                 v2=<span style="color:#00f">sample</span>(<span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;a&#34;</span>,<span style="color:#a31515">&#34;b&#34;</span>,<span style="color:#a31515">&#34;c&#34;</span>,<span style="color:#a31515">&#34;d&#34;</span>)),
+                 v3=<span style="color:#00f">round</span>(rnorm(20,mean = <span style="color:#2b91af">c</span>(20,35),sd = <span style="color:#2b91af">c</span>(3,7)),2),
+                 v4=<span style="color:#2b91af">c</span>(1L,2L,4L,6L))
+dt &lt;- setDT(df)
+setkey(dt,v1)</code></pre></div>
+<h3 id="子集提取-extract">子集提取 extract</h3>
+
+<h4 id="观测值子集提取">观测值子集提取</h4>
+
+<ul>
+<li><p>提取具体行</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">df %&gt;%
+slice(3:15)
+<span style="color:#008000">################</span>
+dt[3:15,] <span style="color:#008000">#或者</span>
+dt[3:15]</code></pre></div></li>
+
+<li><p>提取符合逻辑条件的数据记录</p></li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">df %&gt;%
+filter(v3 &gt; 20) 
+<span style="color:#008000">################</span>
+dt[v3 &gt;20,]</code></pre></div>
+<ul>
+<li>提取符合多条逻辑条件的数据记录</li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">df %&gt;%
+filter(v2 %in% <span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;a&#34;</span>,<span style="color:#a31515">&#34;d&#34;</span>)) 
+<span style="color:#008000">################</span>
+dt[v2 %in% <span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;a&#34;</span>,<span style="color:#a31515">&#34;d&#34;</span>),]</code></pre></div>
+<ul>
+<li>随机选取部分数据</li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#008000">#选取成比例的数据</span>
+df %&gt;%
+sample_frac(0.5, replace = <span style="color:#00f">TRUE</span>) 
+<span style="color:#008000">################</span>
+暂时没有发现这个功能
+
+<span style="color:#008000">#选取n条数据</span>
+df %&gt;%
+sample_n(10, replace = T) 
+<span style="color:#008000">################</span>
+dt[<span style="color:#00f">sample</span>(.N,10,replace = T)]</code></pre></div>
+<ul>
+<li><p>删除重复值</p></li>
+
+<li><p>4、随机选取部分数据</p></li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#008000">#选取成比例的数据</span>
+df %&gt;%
+sample_frac(0.5, replace = <span style="color:#00f">TRUE</span>) 
+<span style="color:#008000">################</span>
+暂时没有发现这个功能，但dt和df有同等的属性，此处可将df替换为dt。
+
+<span style="color:#008000">#选取n条数据</span>
+df %&gt;%
+sample_n(10, replace = T) 
+<span style="color:#008000">################</span>
+dt[<span style="color:#00f">sample</span>(.N,10,replace = T)]</code></pre></div>
+<ul>
+<li>5、删除重复值</li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#008000">#删除重复观察值(所有列值都重复的值）</span>
+df %&gt;%
+distinct() 
+<span style="color:#008000">################</span>
+<span style="color:#00f">unique</span>(dt)
+<span style="color:#008000">#删除特定变量重复值</span>
+df %&gt;%
+distinct() 
+<span style="color:#008000">################</span>
+<span style="color:#00f">unique</span>(dt,<span style="color:#2b91af">list</span>(V1,V2))</code></pre></div>
+<h4 id="变量子集提取">变量子集提取</h4>
+
+<p>dplyr和data.table在变量子集提取上有各自的思路，dplyr通过select()中嵌套相应的函数来获取符合要求的列，data.table则通过『with = F』来实现在data.frame中j项的操作。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#008000">#一般的选取</span>
+df %&gt;%
+select(v2,v3) 
+
+<span style="color:#008000">#选取特定列</span>
+<span style="color:#008000">##选取名为x1、x2、x3、x4、x5的列</span>
+select(df, num_range(<span style="color:#a31515">&#34;x&#34;</span>, 1:5)) 。
+<span style="color:#008000">##选取在Sepal.Length和Petal.Width之间的所有列(包含Sepal.Length和Petal.Width)</span>
+select(df, Sepal.Length:Petal.Width)
+<span style="color:#008000">##选取除Species以外的所有列</span>
+select(df, -Species)
+
+<span style="color:#008000"># 对变量名称有要求的选取</span>
+<span style="color:#008000">##选取名称中含有字符的列</span>
+select(df，contains(<span style="color:#a31515">&#34;.&#34;</span>)) 
+<span style="color:#008000">##选取名称以指定字符串结尾的列</span>
+select(df, ends_with(<span style="color:#a31515">&#34;Length&#34;</span>))
+<span style="color:#008000">##选取每一列</span>
+select(df, everything())
+<span style="color:#008000">##选取名称符合指定表达式规则的列</span>
+select(df, matches(<span style="color:#a31515">&#34;.t.&#34;</span>))
+<span style="color:#008000">##选取名称在指定名字组内的列</span>
+select(df, one_of(<span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;Species&#34;</span>, <span style="color:#a31515">&#34;Genus&#34;</span>))) 
+<span style="color:#008000">##选取名称以指定字符串为首的列</span>
+select(df, starts_with(<span style="color:#a31515">&#34;Sepal&#34;</span>))
+
+<span style="color:#008000">################</span>
+
+<span style="color:#008000">#选取特定列</span>
+<span style="color:#008000">##作为向量（vector）输出</span>
+dt[,v2]
+<span style="color:#008000">##作为data.table输出</span>
+<span style="color:#008000">###简单版本，适合单独提取少数列</span>
+dt[,.(v2,v3)]
+<span style="color:#008000">###标准版本</span>
+dt[,<span style="color:#2b91af">c</span>(<span style="color:#a31515">&#39;v2&#39;</span>,<span style="color:#a31515">&#39;v3&#39;</span>), with = F]
+
+<span style="color:#008000"># 对变量名称有要求的选取</span>
+<span style="color:#008000">## data.table可以通过在『j』的位置嵌套函数实现对特定名称字段的选取</span>
+dt[,<span style="color:#00f">grep</span>(<span style="color:#a31515">&#34;2|4&#34;</span>, <span style="color:#00f">colnames</span>(dt)),with = F]</code></pre></div>
+<h3 id="综合-summarize">综合 summarize</h3>
+
+<p><img src="http://img.blog.csdn.net/20180128161438938?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDUzMTcxNA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" /></p>
+
+<ul>
+<li>一般的数据综合
+```
+#概括计算
+df %&gt;%
+summarize(avg = mean(v3))
+################
+dt[,.(avg = mean(v3))]</li>
+</ul>
+
+<p>#概括计算每一列
+df %&gt;%
+summarize_each(fun(mean))
+################
+dt[,lapply(.SD, mean)]</p>
+
+<p>#data.table可以更进一步的完成更为复杂的概括计算
+dt[,lapply(.SD, function(x)list(mean(x,na.rm = T),sum(x))),.SDcols= -c(&ldquo;&nbsp;v2&nbsp;&rdquo;)]
+dt[,lapply(.SD,sum),by=V2,.SDcols=paste0(&ldquo;&nbsp;v&nbsp;&rdquo;,3:4)]</p>
+
+<pre><code>
+* 分组数据综合
+
+</code></pre>
+
+<p>#分组概括计算
+df %&gt;%
+group_by(v2) %&gt;%
+summarize(avg = mean(v3))
+################
+dt[,.(avg = mean(v3)),by = v2]
+##分组计算多于一组时候，data.table通过扩增 by实现
+dt[,.(avg = mean(v3)),by = .(v2,v4)]</p>
+
+<pre><code>
+* 用于数据综合的函数
+
+dplyr中有一套单独用于数据综合的函数。同时，data.table在『j』的位置嵌套函数的特性，可以使用这些函数，也可以用其他来源的函数。此处列举仅作数据综合时的考虑，就不做两个包的一一对比。
+
+</code></pre>
+
+<p>#向量的第一个值
+dplyr::first
+#向量的最后一个值
+dplyr::last
+#向量的第n个值
+dplyr::nth
+#向量中元素的个数
+dplyr::n
+#向量中的不同元素的个数
+dplyr::n_distinct
+#向量的IQR(四分位距)
+IQR
+#向量中的最小值
+min
+#向量中的最大值
+max
+#向量中的均值
+mean
+#向量中的中位数
+median
+#向量中的方差
+var
+#向量中的标准差
+sd</p>
+
+<pre><code>
+### 创建/更新变量 add/update
+
+![这里写图片描述](http://img.blog.csdn.net/20180128161514951?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDUzMTcxNA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+
+data.table在变量的创建和更新方面，有比dplyr更大的范围，前者能够对已有的变量进行更新，后者只能创建新的变量。
+
+dplyr通过mutate及其相关的函数来实现这一功能，data.table则通过『:=』实现。
+
+* 基本更新
+</code></pre>
+
+<p>#添加单一列
+df %&gt;%
+mutate(v3p = v3 + 100)
+################
+dt[,v3p:= v3 + 100]</p>
+
+<p>#操作多列
+df %&gt;%
+mutate(v3p = v3 + 100，v3s = cumsum(v3))
+################
+dt[,<code>:=</code>(v3p = v3 + 100, v3s = cumsum(v3))]
+##或
+dt[,c(&ldquo;&nbsp;v3p&nbsp;&rdquo;,&ldquo;&nbsp;v3s&nbsp;&rdquo;):= list(v3 + 100,cumsum(v3))]</p>
+
+<pre><code>
+* 其他添加/更新
+
+</code></pre>
+
+<h1 id="dplyr-1">dplyr</h1>
+
+<p>##添加一列新函数并删除旧函数
+df %&gt;%
+transmute(v3_neu = v3*100 + v1*5)
+##把除第一个值以外的所有元素提前，第一个元素为NA
+dplyr::lead</p>
+
+<pre><code>
+
+### 合并 join
+
+对于表合并，dplyr有专门的函数来处理，data.table则没有专门函数处理，通过内含带合并的字段来实现。
+
+![这里写图片描述](http://img.blog.csdn.net/20180128230634704?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDUzMTcxNA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+
+* left join
+
+![这里写图片描述](http://img.blog.csdn.net/20180128230821552?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDUzMTcxNA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+
+```r
+left_join(a, b, by = &quot;x1&quot;)
+################
+b[a]
+</code></pre>
+
+<ul>
+<li>right join</li>
+</ul>
+
+<p><img src="http://img.blog.csdn.net/20180128231406724?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDUzMTcxNA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" /></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">right_join(a, b, by = <span style="color:#a31515">&#34;x1&#34;</span>)
+<span style="color:#008000">################</span>
+a[b]</code></pre></div>
+<ul>
+<li>inner join</li>
+</ul>
+
+<p><img src="http://img.blog.csdn.net/20180128231622683?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDUzMTcxNA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" /></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">inner_join(a, b, by = <span style="color:#a31515">&#34;x1&#34;</span>)
+<span style="color:#008000">################</span>
+b[a,nomatch = 0]</code></pre></div>
+<ul>
+<li>full join</li>
+</ul>
+
+<p><img src="http://img.blog.csdn.net/20180128231945621?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDUzMTcxNA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" /></p>
+
+<p>data.table的full join没有直接明确的支持，关于原因，可以参考<a href="https://stackoverflow.com/questions/12773822/why-does-xy-join-of-data-tables-not-allow-a-full-outer-join-or-a-left-join">此处</a>， 不过依然可以通过曲折的办法实现。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">full_join(a, b, by = <span style="color:#a31515">&#34;x1&#34;</span>)
+<span style="color:#008000">################</span>
+unique_keys &lt;- <span style="color:#00f">unique</span>(<span style="color:#2b91af">c</span>(a[,x1], b[,x1]))
+b[a[J(unique_keys)]]
+<span style="color:#008000">#或者</span>
+b[a[J(unique_keys)]]</code></pre></div>
+<ul>
+<li>semi join</li>
+</ul>
+
+<p>寻找a中与b匹配的</p>
+
+<p><img src="http://img.blog.csdn.net/20180128235723635?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDUzMTcxNA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" /></p>
+
+<p>同样，data.table没有一级的semi join方式，只有通过次级方式实现，可参考<a href="https://stackoverflow.com/questions/18969420/perform-a-semi-join-with-data-table">此处</a> 。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">semi_join(a, b, by = <span style="color:#a31515">&#34;x1&#34;</span>)
+<span style="color:#008000">################</span>
+w = <span style="color:#00f">unique</span>(a[b,which=<span style="color:#00f">TRUE</span>,allow.cartesian=<span style="color:#00f">TRUE</span>])
+a[!!w]</code></pre></div>
+<ul>
+<li>anti_join</li>
+</ul>
+
+<p>寻找a中与b不匹配的
+<img src="http://img.blog.csdn.net/20180129000307556?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxNDUzMTcxNA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" /></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">anti_join(a, b, by = <span style="color:#a31515">&#34;x1&#34;</span>)
+<span style="color:#008000">################</span>
+暂无简洁方式</code></pre></div>
+  </div>
+
+  <div id=links>
+    
+      <a class="basic-alignment left" href="../../post/2015-07-23-r-rmarkdown/">&laquo; Hello R Markdown</a>
+    
+    
+      <a class="basic-alignment left" href="../../post/shiny-app%E5%88%B6%E4%BD%9C%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF/">Shiny app的基本制作思路 &raquo;</a>
+    
+  </div>
+</section>
+
+
+
+<section id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+      
+      
+      if (window.location.hostname == "localhost")
+                return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = '';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+<span id="/post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/" class="leancloud_visitors" data-flag-title="dplyr和data.table的数据操作对码表">
+    <span class="post-meta-item-text">reading number: </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+</span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+   new Valine({
+        el: '#vcomments' ,
+        appId: 'yjXDgIm4adLfC65VUSshkA1W-gzGzoHsz',
+        appKey: '81KLyE7xLDCR0ExKcEib8qjv',
+        notify:  false , 
+        verify:  false , 
+        avatar:'mm', 
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        visitor:  true 
+    });
+</script>
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-132686713-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+
+
+</body>
+</html>
+

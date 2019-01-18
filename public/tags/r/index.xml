@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R on IFF自留地</title>
+    <link>/tags/r/</link>
+    <description>Recent content in R on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 02 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>sf &#43; ggplot2 最简步骤实现中国地图数据展示</title>
+      <link>/post/sf-ggplot2-%E6%9C%80%E7%AE%80%E6%AD%A5%E9%AA%A4%E5%AE%9E%E7%8E%B0%E4%B8%AD%E5%9B%BD%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA/</link>
+      <pubDate>Wed, 02 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/sf-ggplot2-%E6%9C%80%E7%AE%80%E6%AD%A5%E9%AA%A4%E5%AE%9E%E7%8E%B0%E4%B8%AD%E5%9B%BD%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA/</guid>
+      <description>本文作为一个快速记录，R为工具的数据分析过程中的尝试，将最为集中的记录相关主题内容，其他延展性内容则以链接形式作为参考。 要实现的需求 以行政区</description>
+    </item>
+    
+    <item>
+      <title>Shiny app的基本制作思路</title>
+      <link>/post/shiny-app%E5%88%B6%E4%BD%9C%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF/</link>
+      <pubDate>Tue, 18 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/shiny-app%E5%88%B6%E4%BD%9C%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF/</guid>
+      <description>Shiny是基于R的实时计算服务器（serve），并通过CSS，htmlwidge，Javascript来进行拓展的web 交互界面（UI）展</description>
+    </item>
+    
+    <item>
+      <title>dplyr和data.table的数据操作对码表</title>
+      <link>/post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/</link>
+      <pubDate>Mon, 29 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/</guid>
+      <description>缘起 作为R中两个被讨论最多的数据操作包，dplyr 和data.table因其各具特色设计哲学俘获一批忠实用户。二者在整体风格和机制上的明显区</description>
+    </item>
+    
+  </channel>
+</rss>

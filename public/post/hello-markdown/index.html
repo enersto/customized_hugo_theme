@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  
+
+  <link rel="icon" type="image/png" href="../../favicon.png">
+
+  <title>
+    
+    
+     Hello, Markdown 
+    
+  </title>
+  <link rel="canonical" href="../../post/hello-markdown/">
+
+  <link rel="stylesheet" href="../../css/fonts.css" />
+  <link rel="stylesheet" href="../../css/style.css" />
+
+  
+</head>
+
+<body>
+<section id=nav>
+  <h1><a href="../../">IFF自留地</a></h1>
+  <ul>
+    
+    <li><a href="../../">Home</a></li>
+    
+    <li><a href="../../categories/">Categories</a></li>
+    
+    <li><a href="../../tags/">Tags</a></li>
+    
+    <li><a href="../../about/">About</a></li>
+    
+  </ul>
+</section>
+
+
+<section id=content>
+  <h1> Hello, Markdown </h1>
+
+  <div id=sub-header>
+     · 2019/01/18 · 2190 words ·  11 minutes read
+  </div>
+
+  <div class="entry-content">
+    
+
+<pre><code># Builtin values
+references:
+    - references.md
+    - abbreviations.md
+    - footnotes.md
+
+destination: destination.html
+
+# Meta Data
+title: Test Page
+author:
+    - John Doe
+    - Jane Doe
+
+# Settings overrides
+settings:
+    pygments_style: github
+    js:
+      - https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js
+      - https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js
+      - https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js
+      - https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js
+      - res://MarkdownPreview/js/uml.js
+      - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js
+      - res://MarkdownPreview/js/math_config.js
+    markdown_extensions:
+      - markdown.extensions.footnotes
+      - markdown.extensions.attr_list
+      - markdown.extensions.def_list
+      - markdown.extensions.tables
+      - markdown.extensions.abbr
+      - markdown.extensions.toc:
+          permalink: &quot;\ue157&quot;
+      - markdown.extensions.smarty
+      - markdown.extensions.meta
+      - markdown.extensions.admonition
+      - markdown.extensions.codehilite:
+          guess_lang: false
+      - pymdownx.arithmatex:
+          generic: true
+      - pymdownx.extrarawhtml
+      - pymdownx.progressbar
+      - pymdownx.caret:
+          superscript: false
+      - pymdownx.magiclink:
+          repo_url_shortener: true
+          repo_url_shorthand: true
+          user: revolunet
+          repo: sublimetext-markdown-preview
+      - pymdownx.betterem
+      - pymdownx.tilde:
+          subscript: false
+      - pymdownx.emoji:
+          emoji_index: !!python/name:pymdownx.emoji.gemoji
+          emoji_generator: !!python/name:pymdownx.emoji.to_png
+          alt: short
+          options:
+            attributes:
+              align: absmiddle
+              height: 20px
+              width: 20px
+            image_path: https://assets-cdn.github.com/images/icons/emoji/unicode/
+            non_standard_image_path: https://assets-cdn.github.com/images/icons/emoji/
+      - pymdownx.tasklist
+      - pymdownx.superfences:
+          custom_fences:
+            - name: flow
+              class: uml-flowchart
+              format: !!python/name:pymdownx.superfences.fence_code_format
+            - name: sequence
+              class: uml-sequence-diagram
+              format: !!python/name:pymdownx.superfences.fence_code_format
+</code></pre>
+
+<hr />
+
+<p>test: This tests the meta extension
+title: This title will be overridden by YAML</p>
+
+<h1 id="cheat-sheet-and-test">Cheat Sheet and Test</h1>
+
+<p>[TOC]</p>
+
+<h2 id="headers">Headers</h2>
+
+<pre><code># H1
+## H2
+### H3
+#### H4
+##### H5
+###### H6
+### Duplicate Header
+### Duplicate Header
+</code></pre>
+
+<h1 id="h1">H1</h1>
+
+<h2 id="h2">H2</h2>
+
+<h3 id="h3">H3</h3>
+
+<h4 id="h4">H4</h4>
+
+<h5 id="h5">H5</h5>
+
+<h6 id="h6">H6</h6>
+
+<h3 id="duplicate-header">Duplicate Header</h3>
+
+<h3 id="duplicate-header-1">Duplicate Header</h3>
+
+<h2 id="paragraphs">Paragraphs</h2>
+
+<pre><code>This is a paragraph.
+I am still part of the paragraph.
+
+New paragraph.
+</code></pre>
+
+<p>This is a paragraph.
+I am still part of the paragraph.</p>
+
+<p>New paragraph.</p>
+
+<h2 id="inline">Inline</h2>
+
+<pre><code>`inline block`
+
+&lt;kbd&gt;ctrl&lt;/kbd&gt;+&lt;kbd&gt;alt&lt;/kbd&gt;+&lt;kbd&gt;del&lt;/kbd&gt;
+
+**bold 1** and __bold 2__
+
+*italic 1*  and _italic 2_
+
+~~strike~~
+
+
+***bold 1 and italic 1***
+
+___bold 2 and italic 2___
+
+__*bold 2 and italic 1*__
+
+**_bold 1 and italic 2_**
+
+
+~~*strike italic 1*~~ and *~~strike italic 2~~*
+
+~~_strike italic 2_~~ and  _~~strike italic 2~~_
+
+
+~~**strike bold 1**~~ and **~~strike bold 1~~**
+
+~~__strike bold 2__~~ and __~~strike bold 2~~__
+
+
+~~***strike italic 1 bold 1***~~ and ***~~strike italic 1 bold 1~~***
+
+~~___strike italic 2 bold 2___~~ and ___~~strike italic 2 bold 2~~___
+
+**~~*strike italic 1 bold 1*~~** and *~~**strike italic 1 bold 1**~~*
+
+__~~_strike italic 2 bold 2_~~__ and _~~__strike italic 2 bold 2__~~_
+
+**~~_strike italic 2 bold 1_~~** and _~~**strike italic 2 bold 1**~~_
+
+__~~*strike italic 1 bold 2*~~__ and *~~__strike italic 1 bold 2__~~*
+
+</code></pre>
+
+<p><code>inline block</code></p>
+
+<p><kbd>ctrl</kbd>+<kbd>alt</kbd>+<kbd>del</kbd></p>
+
+<p><strong>bold 1</strong> and <strong>bold 2</strong></p>
+
+<p><em>italic 1</em>  and <em>italic 2</em></p>
+
+<p><del>strike</del></p>
+
+<p><strong><em>bold 1 and italic 1</em></strong></p>
+
+<p><strong><em>bold 2 and italic 2</em></strong></p>
+
+<p><strong><em>bold 2 and italic 1</em></strong></p>
+
+<p><strong><em>bold 1 and italic 2</em></strong></p>
+
+<p><del><em>strike italic 1</em></del> and <em><del>strike italic 2</del></em></p>
+
+<p><del><em>strike italic 2</em></del> and  <em><del>strike italic 2</del></em></p>
+
+<p><del><strong>strike bold 1</strong></del> and <strong><del>strike bold 1</del></strong></p>
+
+<p><del><strong>strike bold 2</strong></del> and <strong><del>strike bold 2</del></strong></p>
+
+<p><del><strong><em>strike italic 1 bold 1</em></strong></del> and <strong><em><del>strike italic 1 bold 1</del></em></strong></p>
+
+<p><del><strong><em>strike italic 2 bold 2</em></strong></del> and <strong><em><del>strike italic 2 bold 2</del></em></strong></p>
+
+<p><strong><del><em>strike italic 1 bold 1</em></del></strong> and *<del><strong>strike italic 1 bold 1</strong></del>*</p>
+
+<p><strong><del><em>strike italic 2 bold 2</em></del></strong> and _<del><strong>strike italic 2 bold 2</strong></del>_</p>
+
+<p><strong><del><em>strike italic 2 bold 1</em></del></strong> and <em><del><strong>strike italic 2 bold 1</strong></del></em></p>
+
+<p><strong><del><em>strike italic 1 bold 2</em></del></strong> and <em><del><strong>strike italic 1 bold 2</strong></del></em></p>
+
+<h2 id="links">Links</h2>
+
+<p>Footnote, reference sources are provided in separate markdowns files specified in frontmatter.</p>
+
+<pre><code>[Reference Link][1]
+
+Footnotes[^1] have a label[^label] and a definition[^!DEF]
+
+Web image
+![Web Picture](http://www.revolunet.com/static/parisjs8/img/logo-revolunet-carre.jpg &quot;Web Picture&quot;)
+
+Local image
+![Local Picture](logo-revolunet-carre.jpg &quot;Local Picture&quot;)
+
+contact@revolunet.com
+
+@revolunet
+
+Issue #1
+
+https://github.com/revolunet/sublimetext-markdown-preview/
+
+This is a link https://github.com/revolunet/sublimetext-markdown-preview/.
+
+This is a link &quot;https://github.com/revolunet/sublimetext-markdown-preview/&quot;.
+
+With this link (https://github.com/revolunet/sublimetext-markdown-preview/), it still works.
+
+    [1]: https://github.com/revolunet/sublimetext-markdown-preview/
+    [^1]: This is a footnote
+    [^label]: A footnote on &quot;label&quot;
+    [^!DEF]: The footnote for definition
+</code></pre>
+
+<p>[Reference Link][1]</p>
+
+<p>Footnotes[^1] have a label[^label] and a definition[^!DEF]</p>
+
+<p>Web image
+<img src="http://www.revolunet.com/static/parisjs8/img/logo-revolunet-carre.jpg" alt="Web Picture" title="Web Picture" /></p>
+
+<p>Local image
+<img src="logo-revolunet-carre.jpg" alt="Local Picture" title="Local Picture" /></p>
+
+<p>www.google.com</p>
+
+<p>contact@revolunet.com</p>
+
+<p>@revolunet</p>
+
+<p>Issue #1</p>
+
+<p><a href="https://github.com/revolunet/sublimetext-markdown-preview/">https://github.com/revolunet/sublimetext-markdown-preview/</a></p>
+
+<p>This is a link <a href="https://github.com/revolunet/sublimetext-markdown-preview/">https://github.com/revolunet/sublimetext-markdown-preview/</a>.</p>
+
+<p>This is a link &ldquo;&nbsp;<a href="https://github.com/revolunet/sublimetext-markdown-preview/&quot;">https://github.com/revolunet/sublimetext-markdown-preview/&quot;</a>.</p>
+
+<p>With this link (<a href="https://github.com/revolunet/sublimetext-markdown-preview/">https://github.com/revolunet/sublimetext-markdown-preview/</a>), it still works.</p>
+
+<h2 id="abbreviation">Abbreviation</h2>
+
+<p>Abbreviations source are found in a separate markdown file specified in frontmatter.</p>
+
+<pre><code>The HTML specification 
+is maintained by the W3C.
+
+*[HTML]: Hyper Text Markup Language
+*[W3C]:  World Wide Web Consortium
+</code></pre>
+
+<p>The HTML specification
+is maintained by the W3C.</p>
+
+<h2 id="unordered-list">Unordered List</h2>
+
+<pre><code>Unordered List
+
+- item 1
+    * item A
+    * item B
+        more text
+        + item a
+        + item b
+        + item c
+    * item C
+- item 2
+- item 3
+</code></pre>
+
+<p>Unordered List</p>
+
+<ul>
+<li>item 1
+
+<ul>
+<li>item A</li>
+<li>item B
+more text
+
+<ul>
+<li>item a</li>
+<li>item b</li>
+<li>item c</li>
+</ul></li>
+<li>item C</li>
+</ul></li>
+<li>item 2</li>
+<li>item 3</li>
+</ul>
+
+<h2 id="ordered-list">Ordered List</h2>
+
+<pre><code>Ordered List
+
+1. item 1
+    1. item A
+    2. item B
+        more text
+        1. item a
+        2. item b
+        3. item c
+    3. item C
+2. item 2
+3. item 3
+</code></pre>
+
+<p>Ordered List</p>
+
+<ol>
+<li>item 1
+
+<ol>
+<li>item A</li>
+<li>item B
+more text
+
+<ol>
+<li>item a</li>
+<li>item b</li>
+<li>item c</li>
+</ol></li>
+<li>item C</li>
+</ol></li>
+<li>item 2</li>
+<li>item 3</li>
+</ol>
+
+<h2 id="task-list">Task List</h2>
+
+<pre><code>Task List
+
+- [X] item 1
+    * [X] item A
+    * [ ] item B
+        more text
+        + [x] item a
+        + [ ] item b
+        + [x] item c
+    * [X] item C
+- [ ] item 2
+- [ ] item 3
+</code></pre>
+
+<p>Task List</p>
+
+<ul class="task-list">
+<li><label><input type="checkbox" checked disabled class="task-list-item"> item 1
+
+<ul class="task-list">
+<li><label><input type="checkbox" checked disabled class="task-list-item"> item A</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> item B
+more text
+
+<ul class="task-list">
+<li><label><input type="checkbox" checked disabled class="task-list-item"> item a</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> item b</label></li>
+<li><label><input type="checkbox" checked disabled class="task-list-item"> item c</label></li>
+</ul></label></li>
+<li><label><input type="checkbox" checked disabled class="task-list-item"> item C</label></li>
+</ul></label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> item 2</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> item 3</label></li>
+</ul>
+
+<h2 id="mixed-lists">Mixed Lists</h2>
+
+<p><code>Really Mixed Lists</code> should break with <code>sane_lists</code> on.</p>
+
+<pre><code>Mixed Lists
+
+- item 1
+    * [X] item A
+    * [ ] item B
+        more text
+        1. item a
+        2. itemb
+        3. item c
+    * [X] item C
+- item 2
+- item 3
+
+
+Really Mixed Lists
+
+- item 1
+    * [X] item A
+    - item B
+        more text
+        1. item a
+        + itemb
+        + [ ] item c
+    3. item C
+2. item 2
+- [X] item 3
+</code></pre>
+
+<p>Mixed Lists</p>
+
+<ul class="task-list">
+<li>item 1
+
+<ul class="task-list">
+<li><label><input type="checkbox" checked disabled class="task-list-item"> item A</label></li>
+<li><label><input type="checkbox" disabled class="task-list-item"> item B
+more text
+
+<ol>
+<li>item a</li>
+<li>itemb</li>
+<li>item c</li>
+</ol></label></li>
+<li><label><input type="checkbox" checked disabled class="task-list-item"> item C</label></li>
+</ul></li>
+<li>item 2</li>
+<li>item 3</li>
+</ul>
+
+<p>Really Mixed Lists</p>
+
+<ul class="task-list">
+<li>item 1
+
+<ul class="task-list">
+<li><label><input type="checkbox" checked disabled class="task-list-item"> item A</label></li>
+<li>item B
+more text
+
+<ol class="task-list">
+<li>item a</li>
+<li>itemb</li>
+<li><label><input type="checkbox" disabled class="task-list-item"> item c</label></li>
+</ol></li>
+<li>item C</li>
+</ul></li>
+<li>item 2</li>
+<li><label><input type="checkbox" checked disabled class="task-list-item"> item 3</label></li>
+</ul>
+
+<h2 id="dictionary">Dictionary</h2>
+
+<pre><code>Dictionary
+:   item 1
+
+    item 2
+
+    item 3
+</code></pre>
+
+<dl>
+<dt>Dictionary</dt>
+<dd><p>item 1</p>
+
+<p>item 2</p>
+
+<p>item 3</p></dd>
+</dl>
+
+<h2 id="blocks">Blocks</h2>
+
+<pre><code>    This is a block.
+    
+    This is more of a block.
+
+</code></pre>
+
+<pre><code>This is a block.
+
+This is more of a block.
+</code></pre>
+
+<h2 id="block-quotes">Block Quotes</h2>
+
+<pre><code>&gt; This is a block quote
+&gt;&gt; How does it look?
+</code></pre>
+
+<blockquote>
+<p>This is a block quote.
+&gt; How does it look?
+I think it looks good.</p>
+</blockquote>
+
+<h2 id="fenced-block">Fenced Block</h2>
+
+<p>Assuming guessing is not enabled.</p>
+
+<pre><code>​```
+// Fenced **without** highlighting
+function doIt() {
+    for (var i = 1; i &lt;= slen ; i^^) {
+        setTimeout(&quot;document.z.textdisplay.value = newMake()&quot;, i*300);
+        setTimeout(&quot;window.status = newMake()&quot;, i*300);
+    }
+}
+​```
+
+​```javascript
+// Fenced **with** highlighting
+function doIt() {
+    for (var i = 1; i &lt;= slen ; i^^) {
+        setTimeout(&quot;document.z.textdisplay.value = newMake()&quot;, i*300);
+        setTimeout(&quot;window.status = newMake()&quot;, i*300);
+    }
+}
+​```
+</code></pre>
+
+<pre><code>// Fenced **without** highlighting
+function doIt() {
+    for (var i = 1; i &lt;= slen ; i^^) {
+        setTimeout(&quot;document.z.textdisplay.value = newMake()&quot;, i*300);
+        setTimeout(&quot;window.status = newMake()&quot;, i*300);
+    }
+}
+</code></pre>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#008000">// Fenced **with** highlighting
+</span><span style="color:#008000"></span><span style="color:#00f">function</span> doIt() {
+    <span style="color:#00f">for</span> (<span style="color:#00f">var</span> i = 1; i &lt;= slen ; i^^) {
+        setTimeout(<span style="color:#a31515">&#34;document.z.textdisplay.value = newMake()&#34;</span>, i*300);
+        setTimeout(<span style="color:#a31515">&#34;window.status = newMake()&#34;</span>, i*300);
+    }
+}
+</code></pre></div>
+<h2 id="tables">Tables</h2>
+
+<pre><code>| _Colors_      | Fruits          | Vegetable         |
+| ------------- |:---------------:| -----------------:|
+| Red           | *Apple*         | [Pepper](#Tables) |
+| ~~Orange~~    | Oranges         | **Carrot**        |
+| Green         | ~~***Pears***~~ | Spinach           |
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th><em>Colors</em></th>
+<th align="center">Fruits</th>
+<th align="right">Vegetable</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Red</td>
+<td align="center"><em>Apple</em></td>
+<td align="right">Pepper</td>
+</tr>
+
+<tr>
+<td><del>Orange</del></td>
+<td align="center">Oranges</td>
+<td align="right"><strong>Carrot</strong></td>
+</tr>
+
+<tr>
+<td>Green</td>
+<td align="center"><del><strong><em>Pears</em></strong></del></td>
+<td align="right">Spinach</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="smart-strong">Smart Strong</h2>
+
+<pre><code>Text with double__underscore__words.
+
+__Strong__ still works.
+
+__this__works__too__
+</code></pre>
+
+<p>Text with double<strong>underscore</strong>words.</p>
+
+<p><strong>Strong</strong> still works.</p>
+
+<p><strong>this</strong>works<strong>too</strong></p>
+
+<h2 id="smarty">Smarty</h2>
+
+<pre><code>&quot;double quotes&quot;
+
+'single quotes'
+
+da--sh
+
+elipsis...
+</code></pre>
+
+<p>&ldquo;&nbsp;double quotes&nbsp;&rdquo;</p>
+
+<p>&lsquo;single quotes&rsquo;</p>
+
+<p>da&ndash;sh</p>
+
+<p>elipsis&hellip;</p>
+
+<h2 id="attribute-list">Attribute List</h2>
+
+<pre><code>Normal Text
+
+Modified Text
+{: style=&quot;font-weight:bold;&quot; }
+</code></pre>
+
+<p>Normal Text</p>
+
+<p>Modified Text
+{: style=&ldquo;&nbsp;font-weight:bold;&nbsp;&rdquo; }</p>
+
+<h2 id="admonition">Admonition</h2>
+
+<pre><code>!!! Attention &quot;Success!&quot;
+    You can use inline ~~stuff~~ markup too!
+
+!!! Hint &quot;Info!&quot;
+    - Here is some info.
+    - And some more
+
+!!! Caution &quot;Warning!&quot;
+    - [X] Make sure you turn off the stove
+    - [X] Don't run with scissors
+
+!!! Danger &quot;Alert!&quot;
+    You really need to read [this](#admonition)!
+
+!!! Question &quot;Question?&quot;
+    Are you serious?
+
+!!! Note &quot;Note&quot;
+    😄
+
+    &gt; Not all markup can be placed in these boxes, but you can fit all sorts of things in them. But you will notice that the styles don't always play nice with each other.  Additional CSS could fix this though.
+
+    Stuff like _this_ works too.
+
+    | _Colors_      | Fruits          | Vegetable    |
+    | ------------- |:---------------:| ------------:|
+    | Red           | *Apple*         | Pepper       |
+    | ~~Orange~~    | Oranges         | **Carrot**   |
+    | Green         | ~~***Pears***~~ | Spinach      |
+
+!!! Unknown &quot;Title&quot;
+    Default class style
+</code></pre>
+
+<p>!!! Attention &ldquo;&nbsp;Success!&nbsp;&rdquo;
+    You can use inline <del>stuff</del> markup too!</p>
+
+<p>!!! Hint &ldquo;&nbsp;Info!&nbsp;&rdquo;
+    - Here is some info.
+    - And some more</p>
+
+<p>!!! Caution &ldquo;&nbsp;Warning!&nbsp;&rdquo;
+    - [X] Make sure you turn off the stove
+    - [X] Don&rsquo;t run with scissors</p>
+
+<p>!!! Danger &ldquo;&nbsp;Alert!&nbsp;&rdquo;
+    You really need to read <a href="#admonition">this</a>!</p>
+
+<p>!!! Question &ldquo;&nbsp;Question?&nbsp;&rdquo;
+    Are you serious?</p>
+
+<p>!!! Note &ldquo;&nbsp;Note&nbsp;&rdquo;
+    😄</p>
+
+<pre><code>&gt; Not all markup can be placed in these boxes, but you can fit all sorts of things in them. But you will notice that the styles don't always play nice with each other.  Additional CSS could fix this though.
+
+Stuff like _this_ works too.
+
+| _Colors_      | Fruits          | Vegetable    |
+| ------------- |:---------------:| ------------:|
+| Red           | *Apple*         | Pepper       |
+| ~~Orange~~    | Oranges         | **Carrot**   |
+| Green         | ~~***Pears***~~ | Spinach      |
+</code></pre>
+
+<p>!!! Unknown &ldquo;&nbsp;Title&nbsp;&rdquo;
+    Default class style</p>
+
+<h2 id="github-emoji">Github Emoji</h2>
+
+<pre><code>This is a test for emoji 😄.  The emojis are images linked to github assets .
+</code></pre>
+
+<p>This is a test for emoji 😄.  The emojis are images linked to github assets .</p>
+
+<h3 id="people">People</h3>
+
+<p>:+1::-1:👽👼💢😠😧😲👶💙😊💥🙇👦👰💔👤👥👏😰💥😖😕👷👮👫💑:couplekiss:😢😿💘💃👯💨😞😥💫😵💧👂❗️😑👀👊👪😨🐾🔥✊😳😦🖕👧💚❕❔😬😁😀💂💇✋💩🙉❤️😍😻💓💗😯👿💁😇👺👹😂😹💋😗😽😚😘😙😆👄💌👨👲👳😷💆🤘💪🎵💅😐🙅😶👃🎶👌🙆👴👵👐😮😔😣🙍👱🙎👇👈👉☝️👆💩😾🙏👸👊💜❓😡✋🙌🙋☺️😌💞🏃🏃😆😱🙀🙈💩💀😴😪😄😸😃😺😈😏😼😭✨💖🙊💬⭐️🌟😛😝😜😎😓💦😅💭👎👍😫👅😤💕👬👭😒✌️🚶👋😩😉👩😟💛😋💤</p>
+
+<h3 id="nature">Nature</h3>
+
+<p>🐜🐤🐻🐝🐞🐦🌼🐡🐗💐🐛🌵🐫🐱🐈🌸🌰🐔☁️🐮🐄🌙🐊🌀🌳🐶🐕🐬🐉🐲🐪🌾🌍🌎🌏🐘🌲🍂🌓🌛🐟🌁🍀🐸🌕🌝🌐🐐🐹🐥🐣🌿🌺🐝🐴🐨🌗🌜🍃🐆🍁🌌🐒🐵🌔🐭🐁🍄🌑🌚🌃🌊🐙🐂🌴🐼⛅️🐾🐧🐷🐖🐽🐩🐰🐇🐎🐏🐀🐓🌹🌱🐑🐚🐌🐍❄️⛄️🌞🌻☀️🐯🐅🐠🌷🐢☔️🌋🌘🌖🐃🌒🌔🐳🐋🐺⚡️</p>
+
+<h3 id="objects">Objects</h3>
+
+<p>🎱⏰🍎🎨👟🍼🎈🎍🍌📊⚾️🏀🛀🛁🔋🍺🍻🔔🍱🚴👙🎂🃏✒️📘💣📖🔖📑📚👢🎳🍞💼💡🍰📆📲📷🍬📇💿📉📈🍒🍫🎄🎬📋📕🔐🌂♣️🍸☕️💻🎊🍪🌽💳👑🔮🍛🍮🍡🎯📅♦️💵🎎🚪🍩👗📀:e-mail:🥚🍆🔌✉️✉️📩💶👓📠📁🎆🍥🎣🎏🔦🐬💾🎴🏈👣🍴🍤🍟🎲💎👻🎁💝⛳️🍇🍏📗🎸🔫🍔🔨👜🎧♥️🔆👠🔪🍯🏇⌛️⏳🍨🍦📥📨📱🎃👖🔑👘🏮📒🍋💄🔒🔏🍭➿🔊📢🔅🔍🔎🀄️📫📪📬📭👞🍖📣🍈📝🎤🔬💽💸💰🎓🚵🎥🎹🎼🔇📛👔📰🔕📓📔🔩🍢📖📂📙📤📦📄📃📟📎🍑🍐📝✏️☎️💊🍍🍕📯📮👝🍗💷👛📌📻🍜🎀🍚🍙🍘🎑💍🏉🎽🍶👡🎅📡🎷🎒✂️📜💺🍧👕👞🚿🎿🚬🏂⚽️🔉👾♠️🍝❇️🎇🔈🍲📏🍓🏄🍣🍠🏊💉🎉🎋🍊🍵☎️📞🔭🎾🚽🍅🎩📐🏆🍹🎺👕📺🔓📼📹🎮🎻⌚️🍉🎐🍷👚👒🔧💴</p>
+
+<h3 id="places">Places</h3>
+
+<p>🚡✈️🚑⚓️🚛🏧🏦💈🔰🚲🚙⛵️🌉🚅🚄🚌🚏🚗🎠🏁⛪️🎪🌇🌆🇨🇳🚧🏪🎌🇩🇪🏬🇪🇸🏰🏤🏭🎡🚒⛲️🇫🇷⛽️🇬🇧🚁🏥🏨♨️🏠🏡🇮🇹🏮🗾🏯🇯🇵🇰🇷🚈🏩🚐🚝🗻🚠🚞🗿🏢🚘🚍🚔🚖🎭🚓🏣🚃🌈🚗🚀🎢🚨📍🚣🇷🇺⛵️🏫🚢🎰🚤🌠🚉🗽🚂🌅🌄🚟🚕⛺️🎫🗼🚜🚥🚋🚆🚊🚩🚎🚚🇬🇧🇺🇸🚦⚠️💒</p>
+
+<h3 id="symbols">Symbols</h3>
+
+<p>💯🔢🅰️🆎🔤🔡🉑♒️♈️◀️⏬⏫⬇️🔽▶️⤵️⤴️⬅️↙️↘️➡️↪️⬆️↕️🔼↖️↗️🔃🔄🅱️🚼🔙🛄☑️‼️⚫️⬛️◾️◼️▪️🔲♋️🔠♑️💹🚸🎦🆑🕐🕙🕥🕚🕦🕛🕧🕜🕑🕝🕒🕞🕓🕟🕔🕠🕕🕡🕖🕢🕗🕣🕘🕤㊗️🆒©️➰💱🛃💠🚯8️⃣✴️✳️🔚⏩5️⃣4️⃣🆓♊️#️⃣💟✔️➗💲❗️➖✖️➕🆔🉐ℹ️⁉️🔟🈁🔵🔷🔶🛅↔️↩️♌️♎️🔗Ⓜ️🚹🚇📴❎🆕🆖9️⃣🚳⛔️🚫📵🚷🚭:non-potable_water:⭕️🅾️🆗🔛1️⃣⛎🅿️〽️🛂♓️🚰🚮🔘♻️🔴®️🔁🔂🚻⏪🈂️♐️♏️㊙️7️⃣📶6️⃣🔯🔹🔸🔺🔻🔜🆘🔣♉️3️⃣™️🔝🔱🔀2️⃣🈹🈴🈺🈯️🈷️🈶🈵🈚️🈸🈲🈳🔞🆙📳♍️🆚〰️🚾♿️✅⚪️💮⬜️◽️◻️▫️🔳🚺❌0️⃣</p>
+
+<h2 id="insert">Insert</h2>
+
+<pre><code>^^insert^^
+
+^^*insert italic*^^  *^^insert italic 2^^*
+
+^^_insert italic_^^  _^^insert italic 2^^_
+
+^^**insert bold**^^  **^^insert bold 2^^**
+
+^^__insert bold__^^  __^^insert bold 2^^__
+
+^^***insert italic bold***^^  ***^^insert italic bold 2^^***
+
+^^___insert italic bold___^^  ___^^insert italic bold 2^^___
+
+**^^*insert italic bold*^^**  *^^**insert italic bold 2**^^*
+
+__^^_insert italic bold_^^__  _^^__insert italic bold 2__^^_
+
+**^^_insert italic bold_^^**  _^^**insert italic bold 2**^^_
+
+__^^*insert italic bold*^^__  *^^__insert italic bold 2__^^*
+</code></pre>
+
+<p>^^insert^^</p>
+
+<p>^^<em>insert italic</em>^^  <em>^^insert italic 2^^</em></p>
+
+<p>^^<em>insert italic</em>^^  <em>^^insert italic 2^^</em></p>
+
+<p>^^<strong>insert bold</strong>^^  <strong>^^insert bold 2^^</strong></p>
+
+<p>^^<strong>insert bold</strong>^^  <strong>^^insert bold 2^^</strong></p>
+
+<p>^^<strong><em>insert italic bold</em></strong>^^  <strong><em>^^insert italic bold 2^^</em></strong></p>
+
+<p>^^<strong><em>insert italic bold</em></strong>^^  <strong><em>^^insert italic bold 2^^</em></strong></p>
+
+<p><strong>^^<em>insert italic bold</em>^^</strong>  *^^<strong>insert italic bold 2</strong>^^*</p>
+
+<p><strong>^^<em>insert italic bold</em>^^</strong>  _^^<strong>insert italic bold 2</strong>^^_</p>
+
+<p><strong>^^<em>insert italic bold</em>^^</strong>  <em>^^<strong>insert italic bold 2</strong>^^</em></p>
+
+<p><strong>^^<em>insert italic bold</em>^^</strong>  <em>^^<strong>insert italic bold 2</strong>^^</em></p>
+
+<h2 id="progress">Progress</h2>
+
+<p>Progress bars are block elements and it is recommened to put a newline before and after.  But they will be recognized inline, but they will be on their own line.</p>
+
+<p>Normally you would just globally set your additional classes: <code>progressbar(add_classes=candystripe-animate)</code>, but here we will demonstrate that it works with the <code>attr_list</code> extension.  It will take inline style.</p>
+
+<p>To turn off level classes (which are used to decide special colors for certain percentages) you could just use <code>progressbar(level_class=False)</code>.</p>
+
+<pre><code>| Test               | Result                                        |
+|--------------------|-----------------------------------------------|
+|Animated: 0%        |[=0% &quot;0%&quot;]{: .candystripe-animate}             |
+|Animated: 5%        |[=5% &quot;5%&quot;]{: .candystripe-animate}             |
+|Animated: 25%       |[=25% &quot;25%&quot;]{: .candystripe-animate}           |
+|Animated: 45%       |[=45% &quot;45%&quot;]{: .candystripe-animate}           |
+|Animated: 65%       |[=65% &quot;65%&quot;]{: .candystripe-animate}           |
+|Animated: 85%       |[=85% &quot;85%&quot;]{: .candystripe-animate}           |
+|Animated: 100%      |[=100% &quot;100%&quot;]{: .candystripe-animate}         |
+|Division Percentage |[= 212.2/537 &quot;212.2/537 Testing division&quot;]     |
+|No Label            |[= 50%]                                        |
+|Inline              |Before[= 50% &quot;I'm a block!&quot;]After              |
+|Gloss and Animated  |[= 50% &quot;Gloss&quot;]{: .candystripe-animate .gloss} |
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Result</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Animated: 0%</td>
+<td>[=0% &ldquo;&nbsp;0%&nbsp;&rdquo;]{: .candystripe-animate}</td>
+</tr>
+
+<tr>
+<td>Animated: 5%</td>
+<td>[=5% &ldquo;&nbsp;5%&nbsp;&rdquo;]{: .candystripe-animate}</td>
+</tr>
+
+<tr>
+<td>Animated: 25%</td>
+<td>[=25% &ldquo;&nbsp;25%&nbsp;&rdquo;]{: .candystripe-animate}</td>
+</tr>
+
+<tr>
+<td>Animated: 45%</td>
+<td>[=45% &ldquo;&nbsp;45%&nbsp;&rdquo;]{: .candystripe-animate}</td>
+</tr>
+
+<tr>
+<td>Animated: 65%</td>
+<td>[=65% &ldquo;&nbsp;65%&nbsp;&rdquo;]{: .candystripe-animate}</td>
+</tr>
+
+<tr>
+<td>Animated: 85%</td>
+<td>[=85% &ldquo;&nbsp;85%&nbsp;&rdquo;]{: .candystripe-animate}</td>
+</tr>
+
+<tr>
+<td>Animated: 100%</td>
+<td>[=100% &ldquo;&nbsp;100%&nbsp;&rdquo;]{: .candystripe-animate}</td>
+</tr>
+
+<tr>
+<td>Division Percentage</td>
+<td>[= 212.<sup>2</sup>&frasl;<sub>537</sub> &ldquo;&nbsp;212.<sup>2</sup>&frasl;<sub>537</sub> Testing division&nbsp;&rdquo;]</td>
+</tr>
+
+<tr>
+<td>No Label</td>
+<td>[= 50%]</td>
+</tr>
+
+<tr>
+<td>Inline</td>
+<td>Before[= 50% &ldquo;&nbsp;I&rsquo;m a block!&nbsp;&rdquo;]After</td>
+</tr>
+
+<tr>
+<td>Gloss and Animated</td>
+<td>[= 50% &ldquo;&nbsp;Gloss&nbsp;&rdquo;]{: .candystripe-animate .gloss}</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="neseted-fences">Neseted Fences</h2>
+
+<pre><code>    ```
+    This will still be parsed
+    as a normal indented code block.
+    ```
+
+​```
+This will still be parsed
+as a fenced code block.
+​```
+
+- This is a list that contains multiple code blocks.
+
+    - Here is an indented block
+
+            ```
+            This will still be parsed
+            as a normal indented code block.
+            ```
+
+    - Here is a fenced code block:
+
+        ```
+        This will still be parsed
+        as a fenced code block.
+        ```
+
+        &gt; ```
+        &gt; Blockquotes?
+        &gt; Not a problem!
+        &gt; ```
+</code></pre>
+
+<pre><code>```
+This will still be parsed
+as a normal indented code block.
+```
+</code></pre>
+
+<pre><code>This will still be parsed
+as a fenced code block.
+</code></pre>
+
+<ul>
+<li><p>This is a list that contains multiple code blocks.</p>
+
+<ul>
+<li><p>Here is an indented block</p>
+
+<pre><code>```
+This will still be parsed
+as a normal indented code block.
+```
+</code></pre></li>
+
+<li><p>Here is a fenced code block:</p>
+
+<pre><code>This will still be parsed
+as a fenced code block.
+</code></pre>
+
+<blockquote>
+<pre><code>Blockquotes?
+Not a problem!
+</code></pre>
+</blockquote></li>
+</ul></li>
+</ul>
+
+<h2 id="uml-flow-charts">UML Flow Charts</h2>
+
+<pre><code>​```flow
+st=&gt;start: Start:&gt;http://www.google.com[blank]
+e=&gt;end:&gt;http://www.google.com
+op1=&gt;operation: My Operation
+sub1=&gt;subroutine: My Subroutine
+cond=&gt;condition: Yes
+or No?:&gt;http://www.google.com
+io=&gt;inputoutput: catch something...
+
+st-&gt;op1-&gt;cond
+cond(yes)-&gt;io-&gt;e
+cond(no)-&gt;sub1(right)-&gt;op1
+​```
+</code></pre>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-flow" data-lang="flow">st=&gt;start: Start:&gt;http://www.google.com[blank]
+e=&gt;end:&gt;http://www.google.com
+op1=&gt;operation: My Operation
+sub1=&gt;subroutine: My Subroutine
+cond=&gt;condition: Yes
+or No?:&gt;http://www.google.com
+io=&gt;inputoutput: catch something...
+
+st-&gt;op1-&gt;cond
+cond(yes)-&gt;io-&gt;e
+cond(no)-&gt;sub1(right)-&gt;op1</code></pre></div>
+<h2 id="uml-sequence-diagrams">UML Sequence Diagrams</h2>
+
+<pre><code>​```sequence
+Title: Here is a title
+A-&gt;B: Normal line
+B--&gt;C: Dashed line
+C-&gt;&gt;D: Open arrow
+D--&gt;&gt;A: Dashed open arrow
+​```
+</code></pre>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sequence" data-lang="sequence">Title: Here is a title
+A-&gt;B: Normal line
+B--&gt;C: Dashed line
+C-&gt;&gt;D: Open arrow
+D--&gt;&gt;A: Dashed open arrow</code></pre></div>
+<h2 id="math">Math</h2>
+
+<pre><code>$p(x|y) = \frac{p(y|x)p(x)}{p(y)}$, \(p(x|y) = \frac{p(y|x)p(x)}{p(y)}\).
+
+$$
+E(\mathbf{v}, \mathbf{h}) = -\sum_{i,j}w_{ij}v_i h_j - \sum_i b_i v_i - \sum_j c_j h_j
+$$
+
+\[3 &lt; 4\]
+
+\begin{align}
+    p(v_i=1|\mathbf{h}) &amp; = \sigma\left(\sum_j w_{ij}h_j + b_i\right) \\
+    p(h_j=1|\mathbf{v}) &amp; = \sigma\left(\sum_i w_{ij}v_i + c_j\right)
+\end{align}
+</code></pre>
+
+<p>$p(x|y) = \frac{p(y|x)p(x)}{p(y)}$, (p(x|y) = \frac{p(y|x)p(x)}{p(y)}).</p>
+
+<p>$$
+E(\mathbf{v}, \mathbf{h}) = -\sum<em>{i,j}w</em>{ij}v_i h_j - \sum_i b_i v_i - \sum_j c_j h_j
+$$</p>
+
+<p>[3 &lt; 4]</p>
+
+<p>\begin{align}
+    p(v_i=1|\mathbf{h}) &amp; = \sigma\left(\sum<em>j w</em>{ij}h_j + b_i\right) <br />
+    p(h_j=1|\mathbf{v}) &amp; = \sigma\left(\sum<em>i w</em>{ij}v_i + c_j\right)
+\end{align}</p>
+
+  </div>
+
+  <div id=links>
+    
+      <a class="basic-alignment left" href="../../post/r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F/">&laquo; R实现的数据模拟</a>
+    
+    
+      <a class="basic-alignment left" href="../../post/about-the-site-build-blogdownhugo-and-theme-tanka/">About This Site Build: blogdown, Hugo and Theme Tanka &raquo;</a>
+    
+  </div>
+</section>
+
+
+
+<section id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+      
+      
+      if (window.location.hostname == "localhost")
+                return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = '';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+<span id="/post/hello-markdown/" class="leancloud_visitors" data-flag-title="Hello, Markdown">
+    <span class="post-meta-item-text">reading number: </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+</span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+   new Valine({
+        el: '#vcomments' ,
+        appId: 'yjXDgIm4adLfC65VUSshkA1W-gzGzoHsz',
+        appKey: '81KLyE7xLDCR0ExKcEib8qjv',
+        notify:  false , 
+        verify:  false , 
+        avatar:'mm', 
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        visitor:  true 
+    });
+</script>
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-132686713-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+
+</body>
+</html>
+

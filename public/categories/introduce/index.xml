@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Introduce on IFF自留地</title>
+    <link>/categories/introduce/</link>
+    <description>Recent content in Introduce on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 18 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/introduce/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About This Site Build: blogdown, Hugo and Theme Tanka</title>
+      <link>/post/about-the-site-build-blogdownhugo-and-theme-tanka/</link>
+      <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/about-the-site-build-blogdownhugo-and-theme-tanka/</guid>
+      <description>why blogdown and hugo My initiate site build way is by Hexo. The wreckage is still on. The theme and build process are enough satisfied, and I also got to learn things about git and github basically in the process. But when I want actually to post my article, which is based on Rmarkdown, I find blogdown, the product both comes from Yihui,Rstudio, whom My R learning process benefits superbly</description>
+    </item>
+    
+  </channel>
+</rss>

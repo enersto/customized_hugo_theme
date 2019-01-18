@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tool on IFF自留地</title>
+    <link>/categories/tool/</link>
+    <description>Recent content in Tool on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 18 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/tool/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Hello, Markdown</title>
+      <link>/post/hello-markdown/</link>
+      <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/hello-markdown/</guid>
+      <description># Builtin values references: - references.md - abbreviations.md - footnotes.md destination: destination.html # Meta Data title: Test Page author: - John Doe - Jane Doe # Settings overrides settings: pygments_style: github js: - https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js - https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js - https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js - https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js - res://MarkdownPreview/js/uml.js - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js - res://MarkdownPreview/js/math_config.js markdown_extensions: - markdown.extensions.footnotes - markdown.extensions.attr_list - markdown.extensions.def_list - markdown.extensions.tables - markdown.extensions.abbr - markdown.extensions.toc: permalink: &amp;quot;\ue157&amp;quot; - markdown.extensions.smarty - markdown.extensions.meta - markdown.extensions.admonition - markdown.extensions.codehilite: guess_lang: false - pymdownx.</description>
+    </item>
+    
+    <item>
+      <title>dplyr和data.table的数据操作对码表</title>
+      <link>/post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/</link>
+      <pubDate>Mon, 29 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/</guid>
+      <description>缘起 作为R中两个被讨论最多的数据操作包，dplyr 和data.table因其各具特色设计哲学俘获一批忠实用户。二者在整体风格和机制上的明显区</description>
+    </item>
+    
+  </channel>
+</rss>

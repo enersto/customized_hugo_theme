@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>English on IFF自留地</title>
+    <link>/categories/english/</link>
+    <description>Recent content in English on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 18 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/english/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About This Site Build: blogdown, Hugo and Theme Tanka</title>
+      <link>/post/about-the-site-build-blogdownhugo-and-theme-tanka/</link>
+      <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/about-the-site-build-blogdownhugo-and-theme-tanka/</guid>
+      <description>why blogdown and hugo My initiate site build way is by Hexo. The wreckage is still on. The theme and build process are enough satisfied, and I also got to learn things about git and github basically in the process. But when I want actually to post my article, which is based on Rmarkdown, I find blogdown, the product both comes from Yihui,Rstudio, whom My R learning process benefits superbly</description>
+    </item>
+    
+    <item>
+      <title>Hello, Markdown</title>
+      <link>/post/hello-markdown/</link>
+      <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/hello-markdown/</guid>
+      <description># Builtin values references: - references.md - abbreviations.md - footnotes.md destination: destination.html # Meta Data title: Test Page author: - John Doe - Jane Doe # Settings overrides settings: pygments_style: github js: - https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js - https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js - https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js - https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js - res://MarkdownPreview/js/uml.js - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js - res://MarkdownPreview/js/math_config.js markdown_extensions: - markdown.extensions.footnotes - markdown.extensions.attr_list - markdown.extensions.def_list - markdown.extensions.tables - markdown.extensions.abbr - markdown.extensions.toc: permalink: &amp;quot;\ue157&amp;quot; - markdown.extensions.smarty - markdown.extensions.meta - markdown.extensions.admonition - markdown.extensions.codehilite: guess_lang: false - pymdownx.</description>
+    </item>
+    
+  </channel>
+</rss>

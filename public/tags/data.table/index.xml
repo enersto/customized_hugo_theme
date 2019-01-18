@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Data.table on IFF自留地</title>
+    <link>/tags/data.table/</link>
+    <description>Recent content in Data.table on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 29 Jan 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/data.table/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>dplyr和data.table的数据操作对码表</title>
+      <link>/post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/</link>
+      <pubDate>Mon, 29 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/</guid>
+      <description>缘起 作为R中两个被讨论最多的数据操作包，dplyr 和data.table因其各具特色设计哲学俘获一批忠实用户。二者在整体风格和机制上的明显区</description>
+    </item>
+    
+  </channel>
+</rss>

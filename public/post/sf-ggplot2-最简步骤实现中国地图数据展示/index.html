@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  
+
+  <link rel="icon" type="image/png" href="../../favicon.png">
+
+  <title>
+    
+    
+     sf &#43; ggplot2 最简步骤实现中国地图数据展示 
+    
+  </title>
+  <link rel="canonical" href="../../post/sf-ggplot2-%E6%9C%80%E7%AE%80%E6%AD%A5%E9%AA%A4%E5%AE%9E%E7%8E%B0%E4%B8%AD%E5%9B%BD%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA/">
+
+  <link rel="stylesheet" href="../../css/fonts.css" />
+  <link rel="stylesheet" href="../../css/style.css" />
+
+  
+</head>
+
+<body>
+<section id=nav>
+  <h1><a href="../../">IFF自留地</a></h1>
+  <ul>
+    
+    <li><a href="../../">Home</a></li>
+    
+    <li><a href="../../categories/">Categories</a></li>
+    
+    <li><a href="../../tags/">Tags</a></li>
+    
+    <li><a href="../../about/">About</a></li>
+    
+  </ul>
+</section>
+
+
+<section id=content>
+  <h1> sf &#43; ggplot2 最简步骤实现中国地图数据展示 </h1>
+
+  <div id=sub-header>
+    pauke · 2019/01/02 · 2039 words ·  5 minutes read
+  </div>
+
+  <div class="entry-content">
+    
+
+<p>本文作为一个快速记录，R为工具的数据分析过程中的尝试，将最为集中的记录相关主题内容，其他延展性内容则以链接形式作为参考。</p>
+
+<h3 id="要实现的需求">要实现的需求</h3>
+
+<p>以行政区划为轮廓的行政单位数据展示。最直观的样子是：
+<img src="https://img-blog.csdnimg.cn/20190102162205219.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<h3 id="可选择的其他方案">可选择的其他方案</h3>
+
+<ul>
+<li><strong><a href="https://ggplot2.tidyverse.org/reference/geom_map.html">geom_map</a></strong> 是ggplot2自身集成的地图多边形操作函数。其直接将地理坐标转化为一般的x轴和y轴坐标，从而能够最大只有程度的实现地图描绘。这套思路最大的问题在于，地图数据需要从.shp格式经过反复的转化，才能成为一般的dataframe格式来使用，并且地图数据不易获得（特指中国的shp数据）。具体例子如<a href="https://cosx.org/2014/08/r-maps-for-china/">这篇文章所示</a>。</li>
+<li><strong><a href="https://github.com/dkahle/ggmap">ggmap</a></strong> 是通过使用 Google Maps, OpenStreetMap,  Stamen Maps来源的地区来实现地图数据展示。其最大特点在于地图数据实时易得。但缺点在于其行政区划轮廓数据同样不易取得。</li>
+</ul>
+
+<h3 id="当前方案简介">当前方案简介</h3>
+
+<p>sf全称<a href="https://r-spatial.github.io/sf/index.html">Simple Features for R</a>，是以data frame为基础格式并将地理信息（geometry ）以列单（list-column）的附加构成的数据类型。</p>
+
+<p>其在ggplot的<a href="https://ggplot2.tidyverse.org/reference/ggsf.html">接口函数</a>geom_sf（stat_sf，coord_sf）则是将sf格式数据以ggplot的方式画出来。</p>
+
+<h3 id="当前方案的数据来源">当前方案的数据来源</h3>
+
+<p><a href="https://gadm.org/data.html">GADM</a>是一个世界范围的开源空间数据（spatial data）。其行政区划数据下载简单方便，并且提供多种类型的数据格式（包括sf格式）。作为中国人使用的唯一问题是其中国部分的数据内容不包含台湾，当然这部分可以通过相应转化解决。</p>
+
+<h3 id="具体实现过程">具体实现过程</h3>
+
+<h4 id="整体思路">整体思路</h4>
+
+<p>使用sf格式数据的整体思路是将待展示数据</p>
+
+<table>
+<thead>
+<tr>
+<th>省</th>
+<th>对应值</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>上海市</td>
+<td>$1600</td>
+</tr>
+
+<tr>
+<td>河北省</td>
+<td>$12</td>
+</tr>
+
+<tr>
+<td>江西省</td>
+<td>$1</td>
+</tr>
+</tbody>
+</table>
+
+<p>与sf的数据</p>
+
+<table>
+<thead>
+<tr>
+<th>NL_NAME_1</th>
+<th>NL_NAME_2</th>
+<th>geometry</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>山西省</td>
+<td>太原市</td>
+<td>list(&hellip;)</td>
+</tr>
+
+<tr>
+<td>广西壮族自治区</td>
+<td>桂林市</td>
+<td>list(&hellip;)</td>
+</tr>
+
+<tr>
+<td>江西省</td>
+<td>南昌市</td>
+<td>list(&hellip;)</td>
+</tr>
+</tbody>
+</table>
+
+<p>进行匹配，最终输入ggplot展示。</p>
+
+<h4 id="数据准备">数据准备</h4>
+
+<p>GADM中的中国部分，包含四个行政区划维度的地图数据，其具体链接为：<a href="https://gadm.org/download_country_v3.html">Download GADM data (version 3.6)</a>。
+对应的台湾部分有三个维度的地图数据，对应一并下载。区分对应层次可通过尾缀，如CHN_0是全国图形（没有省级行政区划线的），CHN_1是省级行政区划，CHN_2是地级行政区划，CHN_3是县级行政区划。
+同时，对应的包也需要下载准备好：</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">library(sf)
+tw &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_TWN_0_sf.rds&#34;</span>) <span style="color:#008000">#注意台湾和中国的数据需要错一位拼接</span>
+china &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_CHN_1_sf.rds&#34;</span>) <span style="color:#008000">#即t0-c1,t1-c2,t2-c3</span>
+...</code></pre></div>
+<h4 id="数据拼接">数据拼接</h4>
+
+<p>GADM省级行政区名称不是标准的区划名字，需要进行转换：</p>
+
+<h5 id="省级">省级</h5>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">china<span style="">$</span>NL_NAME_1 &lt;- c(<span style="color:#a31515">&#34;安徽省&#34;</span>,<span style="color:#a31515">&#34;北京市&#34;</span>,<span style="color:#a31515">&#34;重庆市&#34;</span>,
+                     <span style="color:#a31515">&#34;福建省&#34;</span>,<span style="color:#a31515">&#34;甘肃省&#34;</span>,<span style="color:#a31515">&#34;广东省&#34;</span>,
+                     <span style="color:#a31515">&#34;广西壮族自治区省&#34;</span>,<span style="color:#a31515">&#34;贵州省&#34;</span>,<span style="color:#a31515">&#34;海南省&#34;</span>,
+                     <span style="color:#a31515">&#34;河北省&#34;</span>,<span style="color:#a31515">&#34;黑龙江省&#34;</span>,<span style="color:#a31515">&#34;河南省&#34;</span>,
+                     <span style="color:#a31515">&#34;湖北省&#34;</span>,<span style="color:#a31515">&#34;湖南省&#34;</span>,<span style="color:#a31515">&#34;江苏省&#34;</span>,
+                     <span style="color:#a31515">&#34;江西省&#34;</span>,<span style="color:#a31515">&#34;吉林省&#34;</span>,<span style="color:#a31515">&#34;辽宁省&#34;</span>,
+                     <span style="color:#a31515">&#34;内蒙古自治区&#34;</span>,<span style="color:#a31515">&#34;宁夏回族自治区&#34;</span>,<span style="color:#a31515">&#34;青海省&#34;</span>,
+                     <span style="color:#a31515">&#34;陕西省&#34;</span>,<span style="color:#a31515">&#34;山东省&#34;</span>,<span style="color:#a31515">&#34;上海市&#34;</span>,
+                     <span style="color:#a31515">&#34;山西省&#34;</span>,<span style="color:#a31515">&#34;四川省&#34;</span>,<span style="color:#a31515">&#34;天津市&#34;</span>,
+                     <span style="color:#a31515">&#34;新疆维吾尔自治区&#34;</span>,<span style="color:#a31515">&#34;西藏自治区&#34;</span>,<span style="color:#a31515">&#34;云南省&#34;</span>,
+                     <span style="color:#a31515">&#34;浙江省&#34;</span>)</code></pre></div>
+<p>紧接着将台湾的信息合并入中国的数据框中：</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tws &lt;- st_sf(GID_0 = <span style="color:#a31515">&#34;CHN&#34;</span>,NAME_0 = <span style="color:#a31515">&#34;China&#34;</span>,GID_1 = <span style="color:#a31515">&#34;CHN.32_1&#34;</span>,
+             NAME_1 = <span style="color:#a31515">&#34;&#34;</span>,VARNAME_1 = <span style="color:#a31515">&#34;&#34;</span>,NL_NAME_1 = <span style="color:#a31515">&#34;台湾&#34;</span>,
+             TYPE_1 = <span style="color:#a31515">&#34;&#34;</span>,ENGTYPE_1 = <span style="color:#a31515">&#34;&#34;</span>,CC_1 = <span style="color:#a31515">&#34;&#34;</span>,HASC_1 = <span style="color:#a31515">&#34;&#34;</span>,geometry = tw<span style="">$</span>geometry)
+china &lt;- rbind(china,tws)
+rm(tws)</code></pre></div>
+<h5 id="地级">地级</h5>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tw &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_TWN_1_sf.rds&#34;</span>)
+names(tw)
+
+china &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_CHN_2_sf.rds&#34;</span>)
+names(china)
+
+tws &lt;- tw
+names(tws)[3:10] &lt;- c(<span style="color:#a31515">&#34;GID_2&#34;</span>,<span style="color:#a31515">&#34;NAME_2&#34;</span>,<span style="color:#a31515">&#34;VARNAME_2&#34;</span>,<span style="color:#a31515">&#34;NL_NAME_2&#34;</span>,<span style="color:#a31515">&#34;TYPE_2&#34;</span>,<span style="color:#a31515">&#34;ENGTYPE_2&#34;</span>,<span style="color:#a31515">&#34;CC_2&#34;</span>,<span style="color:#a31515">&#34;HASC_2&#34;</span>)
+tws<span style="">$</span>GID_1 &lt;- <span style="color:#a31515">&#34;CHN.32_1&#34;</span>
+tws<span style="">$</span>NAME_1 &lt;- <span style="color:#a31515">&#34;&#34;</span>
+tws<span style="">$</span>NL_NAME_1 &lt;- <span style="color:#a31515">&#34;台湾&#34;</span>
+tws &lt;- tws[,names(china)]
+china &lt;- rbind(china,tws)</code></pre></div>
+<p>最终数据呈现为：
+<img src="https://img-blog.csdnimg.cn/20190102171650925.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<h5 id="县级">县级</h5>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tw &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_TWN_1_sf.rds&#34;</span>)
+names(tw)
+
+china &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_CHN_2_sf.rds&#34;</span>)
+names(china)
+
+tws &lt;- tw
+names(tws)[3:13] &lt;- c(<span style="color:#a31515">&#34;GID_2&#34;</span>,<span style="color:#a31515">&#34;NAME_2&#34;</span>,<span style="color:#a31515">&#34;NL_NAME_2&#34;</span>,<span style="color:#a31515">&#34;GID_3&#34;</span>,<span style="color:#a31515">&#34;NAME_3&#34;</span>,<span style="color:#a31515">&#34;VARNAME_3&#34;</span>,
+                      <span style="color:#a31515">&#34;NL_NAME_3&#34;</span>,<span style="color:#a31515">&#34;TYPE_3&#34;</span>,<span style="color:#a31515">&#34;ENGTYPE_3&#34;</span>,<span style="color:#a31515">&#34;CC_3&#34;</span>,<span style="color:#a31515">&#34;HASC_3&#34;</span>)
+tws<span style="">$</span>GID_1 &lt;- <span style="color:#a31515">&#34;CHN.32_1&#34;</span>
+tws<span style="">$</span>NAME_1 &lt;- <span style="color:#a31515">&#34;&#34;</span>
+tws<span style="">$</span>NL_NAME_1 &lt;- <span style="color:#a31515">&#34;台湾&#34;</span>
+tws &lt;- tws[,names(china)]
+china &lt;- rbind(china,tws)</code></pre></div>
+<p>最终呈现为：
+<img src="https://img-blog.csdnimg.cn/20190102172557154.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<h4 id="输出ggplot">输出ggplot</h4>
+
+<p>最后实现数据输出为图形：</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">temp1 &lt;- dataframe(<span style="">省</span> = c(<span style="color:#a31515">&#34;江西省&#34;</span>,<span style="color:#a31515">&#34;浙江省&#34;</span>,.....), <span style="">对应值</span> = c(1103,1532,..))
+china &lt;- left_join(china,temp1,by= c(<span style="color:#a31515">&#34;NL_NAME_1&#34;</span> = <span style="color:#a31515">&#34;省&#34;</span>))
+
+p &lt;- ggplot() +
+  geom_sf(data = china,aes(fill =<span style="">对应值</span>)) + 
+  coord_sf(crs = <span style="color:#a31515">&#34;+proj=aeqd +lat_0=37 +lon_0=104&#34;</span>)+
+  scale_fill_distiller(palette=<span style="color:#a31515">&#39;Spectral&#39;</span>)</code></pre></div>
+<p><img src="https://img-blog.csdnimg.cn/20190102162205219.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<h5 id="coord-sf-坐标轴取值和类型">coord_sf 坐标轴取值和类型</h5>
+
+<p>sf的坐标映射类型不是像geom_map中coord_map函数直接使用内嵌的映射类型：</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">projlist &lt;- c(<span style="color:#a31515">&#34;aitoff&#34;</span>, <span style="color:#a31515">&#34;albers&#34;</span>, <span style="color:#a31515">&#34;azequalarea&#34;</span>, <span style="color:#a31515">&#34;azequidist&#34;</span>, <span style="color:#a31515">&#34;bicentric&#34;</span>,
+ <span style="color:#a31515">&#34;bonne&#34;</span>, <span style="color:#a31515">&#34;conic&#34;</span>, <span style="color:#a31515">&#34;cylequalarea&#34;</span>, <span style="color:#a31515">&#34;cylindrical&#34;</span>, <span style="color:#a31515">&#34;eisenlohr&#34;</span>, <span style="color:#a31515">&#34;elliptic&#34;</span>,
+ <span style="color:#a31515">&#34;fisheye&#34;</span>, <span style="color:#a31515">&#34;gall&#34;</span>, <span style="color:#a31515">&#34;gilbert&#34;</span>, <span style="color:#a31515">&#34;guyou&#34;</span>, <span style="color:#a31515">&#34;harrison&#34;</span>, <span style="color:#a31515">&#34;hex&#34;</span>, <span style="color:#a31515">&#34;homing&#34;</span>,
+ <span style="color:#a31515">&#34;lagrange&#34;</span>, <span style="color:#a31515">&#34;lambert&#34;</span>, <span style="color:#a31515">&#34;laue&#34;</span>, <span style="color:#a31515">&#34;lune&#34;</span>, <span style="color:#a31515">&#34;mercator&#34;</span>, <span style="color:#a31515">&#34;mollweide&#34;</span>, <span style="color:#a31515">&#34;newyorker&#34;</span>,
+ <span style="color:#a31515">&#34;orthographic&#34;</span>, <span style="color:#a31515">&#34;perspective&#34;</span>, <span style="color:#a31515">&#34;polyconic&#34;</span>, <span style="color:#a31515">&#34;rectangular&#34;</span>, <span style="color:#a31515">&#34;simpleconic&#34;</span>,
+ <span style="color:#a31515">&#34;sinusoidal&#34;</span>, <span style="color:#a31515">&#34;tetra&#34;</span>, <span style="color:#a31515">&#34;trapezoidal&#34;</span>)</code></pre></div>
+<p>而是使用了<a href="https://proj4.org/about.html">PROJ4</a>的类型库。在PROJ4中，有更多的可用的坐标映射类型。
+以投影中国地图常用的<a href="https://proj4.org/operations/projections/aeqd.html">方位角投影法（Azimuthal）</a>为例（sf默认使用墨卡托投影法（ Mercator）），使用proj4string来定义和更换投影的方式。Azimuthal Equidistant是一个全球性的投影映射，在使用的时候需要通过「lat_0=37 +lon_0=104」定位整个图形的中心点位置，对于中国地图来说一般使用lat_0[30,37]，lon_0[100,105]的区间来定位。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">  coord_sf(crs = <span style="color:#a31515">&#34;+proj=aeqd +lat_0=37 +lon_0=104&#34;</span>)</code></pre></div>
+<h3 id="参考文章">参考文章</h3>
+
+<p><a href="https://cran.r-project.org/web/packages/sf/vignettes/sf1.html">Simple Features for R</a>
+<a href="https://cfss.uchicago.edu/geoviz_plot.html">Drawing vector maps with ggplot2 and sf</a>
+<a href="https://www.r-bloggers.com/lang/chinese/1010">用ggplot2包来绘制地图</a>
+<a href="https://cosx.org/2014/08/r-maps-for-china/">R 绘制中国地图，并展示流行病学数据</a></p>
+
+  </div>
+
+  <div id=links>
+    
+      <a class="basic-alignment left" href="../../post/shiny-app%E5%88%B6%E4%BD%9C%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF/">&laquo; Shiny app的基本制作思路</a>
+    
+    
+      <a class="basic-alignment left" href="../../post/r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F/">R实现的数据模拟 &raquo;</a>
+    
+  </div>
+</section>
+
+
+
+<section id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+      
+      
+      if (window.location.hostname == "localhost")
+                return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = '';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+<span id="/post/sf-ggplot2-%E6%9C%80%E7%AE%80%E6%AD%A5%E9%AA%A4%E5%AE%9E%E7%8E%B0%E4%B8%AD%E5%9B%BD%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA/" class="leancloud_visitors" data-flag-title="sf &#43; ggplot2 最简步骤实现中国地图数据展示">
+    <span class="post-meta-item-text">reading number: </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+</span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+   new Valine({
+        el: '#vcomments' ,
+        appId: 'yjXDgIm4adLfC65VUSshkA1W-gzGzoHsz',
+        appKey: '81KLyE7xLDCR0ExKcEib8qjv',
+        notify:  false , 
+        verify:  false , 
+        avatar:'mm', 
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        visitor:  true 
+    });
+</script>
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-132686713-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+
+</body>
+</html>
+

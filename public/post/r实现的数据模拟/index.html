@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  
+
+  <link rel="icon" type="image/png" href="../../favicon.png">
+
+  <title>
+    
+    
+     R实现的数据模拟 
+    
+  </title>
+  <link rel="canonical" href="../../post/r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F/">
+
+  <link rel="stylesheet" href="../../css/fonts.css" />
+  <link rel="stylesheet" href="../../css/style.css" />
+
+  
+</head>
+
+<body>
+<section id=nav>
+  <h1><a href="../../">IFF自留地</a></h1>
+  <ul>
+    
+    <li><a href="../../">Home</a></li>
+    
+    <li><a href="../../categories/">Categories</a></li>
+    
+    <li><a href="../../tags/">Tags</a></li>
+    
+    <li><a href="../../about/">About</a></li>
+    
+  </ul>
+</section>
+
+
+<section id=content>
+  <h1> R实现的数据模拟 </h1>
+
+  <div id=sub-header>
+    pauke · 2019/01/17 · 2351 words ·  5 minutes read
+  </div>
+
+  <div class="entry-content">
+    
+
+
+<p>包载入</p>
+<pre class="r"><code>library(gpairs)</code></pre>
+<pre><code>## Warning: 程辑包&#39;gpairs&#39;是用R版本3.5.2 来建造的</code></pre>
+<div class="section level2">
+<h2>数据模拟</h2>
+<p>数据模拟最直接的意义在于更好的便于R语言操作和统计学知识的练习。但另一方面，也是对市场分析中数据分析的逻辑和内在关联的总结演练。</p>
+<div class="section level3">
+<h3>促销与销量数据模拟</h3>
+<pre class="r"><code>#建立数据框
+n.store &lt;- 50
+n.week &lt;- 156
+store &lt;- data.frame(matrix(NA, ncol = 10, nrow = n.store*n.week))
+names(store) &lt;- c(&quot;store_num&quot;, &quot;year&quot;, &quot;week&quot;, &quot;p1sales&quot;, &quot;p2sales&quot;,
+                      &quot;p1price&quot;, &quot;p2price&quot;, &quot;p1prom&quot;, &quot;p2prom&quot;, &quot;country&quot;)
+
+#逐一创建变量
+storeNumber &lt;- 101:(100 + n.store)
+## for store_num and country
+store_ctr &lt;- c(rep(&quot;US&quot;, 13), rep(&quot;DE&quot;, 10), rep(&quot;GB&quot;, 3), rep(&quot;BR&quot;, 5),
+                 rep(&quot;JP&quot;, 5), rep(&quot;AU&quot;, 2), rep(&quot;CN&quot;, 12))
+length(store_ctr)</code></pre>
+<pre><code>## [1] 50</code></pre>
+<pre class="r"><code>store$store_num &lt;- rep(storeNumber, each = n.week)
+store$country &lt;- rep(store_ctr, each = n.week)
+rm(storeNumber,store_ctr)
+
+## for week and year
+store$week &lt;- rep(1:52, times = n.store *3 )
+store$year &lt;- rep(rep(1:3,each = n.week/3), times = n.store)
+
+store$store_num &lt;- factor(store$store_num)
+store$country &lt;- factor(store$country)
+
+## for p1prom and p2prom
+
+set.seed(0017)
+
+store$p1prom &lt;- rbinom(n = nrow(store), size = 1, p = 0.2)
+store$p2prom &lt;- rbinom(n = nrow(store), size = 1, p = 0.25)
+
+
+## for p1price and p2price
+store$p1price &lt;- sample(x = c(10.99,11.99,12.49,12.99,13.49),size = nrow(store), replace = T)
+store$p2price &lt;- sample(x = c(8.99,9.99,10.99,11.99,12.49),size = nrow(store), replace = T)
+
+## for p1sales and p2sales
+### 销量是计件数据，通过泊松分布生成获得,lambda为平均件数
+
+n.sale1 &lt;- rpois(nrow(store),lambda = 1020) 
+n.sale2 &lt;- rpois(nrow(store),lambda = 1357) 
+
+#价格一般服从对数函数，预设：销量变化和价格成反比，产品1的销量上升程度取决于产品1的对数小于产品2价格对数
+sale1 &lt;- n.sale1*log(store$p2price)/log(store$p1price)
+sale2 &lt;- n.sale2*log(store$p1price)/log(store$p2price)
+
+#考虑促销的影响，假如产品促销时候销量上升20%或25%
+
+store$p1sales &lt;- floor(n.sale1*(1+store$p1prom*0.2))
+store$p2sales &lt;- floor(n.sale2*(1+store$p2prom*0.25))
+
+
+head(store)</code></pre>
+<pre><code>##   store_num year week p1sales p2sales p1price p2price p1prom p2prom
+## 1       101    1    1     993    1622   13.49    8.99      0      1
+## 2       101    1    2    1255    1357   12.99   12.49      1      0
+## 3       101    1    3     971    1372   13.49   11.99      0      0
+## 4       101    1    4    1041    1665   10.99   11.99      0      1
+## 5       101    1    5    1000    1366   13.49   10.99      0      0
+## 6       101    1    6    1026    1387   10.99   12.49      0      0
+##   country
+## 1      US
+## 2      US
+## 3      US
+## 4      US
+## 5      US
+## 6      US</code></pre>
+<pre class="r"><code>str(store)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    7800 obs. of  10 variables:
+##  $ store_num: Factor w/ 50 levels &quot;101&quot;,&quot;102&quot;,&quot;103&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ year     : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ week     : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ p1sales  : num  993 1255 971 1041 1000 ...
+##  $ p2sales  : num  1622 1357 1372 1665 1366 ...
+##  $ p1price  : num  13.5 13 13.5 11 13.5 ...
+##  $ p2price  : num  8.99 12.49 11.99 11.99 10.99 ...
+##  $ p1prom   : int  0 1 0 0 0 0 0 0 0 0 ...
+##  $ p2prom   : int  1 0 0 1 0 0 0 1 1 0 ...
+##  $ country  : Factor w/ 7 levels &quot;AU&quot;,&quot;BR&quot;,&quot;CN&quot;,..: 7 7 7 7 7 7 7 7 7 7 ...</code></pre>
+<pre class="r"><code>summary(store)</code></pre>
+<pre><code>##    store_num         year        week          p1sales        p2sales    
+##  101    : 156   Min.   :1   Min.   : 1.00   Min.   : 901   Min.   :1239  
+##  102    : 156   1st Qu.:1   1st Qu.:13.75   1st Qu.:1005   1st Qu.:1340  
+##  103    : 156   Median :2   Median :26.50   Median :1030   Median :1372  
+##  104    : 156   Mean   :2   Mean   :26.50   Mean   :1060   Mean   :1442  
+##  105    : 156   3rd Qu.:3   3rd Qu.:39.25   3rd Qu.:1070   3rd Qu.:1522  
+##  106    : 156   Max.   :3   Max.   :52.00   Max.   :1351   Max.   :1868  
+##  (Other):6864                                                            
+##     p1price         p2price          p1prom           p2prom      
+##  Min.   :10.99   Min.   : 8.99   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:11.99   1st Qu.: 9.99   1st Qu.:0.0000   1st Qu.:0.0000  
+##  Median :12.49   Median :10.99   Median :0.0000   Median :0.0000  
+##  Mean   :12.39   Mean   :10.91   Mean   :0.1978   Mean   :0.2501  
+##  3rd Qu.:12.99   3rd Qu.:11.99   3rd Qu.:0.0000   3rd Qu.:1.0000  
+##  Max.   :13.49   Max.   :12.49   Max.   :1.0000   Max.   :1.0000  
+##                                                                   
+##  country  
+##  AU: 312  
+##  BR: 780  
+##  CN:1872  
+##  DE:1560  
+##  GB: 468  
+##  JP: 780  
+##  US:2028</code></pre>
+</div>
+<div class="section level3">
+<h3>交易和满意度数据模拟</h3>
+<div class="section level4">
+<h4>设定观察数量</h4>
+<pre class="r"><code>set.seed(0017)
+
+n.qry &lt;- 1500</code></pre>
+<pre class="r"><code>## 逐一生成消费者基本信息变量
+qry &lt;- data.frame(id = factor(paste0(&quot;n&quot;,1:n.qry)))
+qry$age &lt;- rnorm(n = n.qry, mean = 30, sd = 10)
+qry$credit_score &lt;- rnorm(n = n.qry, mean = 2*qry$age +620, sd = 75) #信用积分与年龄存在关系
+qry$email &lt;- factor(sample(c(&quot;ja&quot;,&quot;nein&quot;),size = n.qry, replace = T, prob = c(0.75,0.25))) #生成是否留有邮箱地址的变量
+qry$distance_to_store &lt;- exp(rnorm(n = n.qry, mean = 0.2, sd = 1.5))#确保都是正数</code></pre>
+</div>
+<div class="section level4">
+<h4>销量数据模拟</h4>
+<pre class="r"><code>qry$online_visit &lt;- rnbinom(n.qry, 0.4, mu = 10 +ifelse(qry$email == &quot;ja&quot;,10,0)
+                            -0.6*(qry$age- median(qry$age))) #网店访问次数，该变量符合负二项分布，我们设定留了邮箱的比没留的高10次，通过ifelse根据邮箱是否有取值；同时，也设定年轻用户访问频率更高，设定该用户年龄和中位数的差值来区别</code></pre>
+<pre><code>## Warning in rnbinom(n.qry, 0.4, mu = 10 + ifelse(qry$email == &quot;ja&quot;, 10, 0)
+## - : 产生了NA</code></pre>
+<pre class="r"><code>qry$online_trans &lt;- rbinom(n.qry,size = qry$online_visit, prob = 0.4)#交易次数，设定为访问数量的40%</code></pre>
+<pre><code>## Warning in rbinom(n.qry, size = qry$online_visit, prob = 0.4): 产生了NA</code></pre>
+<pre class="r"><code>qry$online_spend &lt;- exp(rnorm(n.qry,mean = 10, sd = 0.5)) * qry$online_trans # 以rnorm生产单词消费金额，并获得总花费。
+
+qry$store_trans &lt;- rnbinom(n.qry, size = 5, mu = 3/sqrt(qry$distance_to_store))
+qry$store_spend &lt;- exp(rnorm(n.qry, mean = 15, sd = 0.8)) * qry$store_trans
+# 线下实体店的交易次数和消费者距离实体店距离相关，</code></pre>
+</div>
+<div class="section level4">
+<h4>满意度数据模拟</h4>
+<pre class="r"><code>### 基于问卷调查的「光晕效应」，先设定一个不存在于实际问卷中的总体满意度
+stsf.overall &lt;- rnorm(n.qry, mean = 4.1, sd = 0.5)
+### 根据总体满意度，再由随机产生的与总体满意度的差值，形成分项满意度,并通过floor()函数将连续的数值变量转变为离散整数。
+stsf.service &lt;- floor(stsf.overall + rnorm(n.qry, mean = 0.4, sd = 0.5))
+stsf.production &lt;- floor(stsf.overall + rnorm(n.qry, mean = -0.3, sd = 0.7))
+### 对满意度数值进行限定，以便符合一般李克特量表1~5分的要求
+stsf &lt;- cbind(stsf.service,stsf.production)
+
+stsf[stsf.service &gt; 5| stsf.production &gt; 5] &lt;- 5
+stsf[stsf.service &lt; 1| stsf.production &lt; 1] &lt;- 1
+
+summary(stsf)</code></pre>
+<pre><code>##   stsf.service   stsf.production
+##  Min.   :1.000   Min.   :1.000  
+##  1st Qu.:4.000   1st Qu.:3.000  
+##  Median :4.000   Median :3.000  
+##  Mean   :3.999   Mean   :3.352  
+##  3rd Qu.:5.000   3rd Qu.:4.000  
+##  Max.   :5.000   Max.   :5.000</code></pre>
+<pre class="r"><code>### 针对可能存在的问卷数据无回应而缺失的情况，模拟无回应问卷
+no_response &lt;- as.logical(rbinom(n.qry, size = 1, prob = qry$age/100)) # 假设年龄越大，回应问卷可能性越低</code></pre>
+<pre><code>## Warning in rbinom(n.qry, size = 1, prob = qry$age/100): 产生了NA</code></pre>
+<pre class="r"><code>stsf[no_response] &lt;- NA
+
+
+## 最后合并到主体数据集
+qry &lt;- cbind(qry,stsf)
+
+rm(stsf.overall,stsf.service,stsf.production,stsf)</code></pre>
+</div>
+</div>
+<div class="section level3">
+<h3>时间序列数据模拟</h3>
+<p>该部分本可当做独立文章来说时间序列的基本知识的，但内容有限，且多是模拟的相关内容，故而添增于此。</p>
+<div id="-random-walk-process" class="section level4">
+<h4>随机游走进程 Random Walk process模拟</h4>
+<pre class="r"><code># seed X_0 = 0
+X &lt;- 0
+
+# 纯粹随机游走，均值 0，标准差 1.5
+Z &lt;- rnorm(100, mean = 0.5, sd = 1.5)
+
+# 进程
+for (i in 2:length(Z)){
+  X[i] &lt;- X[i-1] + Z[i]
+}
+
+# 作图
+ts.plot(X, main = &quot;Random walk process&quot;)</code></pre>
+<p><img src="../../post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code># 随机游走的差值
+ts.plot(diff(X))</code></pre>
+<p><img src="../../post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+</div>
+<div id="-maq" class="section level4">
+<h4>移动平均 MA(q)模拟</h4>
+<pre class="r"><code># 纯粹随机游走，均值 0，标准差 1.5
+Z &lt;- rnorm(100, mean = 0, sd = 1.5)
+
+# 进程模拟
+X &lt;- c()
+for (i in 2:length(Z)) {
+  X[i] &lt;- Z[i] - 0.45*Z[i-1]
+}
+
+# 作图
+ts.plot(X, main = &quot;Moving Average or order 1 process&quot;)</code></pre>
+<p><img src="../../post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="ar1" class="section level4">
+<h4>AR(1)模拟</h4>
+<pre class="r"><code># 初始值 alpha
+alpha = 0.5
+
+# 纯粹随机过程
+Z &lt;- rnorm(100, mean = 0, sd = 1.5)
+
+# seed
+X &lt;- rnorm(1)
+
+# 进程
+for (i in 2:length(Z)) {
+  X[i] &lt;- 0.7*X[i-1]+Z[i]
+}
+
+# 作图
+ts.plot(X)</code></pre>
+<p><img src="../../post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="arma11-process-" class="section level4">
+<h4>ARMA(1,1) process 模拟</h4>
+<pre class="r"><code>Z &lt;- rnorm(100, mean = 0, sd = 1.5)
+
+## 进程
+X &lt;- rnorm(1)
+
+for (i in 2:length(Z)) {
+  X[i] &lt;- 0.35*X[i-1] + Z[i] + 0.4*Z[i-1]
+}
+
+# 进程作图
+ts.plot(X, main = &quot;ARMA(1,1) process&quot;)</code></pre>
+<p><img src="../../post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+</div>
+<div class="section level3">
+<h3>总结</h3>
+<p>** 数据框：data.frame() 和matrix() 是生成空数据框的主要函数，一般而言数据框可以实现搭建，然后逐步填补，也可逐一添加，及至完成*
+** 字符变量：sample(x, size, replace = FALSE, prob = NULL)函数实现，x是样本生成的构成值的范围，size是抽样次数，replace是是否放回抽样，prob是各个值发生比*
+** 指数正态分布变量：rnorm(n, mean = 0, sd = 1) 生成随机数值，服从正态分布，一般适用于定比数据生成， 如年龄、收入、满意度等*
+** 二项式分布变量：rbinom(n, size, prob) 生成随机二项式服从逻辑分布，适用于是否型的变量数据生成*
+** 泊松分布变量：rpois(n, lambda)，lambda为非负数值均值，主要适用于离散概率分布，如人数、次数等*
+** 负二项分布变量：rnbinom(n, size, prob, mu) mu为负二项分布的均值，负二项分布为正数且右偏的数据， 主要适用于事件频数的生成 *
+** 对数正态分布变量：rlnorm(n, meanlog = 0, sdlog = 1)，对数正态分布适用于都是正值，且极大值很少， 主要适用于到店距离等 *</p>
+<p>** 变量重复： rep(x, times) x是重复的范围，times是次数*
+** 正整数因子变量：floor() 取数据变量为正整数，且成为因子变量*
+** 时间序列模拟多数没有特定函数，而是需要在对一般随机数据进行函数化处理*</p>
+</div>
+</div>
+
+  </div>
+
+  <div id=links>
+    
+      <a class="basic-alignment left" href="../../post/sf-ggplot2-%E6%9C%80%E7%AE%80%E6%AD%A5%E9%AA%A4%E5%AE%9E%E7%8E%B0%E4%B8%AD%E5%9B%BD%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA/">&laquo; sf &#43; ggplot2 最简步骤实现中国地图数据展示</a>
+    
+    
+      <a class="basic-alignment left" href="../../post/hello-markdown/">Hello, Markdown &raquo;</a>
+    
+  </div>
+</section>
+
+
+
+<section id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+      
+      
+      if (window.location.hostname == "localhost")
+                return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = '';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+<span id="/post/r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F/" class="leancloud_visitors" data-flag-title="R实现的数据模拟">
+    <span class="post-meta-item-text">reading number: </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+</span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+   new Valine({
+        el: '#vcomments' ,
+        appId: 'yjXDgIm4adLfC65VUSshkA1W-gzGzoHsz',
+        appKey: '81KLyE7xLDCR0ExKcEib8qjv',
+        notify:  false , 
+        verify:  false , 
+        avatar:'mm', 
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        visitor:  true 
+    });
+</script>
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-132686713-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+
+</body>
+</html>
+

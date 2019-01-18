@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  
+
+  <link rel="icon" type="image/png" href="../../favicon.png">
+
+  <title>
+    
+    
+     About This Site Build: blogdown, Hugo and Theme Tanka 
+    
+  </title>
+  <link rel="canonical" href="../../post/about-the-site-build-blogdownhugo-and-theme-tanka/">
+
+  <link rel="stylesheet" href="../../css/fonts.css" />
+  <link rel="stylesheet" href="../../css/style.css" />
+
+  
+</head>
+
+<body>
+<section id=nav>
+  <h1><a href="../../">IFF自留地</a></h1>
+  <ul>
+    
+    <li><a href="../../">Home</a></li>
+    
+    <li><a href="../../categories/">Categories</a></li>
+    
+    <li><a href="../../tags/">Tags</a></li>
+    
+    <li><a href="../../about/">About</a></li>
+    
+  </ul>
+</section>
+
+
+<section id=content>
+  <h1> About This Site Build: blogdown, Hugo and Theme Tanka </h1>
+
+  <div id=sub-header>
+    pauke · 2019/01/18 · 457 words ·  1 minutes read
+  </div>
+
+  <div class="entry-content">
+    
+
+<h2 id="why-blogdown-and-hugo">why blogdown and hugo</h2>
+
+<p>My initiate site build way is by Hexo. The <a href="https://enersto.github.io/">wreckage</a> is still on. The theme and build process are enough satisfied, and I also got to learn things about git and github basically in the process. But when I want actually to post my article, which is  based on Rmarkdown, I find <a href="https://bookdown.org/yihui/blogdown/">blogdown</a>, the product both comes from <a href="https://yihui.name/cn/about/">Yihui</a>,Rstudio, whom My R learning process benefits superbly from.
+The profound tutorial material and theme libraries, super family GUI tool(Rstudio) and seem fast build process(heard the fast character of go before). These are my thought about the blogdown after read the <a href="https://bookdown.org/yihui/blogdown/">book</a>.
+So why not switch my site build to hugo.
+As for the building workflow, I think blogdown has optimized so extremely that you can just dive in without any web site and deployment knowledge, and the <a href="https://bookdown.org/yihui/blogdown/workflow.html">article</a> make me think that I have no need to build wheel again.</p>
+
+<h2 id="why-the-theme">why the theme</h2>
+
+<p>My site is based on the theme <a href="https://github.com/road2stat/hugo-tanka">Tanka</a>, which is a totally simple, clean and word orientation Hugo theme.
+Based on the theme, I added a fews tools to enrich my site. Here it is:</p>
+
+<h3 id="taxonomies-index">taxonomies index</h3>
+
+<p>Tanka has not  tags and categories index, but the social account line. And I think an achieved index is necessary for a blog site. And I fork the code of taxonomies from <a href="https://github.com/yihui/hugo-xmin">Xmin</a>.</p>
+
+<h3 id="table-format">table format</h3>
+
+<p>There is no table setting in the theme too, and my site also gets code from Xmin.</p>
+
+<table>
+<thead>
+<tr>
+<th align="right">Sepal.Length</th>
+<th align="right">Sepal.Width</th>
+<th align="right">Petal.Length</th>
+<th align="right">Petal.Width</th>
+<th align="left">Species</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="right">5.1</td>
+<td align="right">3.5</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+
+<tr>
+<td align="right">4.9</td>
+<td align="right">3.0</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+
+<tr>
+<td align="right">4.7</td>
+<td align="right">3.2</td>
+<td align="right">1.3</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+
+<tr>
+<td align="right">4.6</td>
+<td align="right">3.1</td>
+<td align="right">1.5</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+
+<tr>
+<td align="right">5.0</td>
+<td align="right">3.6</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+
+<tr>
+<td align="right">5.4</td>
+<td align="right">3.9</td>
+<td align="right">1.7</td>
+<td align="right">0.4</td>
+<td align="left">setosa</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="comments-system">comments system</h3>
+
+<p>The comments system of original theme is hugo embedded comments, Disqus. I don&rsquo;t find much articles comparing of comments in Hugo, which recommends <a href="https://gohugo.io/content-management/comments/#comments-alternatives">these comments system</a> on documents. But Hexo and other static site generators articles are also sightful:
+- <a href="https://darekkay.com/blog/static-site-comments/">Various ways to include comments on your static site</a>
+- <a href="https://3mile.github.io/archives/128/">第三方评论系统推荐</a>.</p>
+
+<p>And my demand of comments is: <strong>simple and lightweight, self-host and not blocked in China</strong>. And <a href="https://valine.js.org/en/">valine</a> is just fitted. And this is an good <a href="https://www.smslit.top/2018/07/08/hugo-valine/">article</a> to maintain the build way in Hugo.</p>
+
+<h3 id="mermaid">mermaid</h3>
+
+<p><a href="https://mermaidjs.github.io/">Mermaid</a> is a simple and useful markdown-like script language for generating charts from text via javascript.</p>
+
+<link href="../../mermaid/mermaid.css" type="text/css" rel="stylesheet"/>
+<script defer src="../../mermaid/mermaid.js">mermaid.initialize({startOnLoad:true});</script>
+<div class="mermaid" align="center" >
+sequenceDiagram
+    participant Alice
+    participant Bob
+    Alice->>John: Hello John, how are you?
+    loop Healthcheck
+        John->John: Fight against hypochondria
+    end
+    Note right of John: Rational thoughts <br/>prevail...
+    John-->Alice: Great!
+    John->Bob: How about you?
+    Bob-->John: Jolly good!
+</div>
+
+
+<p>If you want to add to your theme, you can find the repo from this <a href="https://github.com/matcornic/hugo-theme-learn">theme</a>. then copy the <code>mermaid.html</code>  from <code>hugo-theme-learn\layouts\shortcodes</code> to <code>your_theme_file\layouts\shortcodes</code>, mermaid file in <code>hugo-theme-learn\static\</code> to <code>your_theme_file\static\</code>.</p>
+
+  </div>
+
+  <div id=links>
+    
+      <a class="basic-alignment left" href="../../post/hello-markdown/">&laquo; Hello, Markdown</a>
+    
+    
+  </div>
+</section>
+
+
+
+<section id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+      
+      
+      if (window.location.hostname == "localhost")
+                return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = '';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+<span id="/post/about-the-site-build-blogdownhugo-and-theme-tanka/" class="leancloud_visitors" data-flag-title="About This Site Build: blogdown, Hugo and Theme Tanka">
+    <span class="post-meta-item-text">reading number: </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+</span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+   new Valine({
+        el: '#vcomments' ,
+        appId: 'yjXDgIm4adLfC65VUSshkA1W-gzGzoHsz',
+        appKey: '81KLyE7xLDCR0ExKcEib8qjv',
+        notify:  false , 
+        verify:  false , 
+        avatar:'mm', 
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        visitor:  true 
+    });
+</script>
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-132686713-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+
+</body>
+</html>
+

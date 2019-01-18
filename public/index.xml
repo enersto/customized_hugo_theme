@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>IFF自留地</title>
+    <link>/</link>
+    <description>Recent content on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 01 Jan 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>What does this site contain This site is hosted by Pauke Huang, and the site title “IFF” is the abbreviation of “Initiative, Freiheit, Fortschritt | Initiative, Liberty, Progress”(yep, I got inspired fromLiberté, Égalité, Fraternité, which is my motto and what I wanna express in this blog’s articles. You might get the thought this is a more political related site. And it’s half right, I might post some culture and political words in the future.</description>
+    </item>
+    
+    <item>
+      <title>About This Site Build: blogdown, Hugo and Theme Tanka</title>
+      <link>/post/about-the-site-build-blogdownhugo-and-theme-tanka/</link>
+      <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/about-the-site-build-blogdownhugo-and-theme-tanka/</guid>
+      <description>why blogdown and hugo My initiate site build way is by Hexo. The wreckage is still on. The theme and build process are enough satisfied, and I also got to learn things about git and github basically in the process. But when I want actually to post my article, which is based on Rmarkdown, I find blogdown, the product both comes from Yihui,Rstudio, whom My R learning process benefits superbly</description>
+    </item>
+    
+    <item>
+      <title>Hello, Markdown</title>
+      <link>/post/hello-markdown/</link>
+      <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/hello-markdown/</guid>
+      <description># Builtin values references: - references.md - abbreviations.md - footnotes.md destination: destination.html # Meta Data title: Test Page author: - John Doe - Jane Doe # Settings overrides settings: pygments_style: github js: - https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js - https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js - https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js - https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js - res://MarkdownPreview/js/uml.js - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js - res://MarkdownPreview/js/math_config.js markdown_extensions: - markdown.extensions.footnotes - markdown.extensions.attr_list - markdown.extensions.def_list - markdown.extensions.tables - markdown.extensions.abbr - markdown.extensions.toc: permalink: &amp;quot;\ue157&amp;quot; - markdown.extensions.smarty - markdown.extensions.meta - markdown.extensions.admonition - markdown.extensions.codehilite: guess_lang: false - pymdownx.</description>
+    </item>
+    
+    <item>
+      <title>R实现的数据模拟</title>
+      <link>/post/r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F/</link>
+      <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F/</guid>
+      <description>包载入 library(gpairs) ## Warning: 程辑包&amp;#39;gpairs&amp;#39;是用R版本3.5.2 来建造的 数据模拟 数据模拟最直接的意义在于更好的便于R语言操作和统计学知</description>
+    </item>
+    
+    <item>
+      <title>sf &#43; ggplot2 最简步骤实现中国地图数据展示</title>
+      <link>/post/sf-ggplot2-%E6%9C%80%E7%AE%80%E6%AD%A5%E9%AA%A4%E5%AE%9E%E7%8E%B0%E4%B8%AD%E5%9B%BD%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA/</link>
+      <pubDate>Wed, 02 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/sf-ggplot2-%E6%9C%80%E7%AE%80%E6%AD%A5%E9%AA%A4%E5%AE%9E%E7%8E%B0%E4%B8%AD%E5%9B%BD%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA/</guid>
+      <description>本文作为一个快速记录，R为工具的数据分析过程中的尝试，将最为集中的记录相关主题内容，其他延展性内容则以链接形式作为参考。 要实现的需求 以行政区</description>
+    </item>
+    
+    <item>
+      <title>Shiny app的基本制作思路</title>
+      <link>/post/shiny-app%E5%88%B6%E4%BD%9C%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF/</link>
+      <pubDate>Tue, 18 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/shiny-app%E5%88%B6%E4%BD%9C%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF/</guid>
+      <description>Shiny是基于R的实时计算服务器（serve），并通过CSS，htmlwidge，Javascript来进行拓展的web 交互界面（UI）展</description>
+    </item>
+    
+    <item>
+      <title>dplyr和data.table的数据操作对码表</title>
+      <link>/post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/</link>
+      <pubDate>Mon, 29 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/</guid>
+      <description>缘起 作为R中两个被讨论最多的数据操作包，dplyr 和data.table因其各具特色设计哲学俘获一批忠实用户。二者在整体风格和机制上的明显区</description>
+    </item>
+    
+    <item>
+      <title>Hello R Markdown</title>
+      <link>/post/2015-07-23-r-rmarkdown/</link>
+      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      
+      <guid>/post/2015-07-23-r-rmarkdown/</guid>
+      <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
+You can embed an R code chunk like this:
+summary(cars)## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
+    </item>
+    
+  </channel>
+</rss>

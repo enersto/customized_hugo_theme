@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>App on IFF自留地</title>
+    <link>/tags/app/</link>
+    <description>Recent content in App on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 18 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/app/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Shiny app的基本制作思路</title>
+      <link>/post/shiny-app%E5%88%B6%E4%BD%9C%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF/</link>
+      <pubDate>Tue, 18 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/shiny-app%E5%88%B6%E4%BD%9C%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF/</guid>
+      <description>Shiny是基于R的实时计算服务器（serve），并通过CSS，htmlwidge，Javascript来进行拓展的web 交互界面（UI）展</description>
+    </item>
+    
+  </channel>
+</rss>

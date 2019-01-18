@@ -1,0 +1,249 @@
+---
+title: R实现的数据模拟
+author: pauke
+date: '2019-01-17'
+slug: r实现的数据模拟
+categories:
+  - R
+  - time_series
+tags: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+包载入
+```{r}
+library(gpairs)
+
+```
+
+
+## 数据模拟
+数据模拟最直接的意义在于更好的便于R语言操作和统计学知识的练习。但另一方面，也是对市场分析中数据分析的逻辑和内在关联的总结演练。
+
+### 促销与销量数据模拟
+```{r}
+#建立数据框
+n.store <- 50
+n.week <- 156
+store <- data.frame(matrix(NA, ncol = 10, nrow = n.store*n.week))
+names(store) <- c("store_num", "year", "week", "p1sales", "p2sales",
+                      "p1price", "p2price", "p1prom", "p2prom", "country")
+
+#逐一创建变量
+storeNumber <- 101:(100 + n.store)
+## for store_num and country
+store_ctr <- c(rep("US", 13), rep("DE", 10), rep("GB", 3), rep("BR", 5),
+                 rep("JP", 5), rep("AU", 2), rep("CN", 12))
+length(store_ctr)
+
+store$store_num <- rep(storeNumber, each = n.week)
+store$country <- rep(store_ctr, each = n.week)
+rm(storeNumber,store_ctr)
+
+## for week and year
+store$week <- rep(1:52, times = n.store *3 )
+store$year <- rep(rep(1:3,each = n.week/3), times = n.store)
+
+store$store_num <- factor(store$store_num)
+store$country <- factor(store$country)
+
+## for p1prom and p2prom
+
+set.seed(0017)
+
+store$p1prom <- rbinom(n = nrow(store), size = 1, p = 0.2)
+store$p2prom <- rbinom(n = nrow(store), size = 1, p = 0.25)
+
+
+## for p1price and p2price
+store$p1price <- sample(x = c(10.99,11.99,12.49,12.99,13.49),size = nrow(store), replace = T)
+store$p2price <- sample(x = c(8.99,9.99,10.99,11.99,12.49),size = nrow(store), replace = T)
+
+## for p1sales and p2sales
+### 销量是计件数据，通过泊松分布生成获得,lambda为平均件数
+
+n.sale1 <- rpois(nrow(store),lambda = 1020) 
+n.sale2 <- rpois(nrow(store),lambda = 1357) 
+
+#价格一般服从对数函数，预设：销量变化和价格成反比，产品1的销量上升程度取决于产品1的对数小于产品2价格对数
+sale1 <- n.sale1*log(store$p2price)/log(store$p1price)
+sale2 <- n.sale2*log(store$p1price)/log(store$p2price)
+
+#考虑促销的影响，假如产品促销时候销量上升20%或25%
+
+store$p1sales <- floor(n.sale1*(1+store$p1prom*0.2))
+store$p2sales <- floor(n.sale2*(1+store$p2prom*0.25))
+
+
+head(store)
+str(store)
+summary(store)
+
+```
+
+
+### 交易和满意度数据模拟
+
+#### 设定观察数量
+
+```{r}
+set.seed(0017)
+
+n.qry <- 1500
+```
+
+
+```{r}
+## 逐一生成消费者基本信息变量
+qry <- data.frame(id = factor(paste0("n",1:n.qry)))
+qry$age <- rnorm(n = n.qry, mean = 30, sd = 10)
+qry$credit_score <- rnorm(n = n.qry, mean = 2*qry$age +620, sd = 75) #信用积分与年龄存在关系
+qry$email <- factor(sample(c("ja","nein"),size = n.qry, replace = T, prob = c(0.75,0.25))) #生成是否留有邮箱地址的变量
+qry$distance_to_store <- exp(rnorm(n = n.qry, mean = 0.2, sd = 1.5))#确保都是正数
+```
+
+#### 销量数据模拟
+```{r}
+qry$online_visit <- rnbinom(n.qry, 0.4, mu = 10 +ifelse(qry$email == "ja",10,0)
+                            -0.6*(qry$age- median(qry$age))) #网店访问次数，该变量符合负二项分布，我们设定留了邮箱的比没留的高10次，通过ifelse根据邮箱是否有取值；同时，也设定年轻用户访问频率更高，设定该用户年龄和中位数的差值来区别
+
+qry$online_trans <- rbinom(n.qry,size = qry$online_visit, prob = 0.4)#交易次数，设定为访问数量的40%
+qry$online_spend <- exp(rnorm(n.qry,mean = 10, sd = 0.5)) * qry$online_trans # 以rnorm生产单词消费金额，并获得总花费。
+
+qry$store_trans <- rnbinom(n.qry, size = 5, mu = 3/sqrt(qry$distance_to_store))
+qry$store_spend <- exp(rnorm(n.qry, mean = 15, sd = 0.8)) * qry$store_trans
+# 线下实体店的交易次数和消费者距离实体店距离相关，
+```
+
+#### 满意度数据模拟
+
+```{r}
+
+
+### 基于问卷调查的「光晕效应」，先设定一个不存在于实际问卷中的总体满意度
+stsf.overall <- rnorm(n.qry, mean = 4.1, sd = 0.5)
+### 根据总体满意度，再由随机产生的与总体满意度的差值，形成分项满意度,并通过floor()函数将连续的数值变量转变为离散整数。
+stsf.service <- floor(stsf.overall + rnorm(n.qry, mean = 0.4, sd = 0.5))
+stsf.production <- floor(stsf.overall + rnorm(n.qry, mean = -0.3, sd = 0.7))
+### 对满意度数值进行限定，以便符合一般李克特量表1~5分的要求
+stsf <- cbind(stsf.service,stsf.production)
+
+stsf[stsf.service > 5| stsf.production > 5] <- 5
+stsf[stsf.service < 1| stsf.production < 1] <- 1
+
+summary(stsf)
+
+### 针对可能存在的问卷数据无回应而缺失的情况，模拟无回应问卷
+no_response <- as.logical(rbinom(n.qry, size = 1, prob = qry$age/100)) # 假设年龄越大，回应问卷可能性越低
+stsf[no_response] <- NA
+
+
+## 最后合并到主体数据集
+qry <- cbind(qry,stsf)
+
+rm(stsf.overall,stsf.service,stsf.production,stsf)
+
+```
+
+
+### 时间序列数据模拟
+
+该部分本可当做独立文章来说时间序列的基本知识的，但内容有限，且多是模拟的相关内容，故而添增于此。
+
+#### 随机游走进程 Random Walk process模拟
+
+```{r}
+# seed X_0 = 0
+X <- 0
+
+# 纯粹随机游走，均值 0，标准差 1.5
+Z <- rnorm(100, mean = 0.5, sd = 1.5)
+
+# 进程
+for (i in 2:length(Z)){
+  X[i] <- X[i-1] + Z[i]
+}
+
+# 作图
+ts.plot(X, main = "Random walk process")
+
+# 随机游走的差值
+ts.plot(diff(X))
+
+```
+
+#### 移动平均 MA(q)模拟
+
+```{r}
+# 纯粹随机游走，均值 0，标准差 1.5
+Z <- rnorm(100, mean = 0, sd = 1.5)
+
+# 进程模拟
+X <- c()
+for (i in 2:length(Z)) {
+  X[i] <- Z[i] - 0.45*Z[i-1]
+}
+
+# 作图
+ts.plot(X, main = "Moving Average or order 1 process")
+```
+
+
+
+#### AR(1)模拟
+```{r}
+
+# 初始值 alpha
+alpha = 0.5
+
+# 纯粹随机过程
+Z <- rnorm(100, mean = 0, sd = 1.5)
+
+# seed
+X <- rnorm(1)
+
+# 进程
+for (i in 2:length(Z)) {
+  X[i] <- 0.7*X[i-1]+Z[i]
+}
+
+# 作图
+ts.plot(X)
+
+```
+
+
+#### ARMA(1,1) process 模拟
+```{r}
+Z <- rnorm(100, mean = 0, sd = 1.5)
+
+## 进程
+X <- rnorm(1)
+
+for (i in 2:length(Z)) {
+  X[i] <- 0.35*X[i-1] + Z[i] + 0.4*Z[i-1]
+}
+
+# 进程作图
+ts.plot(X, main = "ARMA(1,1) process")
+```
+
+
+
+### 总结
+
+** 数据框：data.frame() 和matrix() 是生成空数据框的主要函数，一般而言数据框可以实现搭建，然后逐步填补，也可逐一添加，及至完成*
+** 字符变量：sample(x, size, replace = FALSE, prob = NULL)函数实现，x是样本生成的构成值的范围，size是抽样次数，replace是是否放回抽样，prob是各个值发生比*
+** 指数正态分布变量：rnorm(n, mean = 0, sd = 1) 生成随机数值，服从正态分布，一般适用于定比数据生成， 如年龄、收入、满意度等*
+** 二项式分布变量：rbinom(n, size, prob) 生成随机二项式服从逻辑分布，适用于是否型的变量数据生成*
+** 泊松分布变量：rpois(n, lambda)，lambda为非负数值均值，主要适用于离散概率分布，如人数、次数等*
+** 负二项分布变量：rnbinom(n, size, prob, mu) mu为负二项分布的均值，负二项分布为正数且右偏的数据， 主要适用于事件频数的生成 *
+** 对数正态分布变量：rlnorm(n, meanlog = 0, sdlog = 1)，对数正态分布适用于都是正值，且极大值很少， 主要适用于到店距离等 *
+
+** 变量重复： rep(x, times) x是重复的范围，times是次数*
+** 正整数因子变量：floor() 取数据变量为正整数，且成为因子变量*
+** 时间序列模拟多数没有特定函数，而是需要在对一般随机数据进行函数化处理*

@@ -1,0 +1,58 @@
+baseurl = "https://pauke.live"
+title = "IFF自留地"
+author = "pauke"
+relativeurls = true
+canonifyurls = true
+languageCode = "zh-cn"
+# 网站有 CJK 字符（中日韩统一表意文字），设置 hasCJKLanguage = true 
+hasCJKLanguage = true 
+enableEmoji = true
+smartypantsQuotesNBSP = true
+theme = "hugo-tanka"
+
+googleAnalytics = "UA-132686713-1"
+disqusShortname = ""
+disable_mathjax = true
+
+pygmentsstyle      = "vs"
+pygmentscodefences = true
+
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+[params]
+  sitename = "IFF自留地"
+
+[[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 1
+[[menu.main]]
+    name = "Categories"
+    url = "/categories/"
+    weight = 2
+[[menu.main]]
+    name = "Tags"
+    url = "/tags/"
+    weight = 3
+    
+    
+[taxonomies]
+   tag = "tags"
+   category = "categories"
+
+[blackfriday]
+smartypantsQuotesNBSP = true
+extensions =["tables","laxHtmlBlocks"]
+
+  # Valine.
+  # You can get your appid and appkey from https://leancloud.cn
+  # more info please open https://valine.js.org
+  [params.valine]
+    enable = true
+    appId = 'yjXDgIm4adLfC65VUSshkA1W-gzGzoHsz'
+    appKey = '81KLyE7xLDCR0ExKcEib8qjv'
+    notify = false  # mail notifier , https://github.com/xCss/Valine/wiki
+    verify = false # Verification code
+    avatar = 'mm' 
+    placeholder = 'ヾﾉ≧∀≦)o来啊，快活啊!'
+    visitor = true

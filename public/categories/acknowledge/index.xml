@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Acknowledge on IFF自留地</title>
+    <link>/categories/acknowledge/</link>
+    <description>Recent content in Acknowledge on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 30 Dec 2016 21:49:57 -0700</lastBuildDate>
+    
+	<atom:link href="/categories/acknowledge/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About The Theme</title>
+      <link>/post/hello-markdown/</link>
+      <pubDate>Fri, 30 Dec 2016 21:49:57 -0700</pubDate>
+      
+      <guid>/post/hello-markdown/</guid>
+      <description>My site is based on the theme Tanka, which is a minimalist, text-oriented, and performant Hugo theme.
+Features  Minimalist Responsive Typography first High Contrast Disqus Google Analytics  Typography h1 Heading h2 Heading h3 Heading h4 Heading h5 Heading h6 Heading This is bold text
+This is bold text
+This is italic text
+This is italic text
+Deleted text
+ Block quotes are written like so.
+They can span multiple paragraphs, if you like.</description>
+    </item>
+    
+  </channel>
+</rss>

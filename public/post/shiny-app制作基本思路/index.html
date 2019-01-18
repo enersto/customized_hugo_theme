@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  
+
+  <link rel="icon" type="image/png" href="../../favicon.png">
+
+  <title>
+    
+    
+     Shiny app的基本制作思路 
+    
+  </title>
+  <link rel="canonical" href="../../post/shiny-app%E5%88%B6%E4%BD%9C%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF/">
+
+  <link rel="stylesheet" href="../../css/fonts.css" />
+  <link rel="stylesheet" href="../../css/style.css" />
+
+  
+</head>
+
+<body>
+<section id=nav>
+  <h1><a href="../../">IFF自留地</a></h1>
+  <ul>
+    
+    <li><a href="../../">Home</a></li>
+    
+    <li><a href="../../categories/">Categories</a></li>
+    
+    <li><a href="../../tags/">Tags</a></li>
+    
+    <li><a href="../../about/">About</a></li>
+    
+  </ul>
+</section>
+
+
+<section id=content>
+  <h1> Shiny app的基本制作思路 </h1>
+
+  <div id=sub-header>
+    pauke · 2018/12/18 · 4419 words ·  9 minutes read
+  </div>
+
+  <div class="entry-content">
+    
+
+<p>Shiny是基于R的实时计算<strong>服务器（serve）</strong>，并通过CSS，htmlwidge，Javascript来进行拓展的web <strong>交互界面（UI）</strong>展现的构造工具包。</p>
+
+<p>R作为一种以本地会话（local session）为主要使用场景的语言，交互性、可嵌入性和自动化一直是其软肋。Rstudio希望发展基于R构建BI工具，就需要将本地的会话和线上的展示交互结合。因此，这也引出了shiny为回应以上需求，而在结构设计上着墨的三个根本要素：服务器（Serve）、交互界面（UI）和反应连结（Reactivity）。</p>
+
+<p>这也可以引出shiny设计的一个根本思路：反应表达式（reactive expression）。最简洁的理解反应式表达的的示例：</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">input values =&gt; R code =&gt; output values/result</code></pre></div>
+<blockquote>
+<p>当表达式开始执行的时候，将会自动跟踪读取到的反应值以及调用的其他反应表达式。如果反应表达式所依赖的反应值和反应表达式发生了改变，那么该反应表达式的返回值也应该变化，改变一个反应值会自动引发依赖于它的反应表达式重新执行。
+——<a href="http://yanping.me/shiny-tutorial/#reactivity">shiny中文教程</a></p>
+</blockquote>
+
+<p>具体而言，shiny的构成组件主要是这个样子：</p>
+
+<link href="../../mermaid/mermaid.css" type="text/css" rel="stylesheet"/>
+<script defer src="../../mermaid/mermaid.js">mermaid.initialize({startOnLoad:true});</script>
+<div class="mermaid" align="left" >
+graph LR
+subgraph 用户界面UI
+i["输入(input$x)<br> reactiveValues() <br>*Input()"]  
+o("输出(output$y) <br> render*()")
+ob("触发展示(Trigger) <br> observe()<br>observeEvent()")
+end
+subgraph 服务器serve
+is("表达抑制(prevent)<br>isolate()")
+i --> e{"表达(expression)<br>reactive()"}
+i --> ob
+e --> is
+e--> o
+i -->  d{"延迟表达 <br> (delay reaction)<br>eventRactive()"}
+d --> e
+end
+</div>
+
+
+<ul>
+<li>此处的serve和ui不等同于shiny中实际的serve和ui函数，仅是指对于app用户来说的最终呈现情况</li>
+</ul>
+
+<p>基于以上对于shiny设计思路的介绍，就能容易理解shiny代码的基本结构，ui部分（对象值），server部分（函数）以及app结合部分（对象值）。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">library(shiny)
+ui #UI部分 &lt;- fluidPage( 
+numericInput(inputId = <span style="color:#a31515">&#34;n&#34;</span>,<span style="color:#a31515">&#34;Sample size&#34;</span>, value = 25),
+plotOutput(outputId = <span style="color:#a31515">&#34;hist&#34;</span>)
+)
+server #<span style="">服务器部分</span> &lt;- <span style="color:#00f">function</span>(<span style="color:#00f">input</span>, <span style="color:#00f">output</span>) <span style="">{</span> 
+<span style="color:#00f">output</span><span style="">$</span>hist &lt;- renderPlot(<span style="">{</span>
+            hist(rnorm(<span style="color:#00f">input</span><span style="">$</span>n))
+           <span style="">}</span>)
+<span style="">}</span>
+
+shinyApp(ui = ui, server = server) #<span style="">二者结合为</span>shiny</code></pre></div>
+<p>首先，最基本的问题点是shiny app最初的动机需求。这个初始的需求纲要不要求全备，但希望应该对以下几个点有一定的考虑：</p>
+
+<ul>
+<li>数据来源（自带数据、虚拟数据、用户上传数据等）</li>
+<li>交互输入（点选、键入、拖拽等）</li>
+<li>大致呈现方式类型（图、表、文字等）</li>
+<li>交互的数据纬度（交互涉及的数据字段和性质等）</li>
+</ul>
+
+<p>对此有了基本思路之后，就是具体实现的层面。以上纲要也将在具体实现过程中指导具体过程，同时也会在考虑具体实现层面时进一步优化修改。</p>
+
+<p>接下来这篇文章将会以完成一个完整的shiny app的思路顺序。关于更详细的shiny app的构成要件介绍，还是可以是通过<a href="https://www.rstudio.com/resources/cheatsheets/">shiny的速查表</a>来更好了解。再往后则是根据两个我做的shiny小品来聊聊shiny app构建的一些共通基本思路。</p>
+
+<h2 id="ui">UI</h2>
+
+<h3 id="布局-layout">布局（layout）</h3>
+
+<p>布局部分根据需求纲要的确定整个app的大致框架，常见的框架大致如下：</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20181216003147535.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p>flowLayout()，splitLayout()和verticalLayout()适合不同构成要素内容相对均衡的使用场景，并可根据构成要素内容大小多寡具体在三者中选择。</p>
+
+<p>flowRow()和sidebarLayout()适用于构成要素内容差异较大，例如较少的输入要素或需要凸显输出要素等。相对而言，前者适合有一定量的输入要素但输出仍然是需要凸显的情况，后者则是输入要素较少的情况。</p>
+
+<h3 id="输入-input">输入（input）</h3>
+
+<p>输入部分是用户在进行交互时操作的对象，是UI界面的直接体现，在UI部分进行定义和设置，并通过「input$&lt;inputId&gt;」与server部分链接。此外，输入的值都是有反应式的（reactive，最大程度的简化了事件处理代码，从而更专注于应用本身），没有无结果的输入，所以需在server部分写的时候注意每个input都要有对应的反应和输出。</p>
+
+<p>常用的input控件：</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20181217103545277.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="此处仅作展示，具体的代码可查看开始时候提到的速查表" /></p>
+
+<h3 id="输出-output">输出（output）</h3>
+
+<p>输出部分有两个构件组成，在UI部分呈现的output函数，以及在server部分定义的函数计算的对象。二者是使用时候需要一起考虑。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/2018121711594153.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<table>
+<thead>
+<tr>
+<th align="left">提呈函数</th>
+<th align="left">输出函数</th>
+<th align="left">生成对象</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">renderDataTable</td>
+<td align="left">dataTableOutput</td>
+<td align="left">DataTable</td>
+</tr>
+
+<tr>
+<td align="left">renderUI</td>
+<td align="left">htmlOutput/ uiOutput</td>
+<td align="left">raw HTML</td>
+</tr>
+
+<tr>
+<td align="left">renderImage</td>
+<td align="left">imageOutput</td>
+<td align="left">图片（image）</td>
+</tr>
+
+<tr>
+<td align="left">renderPlot</td>
+<td align="left">plotOutput</td>
+<td align="left">图表（plot）</td>
+</tr>
+
+<tr>
+<td align="left">renderTable</td>
+<td align="left">tableOutput</td>
+<td align="left">表（table）</td>
+</tr>
+
+<tr>
+<td align="left">renderText</td>
+<td align="left">textOutput</td>
+<td align="left">文本（text）</td>
+</tr>
+
+<tr>
+<td align="left">renderPrint</td>
+<td align="left">verbatimTextOutput</td>
+<td align="left">输出值（text，summary()之类的结果）</td>
+</tr>
+</tbody>
+</table>
+
+<p>关于输出部分还需要注意以下几点：
+* server部分的呈现函数（render<em>/</em> Output）里是存放最终结果的，若从最开始输入需要经过一系列的计算和赋值等过程，就需要借助到以下将会讲到的server的反应部分；</p>
+
+<ul>
+<li>每个render* 函数部分的R代码需要用花括号{}收纳；</li>
+<li>需要将render* 函数的值赋值到output对象，以最开始时候的示例代码为例：</li>
+</ul>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00f">library</span>(shiny)
+ui  &lt;- fluidPage( 
+plotOutput(outputId = <span style="color:#a31515">&#34;hist&#34;</span>) <span style="color:#008000">#UI部分的Output函数，shiny标准的函数一般是也成为render*()函数</span>
+)
+server  &lt;- <span style="color:#00f">function</span>(input, output) { 
+output$hist  &lt;- renderPlot({ <span style="color:#008000">#UI部分的输出函数的对象内容在server部分进行定义</span>
+            hist(rnorm(input$n))
+           })
+}</code></pre></div>
+<h2 id="运算-server">运算（server）</h2>
+
+<p>该部分将重点讨论反应式（reactivity）。如何理解反应式，可以通过这串代码可以体会：</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">server &lt;- <span style="color:#00f">function</span>(input, output) {
+output$plot &lt;- renderPlot({
+  data &lt;- getSymbols(input$symb, src = <span style="color:#a31515">&#34;yahoo&#34;</span>,
+                     from = input$dates[1],
+                     to = input$dates[2],
+                     auto.assign = <span style="color:#00f">FALSE</span>)
+
+  chartSeries(data, theme = chartTheme(<span style="color:#a31515">&#34;white&#34;</span>),
+              type = <span style="color:#a31515">&#34;line&#34;</span>, log.scale = input$<span style="color:#00f">log</span>, TA = <span style="color:#00f">NULL</span>)
+})
+}</code></pre></div>
+<p>如上所示，server部分把所有的计算反应都只放到一个函数renderPlot中，但这也意味着每次运行都在重新获取和计算数据，将会降低app的反应速度和不必要的带宽浪费（尤其是对于shiny server免费用户来说，这种浪费更需要仔细考虑和避免）。更好的方式是这样：</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">  dataInput &lt;- reactive({
+    getSymbols(input$symb, src = <span style="color:#a31515">&#34;yahoo&#34;</span>,
+        from = input$dates[1],
+        to = input$dates[2],
+        auto.assign = <span style="color:#00f">FALSE</span>)
+  })
+
+  output$plot &lt;- renderPlot({   
+    data &lt;- dataInput()
+    <span style="color:#00f">if</span> (input$adjust) data &lt;- adjust(dataInput())
+
+    chartSeries(data, theme = chartTheme(<span style="color:#a31515">&#34;white&#34;</span>),
+        type = <span style="color:#a31515">&#34;line&#34;</span>, log.scale = input$<span style="color:#00f">log</span>, TA = <span style="color:#00f">NULL</span>)
+  })
+  </code></pre></div>
+<p>本案例来自<a href="http://shiny.rstudio.com/tutorial/written-tutorial/lesson6/">shiny入门</a></p>
+
+<p>通过创建对象值（list）dataInput 来隔离两个计算部分。</p>
+
+<p>当然，更重要的是，通过使用不同的反应式，来更多样的控制app的计算和反应过程。</p>
+
+<h3 id="直呈式反应">直呈式反应</h3>
+
+<p>表达式的反应主要是最终导向输出或输出的过程值为目的的反应式。主要包括<strong>reactiveValues()、render*()和reactive()</strong>。</p>
+
+<h4 id="reactivevalues">reactiveValues()</h4>
+
+<p>输出所设定值函数，与此相对的是在UI部分提到的由用户通过控件产生的输出值：input$&lt;inputId&gt; 。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00f">library</span>(shiny)
+ui &lt;- fluidPage(
+textInput(<span style="color:#a31515">&#34;a&#34;</span>,<span style="color:#a31515">&#34;&#34;</span>)
+)
+server &lt;-
+<span style="color:#00f">function</span>(input,output){
+rv &lt;- reactiveValues()
+rv$number &lt;- 5
+}
+shinyApp(ui, server)</code></pre></div>
+<h4 id="render">render*()</h4>
+
+<p>输出运算结果对象。</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00f">library</span>(shiny)
+ui &lt;- fluidPage(
+textInput(<span style="color:#a31515">&#34;a&#34;</span>,<span style="color:#a31515">&#34;&#34;</span>)
+)
+server &lt;-
+<span style="color:#00f">function</span>(input,output){
+output$b &lt;-
+renderText({
+input$a
+})
+}
+shinyApp(ui, server)</code></pre></div>
+<h4 id="reactive">reactive()</h4>
+
+<p>输出运算过程值，作为模块化编程的重要组成。使用运算结果时，需要用函数的可是来调用。具体来说主要有以下三个功能：
+* 缓存运算值，减少运算；
+* 运算值可被方便多处使用；
+* 调试时能够清晰展现问题点</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00f">library</span>(shiny)
+ui &lt;- fluidPage(
+textInput(<span style="color:#a31515">&#34;a&#34;</span>,<span style="color:#a31515">&#34;&#34;</span>),
+textInput(<span style="color:#a31515">&#34;z&#34;</span>, <span style="color:#a31515">&#34;&#34;</span>)
+)
+server &lt;-
+<span style="color:#00f">function</span>(input,output){
+re &lt;- reactive({
+<span style="color:#00f">paste</span>(input$a,input$b})
+output$b &lt;- renderText({
+re()})
+}
+shinyApp(ui, server)</code></pre></div>
+<h3 id="控制式反应">控制式反应</h3>
+
+<p>控制式反应是在正常的输入-运算-输出之外的反应方式。具体来说包含这三个类型：</p>
+
+<h4 id="isolate">isolate()</h4>
+
+<p>运行代码，但抑制输出结果，返回一个未反应的结果，从而达到避免依赖性（dependency）的目的。理解isolate()，一般可以对比reactive()。reactive()的反馈是实时的、依赖性的，isolate()则是条件性的、非依赖性的。</p>
+
+<p>可在本地运行以下示例app，对比两类反应的结果：</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00f">library</span>(shiny)
+ui&lt;-
+    fluidPage(
+    titlePanel(<span style="color:#a31515">&#34;isolate example&#34;</span>),
+    fluidRow(
+        column(4, wellPanel(
+            sliderInput(<span style="color:#a31515">&#34;n&#34;</span>, <span style="color:#a31515">&#34;n (isolated):&#34;</span>,
+                        min = 10, max = 1000, value = 200, step = 10),          
+            textInput(<span style="color:#a31515">&#34;text&#34;</span>, <span style="color:#a31515">&#34;text (not isolated):&#34;</span>, <span style="color:#a31515">&#34;input text&#34;</span>),
+            br(),
+            actionButton(<span style="color:#a31515">&#34;goButton&#34;</span>, <span style="color:#a31515">&#34;Go!&#34;</span>)
+        )),
+        column(8,
+               h4(<span style="color:#a31515">&#34;summary&#34;</span>),
+               textOutput(<span style="color:#a31515">&#34;summary&#34;</span>)
+        )
+    )
+)
+
+server &lt;- <span style="color:#00f">function</span>(input, output) {
+
+    output$summary &lt;- renderText({
+        <span style="color:#008000"># isolate()一般搭配条件性的触发器使用，其触发器可直接置于其前</span>
+        input$goButton
+        <span style="color:#008000"># 此处的对于str的赋值，类同于reactive，都是实时性的</span>
+        str &lt;- <span style="color:#00f">paste0</span>(<span style="color:#a31515">&#39;input$text is &#34;&#39;</span>, input$text, <span style="color:#a31515">&#39;&#34;&#39;</span>)  
+        <span style="color:#008000"># isolate()则抑制以下部分的运算进行，从而起到独立性和隔离作用</span>
+        isolate({
+            str &lt;- <span style="color:#00f">paste0</span>(str, <span style="color:#a31515">&#39;, and input$n is &#39;</span>)
+            <span style="color:#00f">paste0</span>(str, isolate(input$n))
+        })
+    })
+    
+}
+shinyApp(ui, server)</code></pre></div>
+<p>参考自：<a href="https://shiny.rstudio.com/gallery/isolate-demo.html">isolate-demo</a></p>
+
+<h4 id="reactive-observe-observeevent-和eventreactive-对比">reactive()、observe()、observeEvent()和eventReactive()对比</h4>
+
+<p>observeEvent()和eventReactive()两类都属于控制式反应，与直呈式反应的reactive()和observe()的最直接差异在于：前者是延迟性的反应，其输入值（input value）依赖是部分，通过一定的方式（session）触发；后者则是即时计算的，全局性的依赖于输入值。</p>
+
+<p>关于两个大类中的两个小类则在reactive类的是输出对象值的，observe类的是直接作为环境值输出的。</p>
+
+<p>可在本地运行以下示例app，具体对比四类反应的结果：</p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00f">library</span>(shiny)
+
+ui&lt;-
+    fluidPage(
+        fluidRow(
+            column(3,
+                   h2(<span style="color:#a31515">&#34;Reactive Test&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test_R&#34;</span>,<span style="color:#a31515">&#34;Test_R&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test_R2&#34;</span>,<span style="color:#a31515">&#34;Test_R2&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test_R3&#34;</span>,<span style="color:#a31515">&#34;Test_R3&#34;</span>),
+                   tableOutput(<span style="color:#a31515">&#34;React_Out&#34;</span>)
+            ),
+            column(3,
+                   h2(<span style="color:#a31515">&#34;Observe Test&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test&#34;</span>,<span style="color:#a31515">&#34;Test&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test2&#34;</span>,<span style="color:#a31515">&#34;Test2&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test3&#34;</span>,<span style="color:#a31515">&#34;Test3&#34;</span>),
+                   tableOutput(<span style="color:#a31515">&#34;Observe_Out&#34;</span>)
+            ),
+            column(3,
+                   h2(<span style="color:#a31515">&#34;ObserveEvent Test&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test_OE&#34;</span>,<span style="color:#a31515">&#34;Test_OE&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test_OE2&#34;</span>,<span style="color:#a31515">&#34;Test_OE2&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test_OE3&#34;</span>,<span style="color:#a31515">&#34;Test_OE3&#34;</span>),
+                   tableOutput(<span style="color:#a31515">&#34;Observe_Out_E&#34;</span>),
+                   actionButton(<span style="color:#a31515">&#34;Go&#34;</span>,<span style="color:#a31515">&#34;Test&#34;</span>)
+            ),
+            column(3,
+                   h2(<span style="color:#a31515">&#34;eventReactive Test&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test_eR1&#34;</span>,<span style="color:#a31515">&#34;Test_eR&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test_eR2&#34;</span>,<span style="color:#a31515">&#34;Test_eR2&#34;</span>),
+                   textInput(<span style="color:#a31515">&#34;Test_eR3&#34;</span>,<span style="color:#a31515">&#34;Test_eR3&#34;</span>),
+                   tableOutput(<span style="color:#a31515">&#34;eventReac_out&#34;</span>),
+                   actionButton(<span style="color:#a31515">&#34;Go_event&#34;</span>,<span style="color:#a31515">&#34;Test&#34;</span>)
+            )
+        )
+    )
+
+server&lt;-<span style="color:#00f">function</span>(input,output,session){
+    
+    <span style="color:#008000"># reactive()和observe()在最终呈现上没有区别，都是随着输出值的实时更新计算输出值的；</span>
+    <span style="color:#008000"># 二者的区别在于前者输出的Reactive_Var是全局可用的，而后者输出的df则是环境局限的</span>
+    Reactive_Var&lt;-reactive({<span style="color:#2b91af">c</span>(input$Test_R, input$Test_R2, input$Test_R3)})
+    output$React_Out&lt;-renderTable({
+        Reactive_Var()
+    })
+    
+    observe({
+        A&lt;-input$Test
+        B&lt;-input$Test2
+        C&lt;-input$Test3
+        df&lt;-<span style="color:#2b91af">c</span>(A,B,C)
+        output$Observe_Out&lt;-renderTable({df})
+    })
+    
+    <span style="color:#008000"># observeEvent()和eventReactive()同样在最终呈现上没有区别，但在环境调用上存在不同。</span>
+    observeEvent(input$Go, {
+        A&lt;-input$Test_OE
+        B&lt;-input$Test_OE2
+        C&lt;-input$Test_OE3
+        df&lt;-<span style="color:#2b91af">c</span>(A,B,C)
+        output$Observe_Out_E&lt;-renderTable({df})
+    })
+    
+    eventReactive_Var &lt;- eventReactive(input$Go_event, {
+        <span style="color:#2b91af">c</span>(input$Test_eR1, input$Test_eR2, input$Test_eR3)})
+    output$eventReac_out&lt;-renderTable(eventReactive_Var())
+    
+}
+shinyApp(ui, server)</code></pre></div>
+<p>本案例参考自：<a href="https://stackoverflow.com/questions/53016404/advantages-of-reactive-vs-observe-vs-observeevent">Advantages of reactive vs. observe vs. observeEvent</a></p>
+
+<h2 id="案例">案例</h2>
+
+<p>接下来以我做的一个案例为例，来说一下大致的思路：</p>
+
+<h3 id="北京地铁月度支出模型">北京地铁月度支出模型</h3>
+
+<p>做这个shiny app的初衷是看到<a href="https://www.cnblogs.com/jkisjk/p/4158531.html">这篇文章</a>，里面关于如何在考虑优惠政策的前提下，计算每月在地铁上的花费。为了更直观的了解地铁花费变化情况。</p>
+
+<p>这个app实现前考虑几个要素：</p>
+
+<ul>
+<li>无需输入数据，数据通过函数产生；</li>
+<li>涉及到的交互：条件选择按钮，文本输入按钮；</li>
+<li>输出形式，可交互式的图表（本案选择plotly实现）；</li>
+<li>涉及的的数据字段有三个，通过控件和二维图表进行变化</li>
+</ul>
+
+<p>预览如下，具体可在本地运行查看：
+<img src="https://img-blog.csdnimg.cn/20181218150206985.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00f">library</span>(shiny)
+<span style="color:#00f">library</span>(ggplot2)
+<span style="color:#00f">library</span>(plotly)
+<span style="color:#00f">library</span>(markdown)
+
+ui &lt;- fluidPage(
+    <span style="color:#008000"># shiny可以调用HTML5静态元素来丰富appUI表现</span>
+    tags$style(<span style="color:#a31515">&#34;label{font-family: TT Times New Roman}&#34;</span>),
+    tags$style(<span style="color:#a31515">&#34;body{font-family:TT Times New Roman}&#34;</span>),
+    titlePanel(HTML(<span style="color:#a31515">&#34;北京地铁月度支出模型 &lt;br/&gt;Beijing Subway monthly Fare Model&#34;</span>)),  
+    <span style="color:#008000"># 该app里的UI元素不复杂，一个条件控件，一个文本输入控件</span>
+    fluidRow(
+        column(4,radioButtons(<span style="color:#a31515">&#34;radio&#34;</span>, label = h4(HTML(<span style="color:#a31515">&#34;X轴选择 &lt;br/&gt; Select X Variable&#34;</span>)),
+                              choiceNames = <span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;以天数看花费 \n days as X variable&#34;</span>,
+                                              <span style="color:#a31515">&#34;以单日费用看花费 \n day fare as X variable&#34;</span>),
+                              choiceValues = <span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;dayFare&#34;</span>,<span style="color:#a31515">&#34;days&#34;</span>),
+                              selected = <span style="color:#a31515">&#34;days&#34;</span>)),
+        column(5,uiOutput(<span style="color:#a31515">&#34;Input&#34;</span>))),
+    <span style="color:#008000"># 以及最终的结果呈现，同时，最终结果呈现也可进一步在呈现过程中进行定制化</span>
+    plotlyOutput(<span style="color:#a31515">&#34;distPlot&#34;</span>, width=800,height = 400)
+)
+
+server &lt;- <span style="color:#00f">function</span>(input, output) {
+    <span style="color:#008000"># 生成数据的函数并不需要每次都进行运算，所以通过isolate()进行隔离，从而减少依赖和运算量</span>
+    isolate({
+        feeInMonth &lt;- <span style="color:#00f">function</span>(dayFare, days){
+            fee = dayFare * days
+            <span style="color:#00f">if</span>(fee &gt; 662.5){                                        <span style="color:#008000">#662.5 = 100 + 50/0.8 + 250/0.5</span>
+                fee = (fee -262.5)} <span style="color:#00f">else</span> <span style="color:#00f">if</span>(fee &gt; 162.5 &amp; fee &lt;= 662.5){ <span style="color:#008000">#162.5 = 100 + 50/0.8   </span>
+                    fee = fee/2+68.75 } <span style="color:#00f">else</span> <span style="color:#00f">if</span>(fee &gt; 100 &amp; fee &lt;= 162.5){<span style="color:#008000">#(fee-162.5)/2+150</span>
+                        fee = fee*0.8+20 } <span style="color:#00f">else</span> { <span style="color:#00f">return</span>(fee)}           <span style="color:#008000">#(fee-100)*0.8+100</span>
+            <span style="color:#00f">return</span>(fee)  
+        } 
+        g &lt;- <span style="color:#00f">Vectorize</span>(feeInMonth)
+    }) 
+    <span style="color:#008000"># 通过条件选择呈现不同的按钮</span>
+    output$Input &lt;- renderUI({
+        <span style="color:#00f">if</span>(input$radio == <span style="color:#a31515">&#34;days&#34;</span>){
+            numericInput(<span style="color:#a31515">&#34;Input&#34;</span>, label = h4(HTML(<span style="color:#a31515">&#39;每月使用日数&lt;br/&gt; monthly work days&#39;</span>)), 
+                         value = 22, min = 1, max = 31)
+            
+        }<span style="color:#00f">else</span>{
+            numericInput(<span style="color:#a31515">&#34;Input&#34;</span>, label = h4(HTML(<span style="color:#a31515">&#39;平均每日花费&lt;br/&gt; average each day fare&#39;</span>)), 
+                         value = 10, min = 3, max = 50)
+        }})
+    
+    <span style="color:#008000"># 最终生成结果。此处用plotly嵌套ggplot的对象值，可以说将R的特点最大程度的发挥，对于熟悉R的来说，最方便不过</span>
+    output$distPlot &lt;- renderPlotly(
+        {
+            <span style="color:#00f">if</span>(input$radio == <span style="color:#a31515">&#34;dayFare&#34;</span>){
+                p &lt;- ggplot(<span style="color:#2b91af">data.frame</span>(dayFare = <span style="color:#2b91af">c</span>(3,50),days = <span style="color:#2b91af">c</span>(0,31)), 
+                            aes(x = days)) +
+                    stat_function(fun = g,args = <span style="color:#2b91af">c</span>(dayFare = input$Input)) + 
+                    theme(axis.line = element_line(colour = <span style="color:#a31515">&#34;darkblue&#34;</span>, size = 1.5, linetype = <span style="color:#a31515">&#34;solid&#34;</span>))+ 
+                    labs(x = HTML(<span style="color:#a31515">&#34;使用日数\n using days&#34;</span>), y = HTML(<span style="color:#a31515">&#34;费用\ fare&#34;</span>))
+            }
+            <span style="color:#00f">if</span>(input$radio == <span style="color:#a31515">&#34;days&#34;</span>){
+                p &lt;- ggplot(<span style="color:#2b91af">data.frame</span>(dayFare = <span style="color:#2b91af">c</span>(3,50),days = <span style="color:#2b91af">c</span>(0,31)), 
+                            aes(x = dayFare)) +
+                    stat_function(fun = g,args = <span style="color:#2b91af">c</span>(days = input$Input)) + 
+                    theme(axis.line = element_line(colour = <span style="color:#a31515">&#34;darkblue&#34;</span>,size = 1.5, linetype = <span style="color:#a31515">&#34;solid&#34;</span>))+
+                    labs(x = HTML(<span style="color:#a31515">&#34;平均每日花费\n average each day fare&#34;</span>), y = HTML(<span style="color:#a31515">&#34;费用\ fare&#34;</span>))
+            }
+            gg &lt;- plotly_build(p) %&gt;%  style(line = <span style="color:#2b91af">list</span>(color = <span style="color:#a31515">&#39;lightblue&#39;</span>,width = 3))            
+        })  
+}
+
+shinyApp(ui = ui, server = server,options = <span style="color:#2b91af">list</span>(height = 900))</code></pre></div>
+  </div>
+
+  <div id=links>
+    
+      <a class="basic-alignment left" href="../../post/dplyr%E5%92%8Cdata.table%E7%9A%84%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%AF%B9%E7%A0%81%E8%A1%A8/">&laquo; dplyr和data.table的数据操作对码表</a>
+    
+    
+      <a class="basic-alignment left" href="../../post/sf-ggplot2-%E6%9C%80%E7%AE%80%E6%AD%A5%E9%AA%A4%E5%AE%9E%E7%8E%B0%E4%B8%AD%E5%9B%BD%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%B1%95%E7%A4%BA/">sf &#43; ggplot2 最简步骤实现中国地图数据展示 &raquo;</a>
+    
+  </div>
+</section>
+
+
+
+<section id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+      
+      
+      if (window.location.hostname == "localhost")
+                return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = '';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+<span id="/post/shiny-app%E5%88%B6%E4%BD%9C%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF/" class="leancloud_visitors" data-flag-title="Shiny app的基本制作思路">
+    <span class="post-meta-item-text">reading number: </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+</span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+   new Valine({
+        el: '#vcomments' ,
+        appId: 'yjXDgIm4adLfC65VUSshkA1W-gzGzoHsz',
+        appKey: '81KLyE7xLDCR0ExKcEib8qjv',
+        notify:  false , 
+        verify:  false , 
+        avatar:'mm', 
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        visitor:  true 
+    });
+</script>
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-132686713-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+  
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+
+</body>
+</html>
+

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on IFF自留地</title>
+    <link>/categories/</link>
+    <description>Recent content in Categories on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    
+	<atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>English</title>
+      <link>/categories/english/</link>
+      <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/english/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Introduce</title>
+      <link>/categories/introduce/</link>
+      <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/introduce/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Quick_note</title>
+      <link>/categories/quick_note/</link>
+      <pubDate>Wed, 02 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/quick_note/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R</title>
+      <link>/categories/r/</link>
+      <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Time_series</title>
+      <link>/categories/time_series/</link>
+      <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/time_series/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tool</title>
+      <link>/categories/tool/</link>
+      <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/tool/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Workflow</title>
+      <link>/categories/workflow/</link>
+      <pubDate>Tue, 18 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/workflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>汉语</title>
+      <link>/categories/%E6%B1%89%E8%AF%AD/</link>
+      <pubDate>Wed, 02 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/%E6%B1%89%E8%AF%AD/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
