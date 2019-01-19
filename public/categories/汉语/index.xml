@@ -6,10 +6,19 @@
     <description>Recent content in 汉语 on IFF自留地</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 02 Jan 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 17 Jan 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/%E6%B1%89%E8%AF%AD/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>R实现的数据模拟</title>
+      <link>/post/r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F/</link>
+      <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F/</guid>
+      <description>数据模拟 数据模拟最直接的意义在于更好的便于R语言操作和统计学知识的练习。但另一方面，也是对市场分析中数据分析的逻辑和内在关联的总结演练。 促销</description>
+    </item>
     
     <item>
       <title>sf &#43; ggplot2 最简步骤实现中国地图数据展示</title>

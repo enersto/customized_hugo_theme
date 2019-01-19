@@ -110,5 +110,23 @@
       <description></description>
     </item>
     
+    <item>
+      <title>Time_series</title>
+      <link>/tags/time_series/</link>
+      <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/time_series/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>随机数</title>
+      <link>/tags/%E9%9A%8F%E6%9C%BA%E6%95%B0/</link>
+      <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/%E9%9A%8F%E6%9C%BA%E6%95%B0/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>
