@@ -22,6 +22,10 @@
   <link rel="stylesheet" href="../../css/fonts.css" />
   <link rel="stylesheet" href="../../css/style.css" />
 
+  <link rel="stylesheet" href="../../css/tomorrow.css" rel="stylesheet" id="theme-stylesheet">
+  <script src="../../js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
   
 </head>
 
@@ -524,6 +528,48 @@ server &lt;- <span style="color:#00f">function</span>(input, output) {
 
 shinyApp(ui = ui, server = server,options = <span style="color:#2b91af">list</span>(height = 900))</code></pre></div>
   </div>
+
+
+  
+  
+  <div class="article-toc" >
+      <h3>目录 | Contents</h3>
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#ui">UI</a>
+<ul>
+<li><a href="#布局-layout">布局（layout）</a></li>
+<li><a href="#输入-input">输入（input）</a></li>
+<li><a href="#输出-output">输出（output）</a></li>
+</ul></li>
+<li><a href="#运算-server">运算（server）</a>
+<ul>
+<li><a href="#直呈式反应">直呈式反应</a>
+<ul>
+<li><a href="#reactivevalues">reactiveValues()</a></li>
+<li><a href="#render">render*()</a></li>
+<li><a href="#reactive">reactive()</a></li>
+</ul></li>
+<li><a href="#控制式反应">控制式反应</a>
+<ul>
+<li><a href="#isolate">isolate()</a></li>
+<li><a href="#reactive-observe-observeevent-和eventreactive-对比">reactive()、observe()、observeEvent()和eventReactive()对比</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#案例">案例</a>
+<ul>
+<li><a href="#北京地铁月度支出模型">北京地铁月度支出模型</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+  
+  
+
+ 
 
   <div id=links>
     

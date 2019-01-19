@@ -37,44 +37,9 @@ img {
 /* code */
 pre, code {
   font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
-  background-color: #e0e0e0;
+  
 }
-code {
-  font-size: 14px;
-  padding: 4px;
-}
-pre {
-  margin-top: 0;
-  margin-bottom: 16px;
-  word-wrap: normal;
-  padding: 16px;
-  overflow-x: auto;
-  font-size: 85%;
-  line-height: 1.45;
-}
-pre>code {
-  padding: 0;
-  margin: 0;
-  font-size: 100%;
-  word-break: normal;
-  white-space: pre;
-  background: transparent;
-  border: 0;
-}
-pre code {
-  display: inline;
-  max-width: auto;
-  padding: 0;
-  margin: 0;
-  overflow: visible;
-  line-height: inherit;
-  word-wrap: normal;
-  background-color: transparent;
-  border: 0;
-}
-pre code::before, pre code::after {
-  content: normal;
-}
+
 /* footnotes */
 sup {
   vertical-align: super;
@@ -252,6 +217,42 @@ thead, tfoot, tr:nth-child(even) { background: #eee; }
   text-decoration: none;
   display: inline-block;
   padding-top: 225px;
+}
+
+/* toc part */
+.article-toc {
+  display: none;
+  position: fixed;
+  left: 50%;
+  top: 110px;
+  font-size: 0.9em;
+  width: 260px;
+  margin-left: 400px;
+  padding-left: 20px;
+  overflow-y: auto;
+  line-height: 1.4em;
+  max-height: 85%;
+}
+.article-toc h3 {
+  font-weight: bold;
+  margin-left: 20px;
+}
+.article-toc li {
+  list-style: none;
+  margin-left: 20px;
+  margin-top: 2px;
+}
+.article-toc li a {
+  color: #000;
+  text-decoration: none;
+}
+.article-toc li a.active {
+  font-weight: bold;
+}
+@media screen and (min-width: 1400px) {
+  .article-toc {
+    display: block;
+  }
 }
 
 /* foot part */

@@ -11,6 +11,8 @@
     {{ .Content }}
   </div>
 
+{{ partial "smart_toc.html" . }}
+
   <div id=links>
     {{ if .PrevInSection }}
       <a class="basic-alignment left" href="{{.PrevInSection.Permalink}}">&laquo; {{.PrevInSection.Title}}</a>

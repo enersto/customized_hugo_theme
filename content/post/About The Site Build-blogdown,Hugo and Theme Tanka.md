@@ -13,7 +13,7 @@ So why not switch my site build to hugo.
 As for the building workflow, I think blogdown has optimized so extremely that you can just dive in without any web site and deployment knowledge, and the [article](https://bookdown.org/yihui/blogdown/workflow.html) make me think that I have no need to build wheel again.
 
 
-## why the theme
+## about the theme
 My site is based on the theme [Tanka](https://github.com/road2stat/hugo-tanka), which is a totally simple, clean and word orientation Hugo theme.
 Based on the theme, I added a fews tools to enrich my site. Here it is:
 
@@ -56,5 +56,39 @@ sequenceDiagram
     Bob-->John: Jolly good!
 {{< /mermaid >}}
 
-
 If you want to add to your theme, you can find the repo from this [theme](https://github.com/matcornic/hugo-theme-learn). then copy the `mermaid.html`  from `hugo-theme-learn\layouts\shortcodes` to `your_theme_file\layouts\shortcodes`, mermaid file in `hugo-theme-learn\static\` to `your_theme_file\static\`.  
+
+### highlight of code
+About the highlight setting for blog build, this [article](https://amber.rbind.io/blog/2017/11/15/syntax-highlighting/) interpret very profound.
+My highlight style choice is the "Tommorow".And this is the highlight demo:
+
+```r
+library(ggplot2)
+
+centre <- function(x, type, ...) {
+  switch(type,
+         mean = mean(x),
+         median = median(x),
+         trimmed = mean(x, trim = .1))
+}
+
+data$x
+foo "bar" baz
+# test "test"
+"test # test"
+
+(123) (1) (10) (0.1) (.2) (1e-7)
+(3.) (3.E10) # BUG: .E10 should be part of number
+
+plot(cars, xlim=20)
+plot(cars, xlim=0x20)
+foo<-30
+my.data.3 <- read() # not a number
+c(1,2,3)
+1%%2
+```
+### table of contents
+
+The smart table of contents function, which is forked from this theme [minos](https://github.com/carsonip/hugo-theme-minos), is deep into 6th header, and is fixed when rolling the page.
+You can get the function part on the 
+

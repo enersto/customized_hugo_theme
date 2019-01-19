@@ -22,10 +22,10 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 [params]
   sitename = "IFF自留地"
       # options for highlight.js (version, additional languages, and theme)
-    highlightjsVersion = "9.12.0"
-    highlightjsCDN = "//cdnjs.cloudflare.com/ajax/libs"
-    highlightjsLang = ["r", "yaml","python"]
-    highlightjsTheme = "github"
+    #highlightjsVersion = "9.12.0"
+    #highlightjsCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    #highlightjsLang = ["r", "yaml"]
+    #highlightjsTheme = "github"
 
 [[menu.main]]
     name = "Home"

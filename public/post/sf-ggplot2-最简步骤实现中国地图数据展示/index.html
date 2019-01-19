@@ -22,6 +22,10 @@
   <link rel="stylesheet" href="../../css/fonts.css" />
   <link rel="stylesheet" href="../../css/style.css" />
 
+  <link rel="stylesheet" href="../../css/tomorrow.css" rel="stylesheet" id="theme-stylesheet">
+  <script src="../../js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
   
 </head>
 
@@ -252,6 +256,47 @@ p &lt;- ggplot() +
 <a href="https://cosx.org/2014/08/r-maps-for-china/">R 绘制中国地图，并展示流行病学数据</a></p>
 
   </div>
+
+
+  
+  
+  <div class="article-toc" >
+      <h3>目录 | Contents</h3>
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#要实现的需求">要实现的需求</a></li>
+<li><a href="#可选择的其他方案">可选择的其他方案</a></li>
+<li><a href="#当前方案简介">当前方案简介</a></li>
+<li><a href="#当前方案的数据来源">当前方案的数据来源</a></li>
+<li><a href="#具体实现过程">具体实现过程</a>
+<ul>
+<li><a href="#整体思路">整体思路</a></li>
+<li><a href="#数据准备">数据准备</a></li>
+<li><a href="#数据拼接">数据拼接</a>
+<ul>
+<li><a href="#省级">省级</a></li>
+<li><a href="#地级">地级</a></li>
+<li><a href="#县级">县级</a></li>
+</ul></li>
+<li><a href="#输出ggplot">输出ggplot</a>
+<ul>
+<li><a href="#coord-sf-坐标轴取值和类型">coord_sf 坐标轴取值和类型</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#参考文章">参考文章</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+  
+  
+
+ 
 
   <div id=links>
     
