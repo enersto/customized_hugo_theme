@@ -159,16 +159,16 @@
 <p>GADM中的中国部分，包含四个行政区划维度的地图数据，其具体链接为：<a href="https://gadm.org/download_country_v3.html">Download GADM data (version 3.6)</a>。
 对应的台湾部分有三个维度的地图数据，对应一并下载。区分对应层次可通过尾缀，如CHN_0是全国图形（没有省级行政区划线的），CHN_1是省级行政区划，CHN_2是地级行政区划，CHN_3是县级行政区划。
 同时，对应的包也需要下载准备好：</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">library(sf)
-tw &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_TWN_0_sf.rds&#34;</span>) <span style="color:#008000">#注意台湾和中国的数据需要错一位拼接</span>
-china &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_CHN_1_sf.rds&#34;</span>) <span style="color:#008000">#即t0-c1,t1-c2,t2-c3</span>
-...</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00f">library</span>(sf)
+tw &lt;- <span style="color:#00f">readRDS</span>(<span style="color:#a31515">&#34;.../gadm36_TWN_0_sf.rds&#34;</span>) <span style="color:#008000">#注意台湾和中国的数据需要错一位拼接</span>
+china &lt;- <span style="color:#00f">readRDS</span>(<span style="color:#a31515">&#34;.../gadm36_CHN_1_sf.rds&#34;</span>) <span style="color:#008000">#即t0-c1,t1-c2,t2-c3</span>
+<span style="color:#00f">...</span></code></pre></div>
 <h4 id="数据拼接">数据拼接</h4>
 
 <p>GADM省级行政区名称不是标准的区划名字，需要进行转换：</p>
 
 <h5 id="省级">省级</h5>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">china<span style="">$</span>NL_NAME_1 &lt;- c(<span style="color:#a31515">&#34;安徽省&#34;</span>,<span style="color:#a31515">&#34;北京市&#34;</span>,<span style="color:#a31515">&#34;重庆市&#34;</span>,
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">china$NL_NAME_1 &lt;- <span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;安徽省&#34;</span>,<span style="color:#a31515">&#34;北京市&#34;</span>,<span style="color:#a31515">&#34;重庆市&#34;</span>,
                      <span style="color:#a31515">&#34;福建省&#34;</span>,<span style="color:#a31515">&#34;甘肃省&#34;</span>,<span style="color:#a31515">&#34;广东省&#34;</span>,
                      <span style="color:#a31515">&#34;广西壮族自治区省&#34;</span>,<span style="color:#a31515">&#34;贵州省&#34;</span>,<span style="color:#a31515">&#34;海南省&#34;</span>,
                      <span style="color:#a31515">&#34;河北省&#34;</span>,<span style="color:#a31515">&#34;黑龙江省&#34;</span>,<span style="color:#a31515">&#34;河南省&#34;</span>,
@@ -180,54 +180,54 @@ china &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_CHN_1_sf.rds&#34
                      <span style="color:#a31515">&#34;新疆维吾尔自治区&#34;</span>,<span style="color:#a31515">&#34;西藏自治区&#34;</span>,<span style="color:#a31515">&#34;云南省&#34;</span>,
                      <span style="color:#a31515">&#34;浙江省&#34;</span>)</code></pre></div>
 <p>紧接着将台湾的信息合并入中国的数据框中：</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tws &lt;- st_sf(GID_0 = <span style="color:#a31515">&#34;CHN&#34;</span>,NAME_0 = <span style="color:#a31515">&#34;China&#34;</span>,GID_1 = <span style="color:#a31515">&#34;CHN.32_1&#34;</span>,
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">tws &lt;- st_sf(GID_0 = <span style="color:#a31515">&#34;CHN&#34;</span>,NAME_0 = <span style="color:#a31515">&#34;China&#34;</span>,GID_1 = <span style="color:#a31515">&#34;CHN.32_1&#34;</span>,
              NAME_1 = <span style="color:#a31515">&#34;&#34;</span>,VARNAME_1 = <span style="color:#a31515">&#34;&#34;</span>,NL_NAME_1 = <span style="color:#a31515">&#34;台湾&#34;</span>,
-             TYPE_1 = <span style="color:#a31515">&#34;&#34;</span>,ENGTYPE_1 = <span style="color:#a31515">&#34;&#34;</span>,CC_1 = <span style="color:#a31515">&#34;&#34;</span>,HASC_1 = <span style="color:#a31515">&#34;&#34;</span>,geometry = tw<span style="">$</span>geometry)
-china &lt;- rbind(china,tws)
-rm(tws)</code></pre></div>
+             TYPE_1 = <span style="color:#a31515">&#34;&#34;</span>,ENGTYPE_1 = <span style="color:#a31515">&#34;&#34;</span>,CC_1 = <span style="color:#a31515">&#34;&#34;</span>,HASC_1 = <span style="color:#a31515">&#34;&#34;</span>,geometry = tw$geometry)
+china &lt;- <span style="color:#00f">rbind</span>(china,tws)
+<span style="color:#00f">rm</span>(tws)</code></pre></div>
 <h5 id="地级">地级</h5>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tw &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_TWN_1_sf.rds&#34;</span>)
-names(tw)
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">tw &lt;- <span style="color:#00f">readRDS</span>(<span style="color:#a31515">&#34;.../gadm36_TWN_1_sf.rds&#34;</span>)
+<span style="color:#00f">names</span>(tw)
 
-china &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_CHN_2_sf.rds&#34;</span>)
-names(china)
+china &lt;- <span style="color:#00f">readRDS</span>(<span style="color:#a31515">&#34;.../gadm36_CHN_2_sf.rds&#34;</span>)
+<span style="color:#00f">names</span>(china)
 
 tws &lt;- tw
-names(tws)[3:10] &lt;- c(<span style="color:#a31515">&#34;GID_2&#34;</span>,<span style="color:#a31515">&#34;NAME_2&#34;</span>,<span style="color:#a31515">&#34;VARNAME_2&#34;</span>,<span style="color:#a31515">&#34;NL_NAME_2&#34;</span>,<span style="color:#a31515">&#34;TYPE_2&#34;</span>,<span style="color:#a31515">&#34;ENGTYPE_2&#34;</span>,<span style="color:#a31515">&#34;CC_2&#34;</span>,<span style="color:#a31515">&#34;HASC_2&#34;</span>)
-tws<span style="">$</span>GID_1 &lt;- <span style="color:#a31515">&#34;CHN.32_1&#34;</span>
-tws<span style="">$</span>NAME_1 &lt;- <span style="color:#a31515">&#34;&#34;</span>
-tws<span style="">$</span>NL_NAME_1 &lt;- <span style="color:#a31515">&#34;台湾&#34;</span>
-tws &lt;- tws[,names(china)]
-china &lt;- rbind(china,tws)</code></pre></div>
+<span style="color:#00f">names</span>(tws)[3:10] &lt;- <span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;GID_2&#34;</span>,<span style="color:#a31515">&#34;NAME_2&#34;</span>,<span style="color:#a31515">&#34;VARNAME_2&#34;</span>,<span style="color:#a31515">&#34;NL_NAME_2&#34;</span>,<span style="color:#a31515">&#34;TYPE_2&#34;</span>,<span style="color:#a31515">&#34;ENGTYPE_2&#34;</span>,<span style="color:#a31515">&#34;CC_2&#34;</span>,<span style="color:#a31515">&#34;HASC_2&#34;</span>)
+tws$GID_1 &lt;- <span style="color:#a31515">&#34;CHN.32_1&#34;</span>
+tws$NAME_1 &lt;- <span style="color:#a31515">&#34;&#34;</span>
+tws$NL_NAME_1 &lt;- <span style="color:#a31515">&#34;台湾&#34;</span>
+tws &lt;- tws[,<span style="color:#00f">names</span>(china)]
+china &lt;- <span style="color:#00f">rbind</span>(china,tws)</code></pre></div>
 <p>最终数据呈现为：
 <img src="https://img-blog.csdnimg.cn/20190102171650925.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
 
 <h5 id="县级">县级</h5>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tw &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_TWN_1_sf.rds&#34;</span>)
-names(tw)
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">tw &lt;- <span style="color:#00f">readRDS</span>(<span style="color:#a31515">&#34;.../gadm36_TWN_1_sf.rds&#34;</span>)
+<span style="color:#00f">names</span>(tw)
 
-china &lt;- readRDS(<span style="color:#a31515">&#34;.../gadm36_CHN_2_sf.rds&#34;</span>)
-names(china)
+china &lt;- <span style="color:#00f">readRDS</span>(<span style="color:#a31515">&#34;.../gadm36_CHN_2_sf.rds&#34;</span>)
+<span style="color:#00f">names</span>(china)
 
 tws &lt;- tw
-names(tws)[3:13] &lt;- c(<span style="color:#a31515">&#34;GID_2&#34;</span>,<span style="color:#a31515">&#34;NAME_2&#34;</span>,<span style="color:#a31515">&#34;NL_NAME_2&#34;</span>,<span style="color:#a31515">&#34;GID_3&#34;</span>,<span style="color:#a31515">&#34;NAME_3&#34;</span>,<span style="color:#a31515">&#34;VARNAME_3&#34;</span>,
+<span style="color:#00f">names</span>(tws)[3:13] &lt;- <span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;GID_2&#34;</span>,<span style="color:#a31515">&#34;NAME_2&#34;</span>,<span style="color:#a31515">&#34;NL_NAME_2&#34;</span>,<span style="color:#a31515">&#34;GID_3&#34;</span>,<span style="color:#a31515">&#34;NAME_3&#34;</span>,<span style="color:#a31515">&#34;VARNAME_3&#34;</span>,
                       <span style="color:#a31515">&#34;NL_NAME_3&#34;</span>,<span style="color:#a31515">&#34;TYPE_3&#34;</span>,<span style="color:#a31515">&#34;ENGTYPE_3&#34;</span>,<span style="color:#a31515">&#34;CC_3&#34;</span>,<span style="color:#a31515">&#34;HASC_3&#34;</span>)
-tws<span style="">$</span>GID_1 &lt;- <span style="color:#a31515">&#34;CHN.32_1&#34;</span>
-tws<span style="">$</span>NAME_1 &lt;- <span style="color:#a31515">&#34;&#34;</span>
-tws<span style="">$</span>NL_NAME_1 &lt;- <span style="color:#a31515">&#34;台湾&#34;</span>
-tws &lt;- tws[,names(china)]
-china &lt;- rbind(china,tws)</code></pre></div>
+tws$GID_1 &lt;- <span style="color:#a31515">&#34;CHN.32_1&#34;</span>
+tws$NAME_1 &lt;- <span style="color:#a31515">&#34;&#34;</span>
+tws$NL_NAME_1 &lt;- <span style="color:#a31515">&#34;台湾&#34;</span>
+tws &lt;- tws[,<span style="color:#00f">names</span>(china)]
+china &lt;- <span style="color:#00f">rbind</span>(china,tws)</code></pre></div>
 <p>最终呈现为：
 <img src="https://img-blog.csdnimg.cn/20190102172557154.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
 
 <h4 id="输出ggplot">输出ggplot</h4>
 
 <p>最后实现数据输出为图形：</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">temp1 &lt;- dataframe(<span style="">省</span> = c(<span style="color:#a31515">&#34;江西省&#34;</span>,<span style="color:#a31515">&#34;浙江省&#34;</span>,.....), <span style="">对应值</span> = c(1103,1532,..))
-china &lt;- left_join(china,temp1,by= c(<span style="color:#a31515">&#34;NL_NAME_1&#34;</span> = <span style="color:#a31515">&#34;省&#34;</span>))
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">temp1 &lt;- dataframe(省 = <span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;江西省&#34;</span>,<span style="color:#a31515">&#34;浙江省&#34;</span>,..<span style="color:#00f">...</span>), 对应值 = <span style="color:#2b91af">c</span>(1103,1532,..))
+china &lt;- left_join(china,temp1,by= <span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;NL_NAME_1&#34;</span> = <span style="color:#a31515">&#34;省&#34;</span>))
 
 p &lt;- ggplot() +
-  geom_sf(data = china,aes(fill =<span style="">对应值</span>)) + 
+  geom_sf(data = china,aes(fill =对应值)) + 
   coord_sf(crs = <span style="color:#a31515">&#34;+proj=aeqd +lat_0=37 +lon_0=104&#34;</span>)+
   scale_fill_distiller(palette=<span style="color:#a31515">&#39;Spectral&#39;</span>)</code></pre></div>
 <p><img src="https://img-blog.csdnimg.cn/20190102162205219.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQ1MzE3MTQ=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
@@ -235,7 +235,7 @@ p &lt;- ggplot() +
 <h5 id="coord-sf-坐标轴取值和类型">coord_sf 坐标轴取值和类型</h5>
 
 <p>sf的坐标映射类型不是像geom_map中coord_map函数直接使用内嵌的映射类型：</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">projlist &lt;- c(<span style="color:#a31515">&#34;aitoff&#34;</span>, <span style="color:#a31515">&#34;albers&#34;</span>, <span style="color:#a31515">&#34;azequalarea&#34;</span>, <span style="color:#a31515">&#34;azequidist&#34;</span>, <span style="color:#a31515">&#34;bicentric&#34;</span>,
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">projlist &lt;- <span style="color:#2b91af">c</span>(<span style="color:#a31515">&#34;aitoff&#34;</span>, <span style="color:#a31515">&#34;albers&#34;</span>, <span style="color:#a31515">&#34;azequalarea&#34;</span>, <span style="color:#a31515">&#34;azequidist&#34;</span>, <span style="color:#a31515">&#34;bicentric&#34;</span>,
  <span style="color:#a31515">&#34;bonne&#34;</span>, <span style="color:#a31515">&#34;conic&#34;</span>, <span style="color:#a31515">&#34;cylequalarea&#34;</span>, <span style="color:#a31515">&#34;cylindrical&#34;</span>, <span style="color:#a31515">&#34;eisenlohr&#34;</span>, <span style="color:#a31515">&#34;elliptic&#34;</span>,
  <span style="color:#a31515">&#34;fisheye&#34;</span>, <span style="color:#a31515">&#34;gall&#34;</span>, <span style="color:#a31515">&#34;gilbert&#34;</span>, <span style="color:#a31515">&#34;guyou&#34;</span>, <span style="color:#a31515">&#34;harrison&#34;</span>, <span style="color:#a31515">&#34;hex&#34;</span>, <span style="color:#a31515">&#34;homing&#34;</span>,
  <span style="color:#a31515">&#34;lagrange&#34;</span>, <span style="color:#a31515">&#34;lambert&#34;</span>, <span style="color:#a31515">&#34;laue&#34;</span>, <span style="color:#a31515">&#34;lune&#34;</span>, <span style="color:#a31515">&#34;mercator&#34;</span>, <span style="color:#a31515">&#34;mollweide&#34;</span>, <span style="color:#a31515">&#34;newyorker&#34;</span>,
@@ -243,7 +243,7 @@ p &lt;- ggplot() +
  <span style="color:#a31515">&#34;sinusoidal&#34;</span>, <span style="color:#a31515">&#34;tetra&#34;</span>, <span style="color:#a31515">&#34;trapezoidal&#34;</span>)</code></pre></div>
 <p>而是使用了<a href="https://proj4.org/about.html">PROJ4</a>的类型库。在PROJ4中，有更多的可用的坐标映射类型。
 以投影中国地图常用的<a href="https://proj4.org/operations/projections/aeqd.html">方位角投影法（Azimuthal）</a>为例（sf默认使用墨卡托投影法（ Mercator）），使用proj4string来定义和更换投影的方式。Azimuthal Equidistant是一个全球性的投影映射，在使用的时候需要通过「lat_0=37 +lon_0=104」定位整个图形的中心点位置，对于中国地图来说一般使用lat_0[30,37]，lon_0[100,105]的区间来定位。</p>
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">  coord_sf(crs = <span style="color:#a31515">&#34;+proj=aeqd +lat_0=37 +lon_0=104&#34;</span>)</code></pre></div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">  coord_sf(crs = <span style="color:#a31515">&#34;+proj=aeqd +lat_0=37 +lon_0=104&#34;</span>)</code></pre></div>
 <h3 id="参考文章">参考文章</h3>
 
 <p><a href="https://cran.r-project.org/web/packages/sf/vignettes/sf1.html">Simple Features for R</a>

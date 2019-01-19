@@ -11,9 +11,6 @@ tags: []
 
 
 
-<p>包载入</p>
-<pre class="r"><code>library(gpairs)</code></pre>
-<pre><code>## Warning: 程辑包&#39;gpairs&#39;是用R版本3.5.2 来建造的</code></pre>
 <div class="section level2">
 <h2>数据模拟</h2>
 <p>数据模拟最直接的意义在于更好的便于R语言操作和统计学知识的练习。但另一方面，也是对市场分析中数据分析的逻辑和内在关联的总结演练。</p>
@@ -144,9 +141,9 @@ qry$distance_to_store &lt;- exp(rnorm(n = n.qry, mean = 0.2, sd = 1.5))#确保�
 <pre class="r"><code>qry$online_visit &lt;- rnbinom(n.qry, 0.4, mu = 10 +ifelse(qry$email == &quot;ja&quot;,10,0)
                             -0.6*(qry$age- median(qry$age))) #网店访问次数，该变量符合负二项分布，我们设定留了邮箱的比没留的高10次，通过ifelse根据邮箱是否有取值；同时，也设定年轻用户访问频率更高，设定该用户年龄和中位数的差值来区别</code></pre>
 <pre><code>## Warning in rnbinom(n.qry, 0.4, mu = 10 + ifelse(qry$email == &quot;ja&quot;, 10, 0)
-## - : 产生了NA</code></pre>
+## - : NAs produced</code></pre>
 <pre class="r"><code>qry$online_trans &lt;- rbinom(n.qry,size = qry$online_visit, prob = 0.4)#交易次数，设定为访问数量的40%</code></pre>
-<pre><code>## Warning in rbinom(n.qry, size = qry$online_visit, prob = 0.4): 产生了NA</code></pre>
+<pre><code>## Warning in rbinom(n.qry, size = qry$online_visit, prob = 0.4): NAs produced</code></pre>
 <pre class="r"><code>qry$online_spend &lt;- exp(rnorm(n.qry,mean = 10, sd = 0.5)) * qry$online_trans # 以rnorm生产单词消费金额，并获得总花费。
 
 qry$store_trans &lt;- rnbinom(n.qry, size = 5, mu = 3/sqrt(qry$distance_to_store))
@@ -176,7 +173,7 @@ summary(stsf)</code></pre>
 ##  Max.   :5.000   Max.   :5.000</code></pre>
 <pre class="r"><code>### 针对可能存在的问卷数据无回应而缺失的情况，模拟无回应问卷
 no_response &lt;- as.logical(rbinom(n.qry, size = 1, prob = qry$age/100)) # 假设年龄越大，回应问卷可能性越低</code></pre>
-<pre><code>## Warning in rbinom(n.qry, size = 1, prob = qry$age/100): 产生了NA</code></pre>
+<pre><code>## Warning in rbinom(n.qry, size = 1, prob = qry$age/100): NAs produced</code></pre>
 <pre class="r"><code>stsf[no_response] &lt;- NA
 
 
@@ -204,10 +201,10 @@ for (i in 2:length(Z)){
 
 # 作图
 ts.plot(X, main = &quot;Random walk process&quot;)</code></pre>
-<p><img src="/post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="/post/2019-01-17-r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code># 随机游走的差值
 ts.plot(diff(X))</code></pre>
-<p><img src="/post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<p><img src="/post/2019-01-17-r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
 </div>
 <div id="-maq" class="section level4">
 <h4>移动平均 MA(q)模拟</h4>
@@ -222,7 +219,7 @@ for (i in 2:length(Z)) {
 
 # 作图
 ts.plot(X, main = &quot;Moving Average or order 1 process&quot;)</code></pre>
-<p><img src="/post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="/post/2019-01-17-r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="ar1" class="section level4">
 <h4>AR(1)模拟</h4>
@@ -242,7 +239,7 @@ for (i in 2:length(Z)) {
 
 # 作图
 ts.plot(X)</code></pre>
-<p><img src="/post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/post/2019-01-17-r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="arma11-process-" class="section level4">
 <h4>ARMA(1,1) process 模拟</h4>
@@ -257,20 +254,22 @@ for (i in 2:length(Z)) {
 
 # 进程作图
 ts.plot(X, main = &quot;ARMA(1,1) process&quot;)</code></pre>
-<p><img src="/post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="/post/2019-01-17-r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 <div class="section level3">
 <h3>总结</h3>
-<p>** 数据框：data.frame() 和matrix() 是生成空数据框的主要函数，一般而言数据框可以实现搭建，然后逐步填补，也可逐一添加，及至完成*
-** 字符变量：sample(x, size, replace = FALSE, prob = NULL)函数实现，x是样本生成的构成值的范围，size是抽样次数，replace是是否放回抽样，prob是各个值发生比*
-** 指数正态分布变量：rnorm(n, mean = 0, sd = 1) 生成随机数值，服从正态分布，一般适用于定比数据生成， 如年龄、收入、满意度等*
-** 二项式分布变量：rbinom(n, size, prob) 生成随机二项式服从逻辑分布，适用于是否型的变量数据生成*
-** 泊松分布变量：rpois(n, lambda)，lambda为非负数值均值，主要适用于离散概率分布，如人数、次数等*
-** 负二项分布变量：rnbinom(n, size, prob, mu) mu为负二项分布的均值，负二项分布为正数且右偏的数据， 主要适用于事件频数的生成 *
-** 对数正态分布变量：rlnorm(n, meanlog = 0, sdlog = 1)，对数正态分布适用于都是正值，且极大值很少， 主要适用于到店距离等 *</p>
-<p>** 变量重复： rep(x, times) x是重复的范围，times是次数*
-** 正整数因子变量：floor() 取数据变量为正整数，且成为因子变量*
-** 时间序列模拟多数没有特定函数，而是需要在对一般随机数据进行函数化处理*</p>
+<ul>
+<li><p>数据框：data.frame() 和matrix()是生成空数据框的主要函数，一般而言数据框可以实现搭建，然后逐步填补，也可逐一添加，及至完成</p></li>
+<li><p>字符变量：sample(x, size, replace = FALSE, prob = NULL)函数实现，x是样本生成的构成值的范围，size是抽样次数，replace是是否放回抽样，prob是各个值发生比</p></li>
+<li><p>指数正态分布变量：rnorm(n, mean = 0, sd = 1) 生成随机数值，服从正态分布，一般适用于定比数据生成， 如年龄、收入、满意度等</p></li>
+<li><p>二项式分布变量：rbinom(n, size, prob) 生成随机二项式服从逻辑分布，适用于是否型的变量数据生成</p></li>
+<li><p>泊松分布变量：rpois(n, lambda)，lambda为非负数值均值，主要适用于离散概率分布，如人数、次数等</p></li>
+<li><p>负二项分布变量：rnbinom(n, size, prob, mu) mu为负二项分布的均值，负二项分布为正数且右偏的数据， 主要适用于事件频数的生成</p></li>
+<li><p>对数正态分布变量：rlnorm(n, meanlog = 0, sdlog = 1)，对数正态分布适用于都是正值，且极大值很少， 主要适用于到店距离等</p></li>
+<li><p>变量重复： rep(x, times) x是重复的范围，times是次数</p></li>
+<li><p>正整数因子变量：floor() 取数据变量为正整数，且成为因子变量</p></li>
+<li><p>时间序列模拟多数没有特定函数，而是需要在对一般随机数据进行函数化处理</p></li>
+</ul>
 </div>
 </div>

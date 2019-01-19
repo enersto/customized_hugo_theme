@@ -24,7 +24,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
       # options for highlight.js (version, additional languages, and theme)
     highlightjsVersion = "9.12.0"
     highlightjsCDN = "//cdnjs.cloudflare.com/ajax/libs"
-    highlightjsLang = ["r", "yaml"]
+    highlightjsLang = ["r", "yaml","python"]
     highlightjsTheme = "github"
 
 [[menu.main]]
@@ -47,7 +47,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [blackfriday]
 smartypantsQuotesNBSP = true
-extensions =["tables","laxHtmlBlocks"]
+extensions =["laxHtmlBlocks"]
 
   # Valine.
   # You can get your appid and appkey from https://leancloud.cn

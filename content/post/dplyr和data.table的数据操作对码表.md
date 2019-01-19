@@ -3,7 +3,7 @@ title: dplyr和data.table的数据操作对码表
 author: 'pauke'
 date: '2018-01-29'
 categories:
-  - tool
+  - r_package
   - 汉语
 tags: ["R","data.table","dplyr"]
 ---
@@ -19,6 +19,7 @@ tags: ["R","data.table","dplyr"]
 ### data.table
 
 先来看data.table包作者对于该包的目的预设和定位：
+
 > data.table inherits from data.frame. It offers fast and nemory efficient: file reader and writer, aggregations, updates, equi, non-equi, rolling, range and interval joins, in a short and flexible syntax, for faster development.
 It is inspired by A[B] syntax in R where A is a matrix and B is a 2-column matrix. Since a data.table is a data.frame, it is compatible with R functions and packages that accept only data.frames.
 

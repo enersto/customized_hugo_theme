@@ -29,20 +29,20 @@
     </item>
     
     <item>
-      <title>Quick_note</title>
-      <link>/categories/quick_note/</link>
-      <pubDate>Wed, 02 Jan 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/quick_note/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>R</title>
       <link>/categories/r/</link>
       <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
       
       <guid>/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R_package</title>
+      <link>/categories/r_package/</link>
+      <pubDate>Wed, 02 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/r_package/</guid>
       <description></description>
     </item>
     
