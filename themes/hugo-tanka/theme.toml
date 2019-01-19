@@ -9,9 +9,9 @@ min_version = 0.17
 
 # author of this modified version
 [[author]]
-  name = "Nan Xiao"
-  homepage = "https://nanx.me"
-  repo = "https://github.com/road2stat/hugo-tanka"
+  name = "pauke huang"
+  homepage = "https://pauke.live"
+  repo = "https://github.com/enersto/customized_hugo_theme"
 
 # original creator of the theme
 [[original]]

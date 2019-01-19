@@ -21,6 +21,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [params]
   sitename = "IFF自留地"
+  Subtitle = "Initiative, Freiheit, Fortschritt"
       # options for highlight.js (version, additional languages, and theme)
     #highlightjsVersion = "9.12.0"
     #highlightjsCDN = "//cdnjs.cloudflare.com/ajax/libs"
@@ -40,10 +41,6 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     url = "/tags/"
     weight = 3
     
-    
-[taxonomies]
-   tag = "tags"
-   category = "categories"
 
 [blackfriday]
 smartypantsQuotesNBSP = true

@@ -32,6 +32,7 @@
 <body>
 <section id=nav>
   <h1><a href="../../">IFF自留地</a></h1>
+  <h3><a href="../../">Initiative, Freiheit, Fortschritt</a></h3>
   <ul>
     
     <li><a href="../../">Home</a></li>
@@ -50,7 +51,7 @@
   <h1> About This Site Build: blogdown, Hugo and Theme Tanka </h1>
 
   <div id=sub-header>
-    pauke · 2019/01/18 · 581 words ·  2 minute(s) read · 
+    pauke · 2019/01/18 · 649 words ·  2 minute(s) read · 
   <i data-feather="tag"></i>
   
   
@@ -71,17 +72,17 @@
   <div class="entry-content">
     
 
-<h2 id="why-blogdown-and-hugo">why blogdown and hugo</h2>
+<h2 id="why-blogdown-and-hugo">Why blogdown and Hugo</h2>
 
 <p>My initiate site build way is by Hexo. The <a href="https://enersto.github.io/">wreckage</a> is still on. The theme and build process are enough satisfied, and I also got to learn things about git and github basically in the process. But when I want actually to post my article, which is  based on Rmarkdown, I find <a href="https://bookdown.org/yihui/blogdown/">blogdown</a>, the product both comes from <a href="https://yihui.name/cn/about/">Yihui</a>,Rstudio, whom My R learning process benefits superbly from.
 The profound tutorial material and theme libraries, super family GUI tool(Rstudio) and seem fast build process(heard the fast character of go before). These are my thought about the blogdown after read the <a href="https://bookdown.org/yihui/blogdown/">book</a>.
 So why not switch my site build to hugo.
 As for the building workflow, I think blogdown has optimized so extremely that you can just dive in without any web site and deployment knowledge, and the <a href="https://bookdown.org/yihui/blogdown/workflow.html">article</a> make me think that I have no need to build wheel again.</p>
 
-<h2 id="about-the-theme">about the theme</h2>
+<h2 id="about-the-theme">About the Theme</h2>
 
 <p>My site is based on the theme <a href="https://github.com/road2stat/hugo-tanka">Tanka</a>, which is a totally simple, clean and word orientation Hugo theme.
-Based on the theme, I added a fews tools to enrich my site. Here it is:</p>
+On the other, the theme is so simple that I need to enrich more functions to feed my blog needs by myself.It is the way I customize this theme,and also the way I get learning things about Hugo, css and HTML. And this is the parts I change or add:</p>
 
 <h3 id="taxonomies-index">taxonomies index</h3>
 
@@ -126,40 +127,19 @@ Based on the theme, I added a fews tools to enrich my site. Here it is:</p>
 <td align="right">0.2</td>
 <td align="left">setosa</td>
 </tr>
-
-<tr>
-<td align="right">4.6</td>
-<td align="right">3.1</td>
-<td align="right">1.5</td>
-<td align="right">0.2</td>
-<td align="left">setosa</td>
-</tr>
-
-<tr>
-<td align="right">5.0</td>
-<td align="right">3.6</td>
-<td align="right">1.4</td>
-<td align="right">0.2</td>
-<td align="left">setosa</td>
-</tr>
-
-<tr>
-<td align="right">5.4</td>
-<td align="right">3.9</td>
-<td align="right">1.7</td>
-<td align="right">0.4</td>
-<td align="left">setosa</td>
-</tr>
 </tbody>
 </table>
 
 <h3 id="comments-system">comments system</h3>
 
-<p>The comments system of original theme is hugo embedded comments, Disqus. I don&rsquo;t find much articles comparing of comments in Hugo, which recommends <a href="https://gohugo.io/content-management/comments/#comments-alternatives">these comments system</a> on documents. But Hexo and other static site generators articles are also sightful:
-- <a href="https://darekkay.com/blog/static-site-comments/">Various ways to include comments on your static site</a>
-- <a href="https://3mile.github.io/archives/128/">第三方评论系统推荐</a>.</p>
+<p>The comments system of original theme is hugo embedded comments, Disqus. I don&rsquo;t find much articles comparing of comments in Hugo, which recommends <a href="https://gohugo.io/content-management/comments/#comments-alternatives">these comments system</a> on documents. But Hexo and other static site generators articles are also sightly:</p>
 
-<p>And my demand of comments is: <strong>simple and lightweight, self-host and not blocked in China</strong>. And <a href="https://valine.js.org/en/">valine</a> is just fitted. And this is an good <a href="https://www.smslit.top/2018/07/08/hugo-valine/">article</a> to maintain the build way in Hugo.</p>
+<ul>
+<li><a href="https://darekkay.com/blog/static-site-comments/">Various ways to include comments on your static site</a></li>
+<li><a href="https://3mile.github.io/archives/128/">第三方评论系统推荐</a>.</li>
+</ul>
+
+<p>And my demand of comments is: <strong>simple and lightweight, self-host, anonymous and not blocked in China</strong>. And <a href="https://valine.js.org/en/">valine</a> is just fitted. And this is an good <a href="https://www.smslit.top/2018/07/08/hugo-valine/">article</a> to maintain the build way in Hugo.</p>
 
 <h3 id="mermaid">mermaid</h3>
 
@@ -182,12 +162,17 @@ sequenceDiagram
 </div>
 
 
-<p>If you want to add to your theme, you can find the repo from this <a href="https://github.com/matcornic/hugo-theme-learn">theme</a>. then copy the <code>mermaid.html</code>  from <code>hugo-theme-learn\layouts\shortcodes</code> to <code>your_theme_file\layouts\shortcodes</code>, mermaid file in <code>hugo-theme-learn\static\</code> to <code>your_theme_file\static\</code>.</p>
+<p>My site mermaid function is forked from the theme <a href="https://github.com/matcornic/hugo-theme-learn">learn</a>. This is the method you can add the function on your theme:</p>
+
+<ul>
+<li>get the <code>mermaid.html</code>  from <code>hugo-theme-learn\layouts\shortcodes</code> to <code>your_theme_file\layouts\shortcodes</code>;</li>
+<li>fork the &ldquo;&nbsp;mermaid file&nbsp;&rdquo; in <code>hugo-theme-learn\static\</code> to <code>your_theme_file\static\</code>, which contains 4 files.<br /></li>
+</ul>
 
 <h3 id="highlight-of-code">highlight of code</h3>
 
-<p>About the highlight setting for blog build, this <a href="https://amber.rbind.io/blog/2017/11/15/syntax-highlighting/">article</a> interpret very profound.
-My highlight style choice is the &ldquo;&nbsp;Tommorow&nbsp;&rdquo;.And this is the highlight demo:</p>
+<p>About the highlight setting for blog build, this <a href="https://amber.rbind.io/blog/2017/11/15/syntax-highlighting/">article</a> interprets very profound.
+My highlight style choice is the &ldquo;&nbsp;Tomorrow&nbsp;&rdquo;.And this is the highlight demo:</p>
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#00f">library</span>(ggplot2)
 
 centre &lt;- <span style="color:#00f">function</span>(x, type, <span style="color:#00f">...</span>) {
@@ -213,8 +198,16 @@ my.data.3 &lt;- read() <span style="color:#008000"># not a number</span>
 1%%2</code></pre></div>
 <h3 id="table-of-contents">table of contents</h3>
 
-<p>The smart table of contents function, which is forked from this theme <a href="https://github.com/carsonip/hugo-theme-minos">minos</a>, is deep into 6th header, and is fixed when rolling the page.
-You can get the function part on the</p>
+<p>The smart table of contents function(smartToc), which is forked from this theme <a href="https://github.com/carsonip/hugo-theme-minos">minos</a>, is deep into 6th. header, and is fixed when rolling the page.
+You can get this function in this way:</p>
+
+<ul>
+<li><p>fork the function part file on the this <a href="https://github.com/enersto/customized_hugo_theme/blob/master/themes/hugo-tanka/layouts/partials/smart_toc.html">repo</a>, and lay down on the <code>your_theme_name/layouts/partials/</code>;</p></li>
+
+<li><p>leave a partial html function on <code>your_theme_name/layouts/_default/single.html</code>(you also can get the code on my repo file);</p></li>
+
+<li><p>set style on the <code>your_theme_name/static/css/style.css</code> about the toc.</p></li>
+</ul>
 
   </div>
 
@@ -227,8 +220,8 @@ You can get the function part on the</p>
 <ul>
 <li>
 <ul>
-<li><a href="#why-blogdown-and-hugo">why blogdown and hugo</a></li>
-<li><a href="#about-the-theme">about the theme</a>
+<li><a href="#why-blogdown-and-hugo">Why blogdown and Hugo</a></li>
+<li><a href="#about-the-theme">About the Theme</a>
 <ul>
 <li><a href="#taxonomies-index">taxonomies index</a></li>
 <li><a href="#table-format">table format</a></li>
