@@ -57,13 +57,13 @@ em,q,em,dfn {
   font-style:italic;
 }
 .sans,html .gist .gist-file .gist-meta {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-family: "Helvetica Neue", sans-serif,-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell;
 }
 .mono,pre,code,tt,p code,li code {
   font-family: "SFMono-serif", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 .heading,.serif,h1,h2,h3 {
-  font-family: serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family: serif,'Times New Roman', Times,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   font-weight: 600;
   line-height: 120%;
 }
@@ -134,7 +134,7 @@ h1,h2 {
 }
 #nav h3 a {
   font-size: 18px;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Times, 'Times New Roman', Georgia, serif;
   font-style: italic;
   color: rgb(15, 11, 5);
   line-height: 10%;
