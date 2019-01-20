@@ -9,12 +9,13 @@
   text-decoration-skip: ink;
 }
 body {
-  font-family: serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-  font-size: 17px;
+  font-family: serif,'Times New Roman', Times,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 22px;
   line-height: 28px;
   color: rgb(20, 1, 1);
   max-width: 700px;
   margin: auto;
+  background: rgba(253, 246, 226, 0.952);
 }
 p {
   margin: 20px 0;
@@ -95,7 +96,7 @@ blockquote:after {
   content: "\201D";
 }
 
-/* head type */
+/* Typography */
 hr {
   width:40%;
   height: 1px;
@@ -103,7 +104,7 @@ hr {
   margin: 25px auto;
 }
 h1 {
-  font-size: 35px;
+  font-size: 58px;
 }
 h2 {
   font-size: 28px;
@@ -127,7 +128,7 @@ h1,h2 {
 }
 #nav h1 a {
   font-size: 35px;
-  font-family: sans-serif;
+  font-family: sans-serif,-apple-system;
   color: rgb(15, 11, 5);
   line-height: 10%;
 }
@@ -169,7 +170,7 @@ ul li {
   margin-left:3px;
 }
 #content h1 {
-  font-size: 30px;
+  font-size: 44px;
 }
 .highlight {
   margin: 10px 0;
@@ -187,12 +188,12 @@ ul li {
 /* table */
 table {
   margin: auto;
-  border-top: 1px solid #666;
+  border-top: 1px solid rgb(105, 105, 105);
   border-bottom: 1px solid #666;
 }
-table thead th { border-bottom: 1px solid #ddd; }
+table thead th { border-bottom: 1px solid rgb(209, 208, 208); }
 th, td { padding: 5px; }
-thead, tfoot, tr:nth-child(even) { background: #eee; }
+thead, tfoot, tr:nth-child(even) { background: rgb(253, 253, 253); }
 
 /* front table */
 #nav {
