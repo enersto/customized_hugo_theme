@@ -45,7 +45,7 @@ To make sure how I intent to do, I urge myself to start with a rough way, [build
 ## Other things about this site
 The specific site building is all in this [post](https://pauke.live/post/about-the-site-build-blogdownhugo-and-theme-tanka/), if you, the reader, have more question,help yourself, just leave the message under the post.
 
-As for the language of this site, it all depends on which one makes me more comfortable to express, when I manage to write. My priority is English,汉语 and Deutsch.  
+As for the language of this site, it all depends on which one makes me more comfortable to express, when I manage to write. My priority is 汉语, English and Deutsch.  
 
 
 
@@ -59,8 +59,9 @@ As for the language of this site, it all depends on which one makes me more comf
 - [Instagram](https://www.instagram.com/enerstohuang/)
 - [Telegram]( https://t.me/enerstohuang)
 
-<img src="/content/about_files/about.png" alt="" width="450px"/>
-Looking forward your respond!
+
+<img src="/./about_files/about.png" alt="" width="400px"/>
+__________________Looking forward to your respond!__________________
 
 
 
