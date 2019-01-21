@@ -9,8 +9,8 @@
   text-decoration-skip: ink;
 }
 body {
-  font-family: serif,'Times New Roman', Times,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-  font-size: 22px;
+  font-family: Georgia,serif,'Times New Roman',Times,  -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 24px;
   line-height: 28px;
   color: rgb(20, 1, 1);
   max-width: 700px;
@@ -63,7 +63,7 @@ em,q,em,dfn {
   font-family: "SFMono-serif", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 .heading,.serif,h1,h2,h3 {
-  font-family: serif,'Times New Roman', Times,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family: Times, serif,'Times New Roman', -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   font-weight: 600;
   line-height: 120%;
 }
@@ -128,9 +128,9 @@ h1,h2 {
 }
 #nav h1 a {
   font-size: 35px;
-  font-family: sans-serif,-apple-system;
+  font-family: Helvetica, Arial,  sans-serif sans-serif,-apple-system;
   color: rgb(15, 11, 5);
-  line-height: 10%;
+  line-height: 120%;
 }
 #nav h3 a {
   font-size: 18px;
