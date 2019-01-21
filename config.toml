@@ -11,7 +11,7 @@ smartypantsQuotesNBSP = true
 theme = "hugo-tanka"
 
 googleAnalytics = "UA-132686713-1"
-disqusShortname = ""
+disqusShortname = "pauke-live"
 disable_mathjax = false
 
 pygmentsstyle      = "vs"
