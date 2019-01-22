@@ -8,6 +8,11 @@
   </url>
   
   <url>
+    <loc>/post/2019-01-22-%E6%9C%AB%E4%B8%96%E9%A2%98%E6%9D%90%E6%96%87%E6%9C%AC%E5%8F%91%E5%BE%AE%E4%BF%A1/</loc>
+    <lastmod>2019-01-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/post/about-the-site-build-blogdownhugo-and-theme-tanka/</loc>
     <lastmod>2019-01-18T00:00:00+00:00</lastmod>
   </url>
@@ -98,7 +103,7 @@
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2019-01-18T00:00:00+00:00</lastmod>
+    <lastmod>2019-01-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -169,8 +174,32 @@
   </url>
   
   <url>
+    <loc>/tags/%E5%8F%99%E4%BA%8B/</loc>
+    <lastmod>2019-01-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/%E5%8F%99%E4%BA%8B%E8%AE%A8%E8%AE%BA/</loc>
+    <lastmod>2019-01-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/%E6%9C%AB%E4%B8%96/</loc>
+    <lastmod>2019-01-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/categories/%E6%B1%89%E8%AF%AD/</loc>
-    <lastmod>2019-01-17T00:00:00+00:00</lastmod>
+    <lastmod>2019-01-22T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/%E8%AF%BB%E5%90%8E%E6%84%9F/</loc>
+    <lastmod>2019-01-22T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
