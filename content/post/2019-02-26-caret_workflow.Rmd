@@ -1,0 +1,33 @@
+---
+title: "caret workflow"
+author: "pauke"
+date: "1/26/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Foreword
+
+This is a workflow about [caret](https://topepo.github.io/caret/), which is a creating predicted models collecting toolkit packages in R. This is then about the model building and tuning, but without the first part, exploration and 
+
+T The package's content
+
+
+ , but not 
+
+```{r cars}
+orange <- read.csv('https://raw.githubusercontent.com/selva86/datasets/master/orange_juice_withmissing.csv')
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
