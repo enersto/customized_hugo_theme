@@ -5,6 +5,13 @@ date: "1/26/2019"
 output: html_document
 ---
 
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 21px;
+  }
+</style>
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(caret)
@@ -18,6 +25,17 @@ This is a workflow about [caret](https://topepo.github.io/caret/), which is a cr
 The article is about the usual thought of using caret and machine learning, more focusing on general use situation. And I'll try to offer a holistic view for machine learning beginners and the way to find more concrete field. That means I would not present the specific algorithms, tuning methods or fitted fields.
 
 ## Structure
+
+All tools in caret can be classified in the [ducument](https://topepo.github.io/caret/) like this:
+
+> - data splitting
+> - pre-processing
+> - feature selection
+> - model tuning using resampling
+> - variable importance estimation
+
+Link to the crutial function in each part, all the part of caret workflow is:
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -46,34 +64,41 @@ D_S --- D_Ss
 M --- Ms
 M_E --- M_Es
 
+classDef default fill:#ffffe6,stroke:#333,stroke-width:2px
+
 style D_E stroke-width:4px
 style P stroke-width:4px
 style D_S stroke-width:4px
 style M stroke-width:4px
 style M_E stroke-width:4px
 
-', height =500, width =1000
+', height =500, width =950
 )
 
 ```
 
-> - data splitting
-> - pre-processing
-feature selection
-model tuning using resampling
-variable importance estimation
 
 By the way,as I said in foreword, this post would like more pay attention on the process of caret using. The part of data exploration is deeply dependent on the familiarity about the data you get to deal with, and can be replaced by another professional packages. If you are more interesting on the visualization tools of caret, just jump to this [chapter](http://topepo.github.io/caret/visualizations.html).
 
 
 
 
-## Including Plots
+## Preprocessing
 
-You can also embed plots, for example:
+This part is based on the conclution of your data exploration. You need to consider what situation of your data that you need to deal with before starting build your model. According to the situation of the function facing to, preprocessing function of caret can be sorted as:
 
-```{r pressure, echo=FALSE}
-orange <- read.csv('https://raw.githubusercontent.com/selva86/datasets/master/orange_juice_withmissing.csv')
-```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+category|function
+----------|--------
+categorical/dichotomous variables| dummyVars()
+unbalance| nearZeroVar()
+
+
+
+
+
+
+
+
+
+

@@ -2841,6 +2841,12 @@ $(document).ready(function () {
 </div>
 
 
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 21px;
+  }
+</style>
 <div id="foreword" class="section level2">
 <h2>Foreword</h2>
 <p>This is a workflow about <a href="https://topepo.github.io/caret/">caret</a>, which is a creating predicted models collecting toolkit framework, integrating all activities related to model development from other R packages. Caret can be also treated as a tool to get started or get familiar with machine learning, especially in supervised and unsupervised learning part that is good at.</p>
@@ -2848,20 +2854,38 @@ $(document).ready(function () {
 </div>
 <div id="structure" class="section level2">
 <h2>Structure</h2>
-<div id="htmlwidget-d06ca8606faa5669af71" style="width:1000px;height:500px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-d06ca8606faa5669af71">{"x":{"diagram":"\ngraph LR\nD_E[Data Exploration/Visualization]\nP[Preprocessing]\nD_S[Data Splitting]\nM[Modeling]\nM_E[Model Evaluation]\n\nD_Es(\"featureplot()<br>dotPlot()<br>lift()<br>plotClassProbs()\")\nPs(\"nearZeroVar()<br>findCorrelation()<br>findLinearCombos()<br>preprocess()\")\nD_Ss(\"createDataPartition()<br>createFolds()\")\nMs(\"train()<br>trainControl()\")\nM_Es(\"confusionMatrix()<br>resample()<br>postResample()\")\n\nD_E --> P \nP --> D_S\nD_S --> M\nM --> M_E\n\nD_E --- D_Es\nP --- Ps\nD_S --- D_Ss\nM --- Ms\nM_E --- M_Es\n\nstyle D_E stroke-width:4px\nstyle P stroke-width:4px\nstyle D_S stroke-width:4px\nstyle M stroke-width:4px\nstyle M_E stroke-width:4px\n\n"},"evals":[],"jsHooks":[]}</script>
+<p>All tools in caret can be classified in the <a href="https://topepo.github.io/caret/">ducument</a> like this:</p>
 <blockquote>
 <ul>
 <li>data splitting</li>
-<li>pre-processing feature selection model tuning using resampling variable importance estimation</li>
+<li>pre-processing</li>
+<li>feature selection</li>
+<li>model tuning using resampling</li>
+<li>variable importance estimation</li>
 </ul>
 </blockquote>
+<p>Link to the crutial function in each part, all the part of caret workflow is:</p>
+<div id="htmlwidget-07b3ced18c531f3e44c2" style="width:950px;height:500px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-07b3ced18c531f3e44c2">{"x":{"diagram":"\ngraph LR\nD_E[Data Exploration/Visualization]\nP[Preprocessing]\nD_S[Data Splitting]\nM[Modeling]\nM_E[Model Evaluation]\n\nD_Es(\"featureplot()<br>dotPlot()<br>lift()<br>plotClassProbs()\")\nPs(\"nearZeroVar()<br>findCorrelation()<br>findLinearCombos()<br>preprocess()\")\nD_Ss(\"createDataPartition()<br>createFolds()\")\nMs(\"train()<br>trainControl()\")\nM_Es(\"confusionMatrix()<br>resample()<br>postResample()\")\n\nD_E --> P \nP --> D_S\nD_S --> M\nM --> M_E\n\nD_E --- D_Es\nP --- Ps\nD_S --- D_Ss\nM --- Ms\nM_E --- M_Es\n\nclassDef default fill:#ffffe6,stroke:#333,stroke-width:2px\n\nstyle D_E stroke-width:4px\nstyle P stroke-width:4px\nstyle D_S stroke-width:4px\nstyle M stroke-width:4px\nstyle M_E stroke-width:4px\n\n"},"evals":[],"jsHooks":[]}</script>
 <p>By the way,as I said in foreword, this post would like more pay attention on the process of caret using. The part of data exploration is deeply dependent on the familiarity about the data you get to deal with, and can be replaced by another professional packages. If you are more interesting on the visualization tools of caret, just jump to this <a href="http://topepo.github.io/caret/visualizations.html">chapter</a>.</p>
 </div>
-<div id="including-plots" class="section level2">
-<h2>Including Plots</h2>
-<p>You can also embed plots, for example:</p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+<div id="preprocessing" class="section level2">
+<h2>Preprocessing</h2>
+<p>This part is based on the conclution of your data exploration. You need to consider what situation of your data that you need to deal with before starting build your model. According to the situation of the function facing to, preprocessing function of caret can be sorted as:</p>
+<table>
+<thead>
+<tr class="header">
+<th>categaried</th>
+<th>function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>categorical variable</td>
+<td>dummyVars()</td>
+</tr>
+</tbody>
+</table>
 </div>
 
 
