@@ -1,5 +1,5 @@
 ---
-title: "caret workflow"
+title: "Workflow with Caret"
 author: "pauke"
 date: "1/26/2019"
 output: html_document
@@ -7,27 +7,73 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(caret)
+library(DiagrammeR)
 ```
 
 ## Foreword
 
-This is a workflow about [caret](https://topepo.github.io/caret/), which is a creating predicted models collecting toolkit packages in R. This is then about the model building and tuning, but without the first part, exploration and 
+This is a workflow about [caret](https://topepo.github.io/caret/), which is a creating predicted models collecting toolkit framework, integrating all activities related to model development from other R packages. Caret can be also treated as a tool to get started or get familiar with machine learning, especially in supervised and unsupervised learning part that is good at. 
 
-T The package's content
+The article is about the usual thought of using caret and machine learning, more focusing on general use situation. And I'll try to offer a holistic view for machine learning beginners and the way to find more concrete field. That means I would not present the specific algorithms, tuning methods or fitted fields.
 
+## Structure
 
- , but not 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-```{r cars}
-orange <- read.csv('https://raw.githubusercontent.com/selva86/datasets/master/orange_juice_withmissing.csv')
+DiagrammeR::mermaid('
+graph LR
+D_E[Data Exploration/Visualization]
+P[Preprocessing]
+D_S[Data Splitting]
+M[Modeling]
+M_E[Model Evaluation]
+
+D_Es("featureplot()<br>dotPlot()<br>lift()<br>plotClassProbs()")
+Ps("nearZeroVar()<br>findCorrelation()<br>findLinearCombos()<br>preprocess()")
+D_Ss("createDataPartition()<br>createFolds()")
+Ms("train()<br>trainControl()")
+M_Es("confusionMatrix()<br>resample()<br>postResample()")
+
+D_E --> P 
+P --> D_S
+D_S --> M
+M --> M_E
+
+D_E --- D_Es
+P --- Ps
+D_S --- D_Ss
+M --- Ms
+M_E --- M_Es
+
+style D_E stroke-width:4px
+style P stroke-width:4px
+style D_S stroke-width:4px
+style M stroke-width:4px
+style M_E stroke-width:4px
+
+', height =500, width =1000
+)
+
 ```
+
+> - data splitting
+> - pre-processing
+feature selection
+model tuning using resampling
+variable importance estimation
+
+By the way,as I said in foreword, this post would like more pay attention on the process of caret using. The part of data exploration is deeply dependent on the familiarity about the data you get to deal with, and can be replaced by another professional packages. If you are more interesting on the visualization tools of caret, just jump to this [chapter](http://topepo.github.io/caret/visualizations.html).
+
+
+
 
 ## Including Plots
 
 You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+orange <- read.csv('https://raw.githubusercontent.com/selva86/datasets/master/orange_juice_withmissing.csv')
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
