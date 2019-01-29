@@ -5,18 +5,28 @@ date: "1/26/2019"
 output: html_document
 ---
 
-<style type="text/css">
-
-body{ /* Normal  */
-      font-size: 21px;
-  }
-</style>
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(caret)
-library(DiagrammeR)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+
+
 ```
+
+```{r message=FALSE, warning=FALSE}
+library(caret)
+library(DiagrammeR)#for the flowchart
+library(DescTools)# for summary of data
+library(proxy)#maxDissim
+library(mlbench)#data zoo
+library(data.table)
+
+options(scipen=8)
+
+```
+
 
 ## Foreword
 
@@ -29,7 +39,7 @@ The article is about the usual thought of using caret and machine learning, more
 All tools in caret can be classified in the [ducument](https://topepo.github.io/caret/) like this:
 
 > - data splitting
-> - pre-processing
+> - pre-processing(depending on data set situation)
 > - feature selection
 > - model tuning using resampling
 > - variable importance estimation
@@ -49,13 +59,13 @@ M_E[Model Evaluation]
 
 D_Es("featureplot()<br>dotPlot()<br>lift()<br>plotClassProbs()")
 Ps("nearZeroVar()<br>findCorrelation()<br>findLinearCombos()<br>preprocess()")
-D_Ss("createDataPartition()<br>createFolds()")
+D_Ss("createDataPartition()<br>createTimeSlices()")
 Ms("train()<br>trainControl()")
 M_Es("confusionMatrix()<br>resample()<br>postResample()")
 
-D_E --> P 
-P --> D_S
-D_S --> M
+D_E --> D_S 
+D_S --> P  
+P --> M
 M --> M_E
 
 D_E --- D_Es
@@ -67,7 +77,7 @@ M_E --- M_Es
 classDef default fill:#ffffe6,stroke:#333,stroke-width:2px
 
 style D_E stroke-width:4px
-style P stroke-width:4px
+style P stroke-width:4px,stroke-dasharray: 5, 5
 style D_S stroke-width:4px
 style M stroke-width:4px
 style M_E stroke-width:4px
@@ -80,7 +90,94 @@ style M_E stroke-width:4px
 
 By the way,as I said in foreword, this post would like more pay attention on the process of caret using. The part of data exploration is deeply dependent on the familiarity about the data you get to deal with, and can be replaced by another professional packages. If you are more interesting on the visualization tools of caret, just jump to this [chapter](http://topepo.github.io/caret/visualizations.html).
 
+## Data Splitting
 
+More specific matter of data splitting, you can find on the [document](http://topepo.github.io/caret/data-splitting.html) and the this article [Preprocessign Data with caret](http://rismyhammer.com/ml/Pre-Processing.html)
+
+### based on outcome
+
+`createDataPartition()` is the splitting function that data set has clear dependent variables, which means it's fitted for supervised learning. `createDataPartition()`is the one of the most useful feature function of caret package, which makes data splitting to be more orderly and approachable.
+
+This method can generate balant data split. When the dependent variables are factor variables, the splitting will based on the distribution of factors.
+
+```{r echo=TRUE, warning=FALSE}
+
+data(scat)
+#set seed and create splitting index
+set.seed(3456)
+trainIndex <- createDataPartition(scat$Species, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+#the distribution of dependent variables
+Desc(scat$Species)[[1]][["freq"]]
+```
+
+```{r}
+#splitting
+
+scatTrain <- scat[ trainIndex,]
+scatTest  <- scat[-trainIndex,]
+
+Desc(scatTrain$Species)[[1]][["freq"]]
+
+```
+
+### based on predictors
+If we manage to get a unsupervised learning prediction, the maxDissim function is a splitting good way using a maximum dissimilarity approach. About the method:
+
+>Suppose there is a data set A with m samples and a larger data set B with n samples. We may want to create a sub–sample from B that is diverse when compared to A. To do this, for each sample in B, the function calculates the m dissimilarities between each point in A. The most dissimilar point in B is added to A and the process continues.
+
+In a short, sampling out A as the start set, and getting the final set against start set by largest distance.
+
+```{r echo=TRUE, warning=FALSE}
+
+data(cars)
+
+testing <- scale(cars[, c("Price", "Mileage")])
+set.seed(5)
+## A random sample of 5 data points
+startSet <- sample(1:dim(testing)[1], 5)
+samplePool <- testing[-startSet,]
+start <- testing[startSet,]
+newSamp <- maxDissim(start, samplePool, n = 20)
+```
+
+result of the splitting:
+
+```{r}
+plot(testing[-newSamp,], 
+          col = "darkgrey")
+points(start, pch = 16, cex = .7)
+     
+     for(i in seq(along = newSamp))
+          points(
+               samplePool[newSamp[i],1], 
+               samplePool[newSamp[i],2], 
+               pch = paste(i), col = "darkred")
+```
+
+More maxDissim methods, please check this [article](http://rismyhammer.com/ml/Pre-Processing.html)'s Splitting Based on Predictors part.
+
+
+### time serias data splitting
+
+`createTimeSlices()` is the sister function of `createDataPartition()` to handle time serias data. Three argument of the function is:
+
+- `initialWindow`: the initial number of consecutive values in each training set sample
+- `horizon`: The number of consecutive values in test set sample
+- `fixedWindow`: A logical: if FALSE, the training set always start at the first sample and the training set size will vary over data splits.
+
+The example of the function usage is also in this [articles](http://rismyhammer.com/ml/Pre-Processing.html)'s Time Series Data Splitting part.
+
+```{r}
+data(economics)
+# which is often used in the `trainControl()` set
+myTimeControl <- trainControl(method = "timeslice", initialWindow = 36, horizon = 12, fixedWindow = TRUE)
+
+plsFitTime <- train(unemploy ~ pce + pop + psavert, data = economics, method = "pls",
+                    preProc = c("center", "scale"), trControl = myTimeControl)
+
+```
 
 
 ## Preprocessing
@@ -88,11 +185,40 @@ By the way,as I said in foreword, this post would like more pay attention on the
 This part is based on the conclution of your data exploration. You need to consider what situation of your data that you need to deal with before starting build your model. According to the situation of the function facing to, preprocessing function of caret can be sorted as:
 
 
-category|function
+problem category|function
 ----------|--------
-categorical/dichotomous variables| dummyVars()
-unbalance| nearZeroVar()
+categorical/dichotomous variables| dummyVars(),data.table()
+unbalance| nearZeroVar(),preProcess(df,method = c("center", "scale"))
+missing value | preProcess(df,method = c("center", "scale")/"knnImpute")
+too much predictors| preProcess(df, method = "BoxCox"/"pca")
+class distance | classDist()
 
+
+### dummy variables
+
+There are two methods to deal with the categorical or dichotomous variables:
+
+```{r}
+
+data("Zoo")
+Zoo$animalNames <- rownames(Zoo)
+
+#categorical variable
+unique(Zoo$type)
+## recode the categorical variable as numeric
+value= unique(Zoo$type)
+zoo <- setDT(Zoo)[,type:=as.character(type)][.(type = value,to = 1:length(value)),on = "type",type :=i.to]
+unique(zoo$type)
+names(zoo)
+
+#dichotomous variable
+
+head(model.matrix(type ~ ., data = zoo[,c(1:4,17)]))
+
+dummies <- dummyVars(type ~ ., data = zoo[,c(1:4,17)])
+head(predict(dummies, newdata = zoo))
+
+```
 
 
 
