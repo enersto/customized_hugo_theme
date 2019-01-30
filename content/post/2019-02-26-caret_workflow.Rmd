@@ -64,17 +64,20 @@ Ps("preProcess()<br>nearZeroVar()<br>findCorrelation()<br>findLinearCombos()")
 D_Ss("createDataPartition()<br>createTimeSlices()")
 Ms("train()<br>trainControl()")
 M_Es("confusionMatrix()<br>resample()<br>postResample()")
+Finishs(fit the final model with<br> optimal parameter set)
 
 D_E --> D_S 
 D_S --> P  
 P --> M
-M --> M_E
+M --tuning or parameters <br> set changing--> M_E
+M_E -- "if largest performance value <br>or smallest mean squared error"--> Finish
 
 D_E --- D_Es
 P --- Ps
 D_S --- D_Ss
 M --- Ms
 M_E --- M_Es
+Finish --- Finishs
 
 classDef default fill:#ffffe6,stroke:#333,stroke-width:2px
 
@@ -83,6 +86,7 @@ style P stroke-width:4px,stroke-dasharray: 5, 5
 style D_S stroke-width:4px
 style M stroke-width:4px
 style M_E stroke-width:4px
+style Finish stroke-width:4px
 
 ', height =500, width =950
 )
@@ -318,6 +322,22 @@ high_cor_remove
 
 ## Basic Model Training
 
+The `train()` is the center of the whole model training(About the origin of the function, [there](http://www.jstatsoft.org/article/view/v028i05/v28i05.pdf) is an illastration). 
+
+Quick example show of the function `train()`
+
+
+The `train()` function consists of these arguments:
+
+x: a matrix or data frame of predictors. Currently, the function only accepts numeric values (i.e., no factors or character variables). In some cases, the model.matrix function may be needed to generate a data frame or matrix of purely numeric data
+y: a numeric or factor vector of outcomes. The function determines the type of problem (classification or regression) from the type of the response given in this argument.
+method: a character string specifying the type of model to be used. See Table 1 for the possible values.
+
+metric: a character string with values of "Accuracy", "Kappa", "RMSE" or "Rsquared". This value determines the objective function used to select the final model. For example, selecting "Kappa" makes the function select the tuning parameters with the largest value of the mean Kappa statistic computed from the held-out samples.
+trControl: takes a list of control parameters for the function. The type of resampling as well as the number of resampling iterations can be set using this list. The function trainControl can be used to compute default parameters. The default number of resampling iterations is 25, which may be too small to obtain accurate performance estimates in some cases.
+tuneLength: controls the size of the default grid of tuning parameters. For each model, train will select a grid of complexity parameters as candidate values. For the SVM model, the function will tune over C = 10−1,1,10. To expand the size of the default list, the tuneLength argument can be used. By selecting tuneLength = 5, values of C ranging from 0.1 to 1, 000 are evaluated.
+tuneGrid: can be used to define a specific grid of tuning parameters. See the example below.
+... : the three dots can be used to pass additional arguments to the functions listed in Table 1. For example, we have already centered and scaled the predictors, so the argument scaled = FALSE can be passed to the ksvm function to avoid duplication of the pre-processing.
 
 
 
