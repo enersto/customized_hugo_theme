@@ -2841,6 +2841,16 @@ $(document).ready(function () {
 </div>
 
 
+<pre class="r"><code>library(knitr)
+library(caret)
+library(DiagrammeR)#for the flowchart
+library(DescTools)# for summary of data
+library(proxy)#maxDissim
+library(mlbench)#data zoo
+library(data.table)
+library(fastDummies) #for dummy variables
+
+options(scipen=8)</code></pre>
 <div id="foreword" class="section level2">
 <h2>Foreword</h2>
 <p>This is a workflow about <a href="https://topepo.github.io/caret/">caret</a>, which is a creating predicted models collecting toolkit framework, integrating all activities related to model development from other R packages. Caret can be also treated as a tool to get started or get familiar with machine learning, especially in supervised and unsupervised learning part that is good at.</p>
@@ -2858,16 +2868,38 @@ $(document).ready(function () {
 <li>variable importance estimation</li>
 </ul>
 </blockquote>
-<p>Link to the crutial function in each part, all the part of caret workflow is:</p>
-<div id="htmlwidget-a0cdc6830df1f371ea48" style="width:950px;height:500px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a0cdc6830df1f371ea48">{"x":{"diagram":"\ngraph LR\nD_E[Data Exploration/Visualization]\nP[Preprocessing]\nD_S[Data Splitting]\nM[Modeling]\nM_E[Model Evaluation]\n\nD_Es(\"featureplot()<br>dotPlot()<br>lift()<br>plotClassProbs()\")\nPs(\"nearZeroVar()<br>findCorrelation()<br>findLinearCombos()<br>preprocess()\")\nD_Ss(\"createDataPartition()<br>createTimeSlices()\")\nMs(\"train()<br>trainControl()\")\nM_Es(\"confusionMatrix()<br>resample()<br>postResample()\")\n\nD_E --> D_S \nD_S --> P  \nP --> M\nM --> M_E\n\nD_E --- D_Es\nP --- Ps\nD_S --- D_Ss\nM --- Ms\nM_E --- M_Es\n\nclassDef default fill:#ffffe6,stroke:#333,stroke-width:2px\n\nstyle D_E stroke-width:4px\nstyle P stroke-width:4px,stroke-dasharray: 5, 5\nstyle D_S stroke-width:4px\nstyle M stroke-width:4px\nstyle M_E stroke-width:4px\n\n"},"evals":[],"jsHooks":[]}</script>
+<p>Link to the crucial function in each part, all the part of caret workflow is:</p>
+<div id="htmlwidget-0525ebd6628b72b5dff0" style="width:950px;height:500px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0525ebd6628b72b5dff0">{"x":{"diagram":"\ngraph LR\nD_E[Data Exploration/Visualization]\nP[Preprocessing]\nD_S[Data Splitting]\nM[Modeling]\nM_E[Model Evaluation]\n\nD_Es(\"featureplot()<br>dotPlot()<br>lift()<br>plotClassProbs()\")\nPs(\"nearZeroVar()<br>findCorrelation()<br>findLinearCombos()<br>preprocess()\")\nD_Ss(\"createDataPartition()<br>createTimeSlices()\")\nMs(\"train()<br>trainControl()\")\nM_Es(\"confusionMatrix()<br>resample()<br>postResample()\")\n\nD_E --> D_S \nD_S --> P  \nP --> M\nM --> M_E\n\nD_E --- D_Es\nP --- Ps\nD_S --- D_Ss\nM --- Ms\nM_E --- M_Es\n\nclassDef default fill:#ffffe6,stroke:#333,stroke-width:2px\n\nstyle D_E stroke-width:4px\nstyle P stroke-width:4px,stroke-dasharray: 5, 5\nstyle D_S stroke-width:4px\nstyle M stroke-width:4px\nstyle M_E stroke-width:4px\n\n"},"evals":[],"jsHooks":[]}</script>
 <p>By the way,as I said in foreword, this post would like more pay attention on the process of caret using. The part of data exploration is deeply dependent on the familiarity about the data you get to deal with, and can be replaced by another professional packages. If you are more interesting on the visualization tools of caret, just jump to this <a href="http://topepo.github.io/caret/visualizations.html">chapter</a>.</p>
 </div>
 <div id="data-splitting" class="section level2">
 <h2>Data Splitting</h2>
 <p>More specific matter of data splitting, you can find on the <a href="http://topepo.github.io/caret/data-splitting.html">document</a> and the this article <a href="http://rismyhammer.com/ml/Pre-Processing.html">Preprocessign Data with caret</a></p>
+<table>
+<thead>
+<tr class="header">
+<th>situation</th>
+<th>splitting mathods</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>supervised learning</td>
+<td><code>createDataPartition()</code></td>
+</tr>
+<tr class="even">
+<td>unsupervised learning</td>
+<td><code>maxDissim()</code></td>
+</tr>
+<tr class="odd">
+<td>time serias</td>
+<td><code>trainControl(method = &quot;timeslice&quot;...)</code></td>
+</tr>
+</tbody>
+</table>
 <div id="based-on-outcome" class="section level3">
-<h3>based on outcome</h3>
+<h3>Based on Outcome</h3>
 <p><code>createDataPartition()</code> is the splitting function that data set has clear dependent variables, which means it’s fitted for supervised learning. <code>createDataPartition()</code>is the one of the most useful feature function of caret package, which makes data splitting to be more orderly and approachable.</p>
 <p>This method can generate balant data split. When the dependent variables are factor variables, the splitting will based on the distribution of factors.</p>
 <pre class="r"><code>data(scat)
@@ -2877,24 +2909,84 @@ trainIndex &lt;- createDataPartition(scat$Species, p = .8,
                                   list = FALSE, 
                                   times = 1)
 #the distribution of dependent variables
-Desc(scat$Species)[[1]][[&quot;freq&quot;]]</code></pre>
-<pre><code>##       level  freq   perc  cumfreq  cumperc
-## 1    bobcat    57  51.8%       57    51.8%
-## 2    coyote    28  25.5%       85    77.3%
-## 3  gray_fox    25  22.7%      110   100.0%</code></pre>
+knitr::kable(Desc(scat$Species)[[1]][[&quot;freq&quot;]]) </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">level</th>
+<th align="right">freq</th>
+<th align="right">perc</th>
+<th align="right">cumfreq</th>
+<th align="right">cumperc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">bobcat</td>
+<td align="right">57</td>
+<td align="right">0.5181818</td>
+<td align="right">57</td>
+<td align="right">0.5181818</td>
+</tr>
+<tr class="even">
+<td align="left">coyote</td>
+<td align="right">28</td>
+<td align="right">0.2545455</td>
+<td align="right">85</td>
+<td align="right">0.7727273</td>
+</tr>
+<tr class="odd">
+<td align="left">gray_fox</td>
+<td align="right">25</td>
+<td align="right">0.2272727</td>
+<td align="right">110</td>
+<td align="right">1.0000000</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>#splitting
 
 scatTrain &lt;- scat[ trainIndex,]
 scatTest  &lt;- scat[-trainIndex,]
 
-Desc(scatTrain$Species)[[1]][[&quot;freq&quot;]]</code></pre>
-<pre><code>##       level  freq   perc  cumfreq  cumperc
-## 1    bobcat    46  51.7%       46    51.7%
-## 2    coyote    23  25.8%       69    77.5%
-## 3  gray_fox    20  22.5%       89   100.0%</code></pre>
+knitr::kable(Desc(scatTrain$Species)[[1]][[&quot;freq&quot;]])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">level</th>
+<th align="right">freq</th>
+<th align="right">perc</th>
+<th align="right">cumfreq</th>
+<th align="right">cumperc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">bobcat</td>
+<td align="right">46</td>
+<td align="right">0.5168539</td>
+<td align="right">46</td>
+<td align="right">0.5168539</td>
+</tr>
+<tr class="even">
+<td align="left">coyote</td>
+<td align="right">23</td>
+<td align="right">0.2584270</td>
+<td align="right">69</td>
+<td align="right">0.7752809</td>
+</tr>
+<tr class="odd">
+<td align="left">gray_fox</td>
+<td align="right">20</td>
+<td align="right">0.2247191</td>
+<td align="right">89</td>
+<td align="right">1.0000000</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="based-on-predictors" class="section level3">
-<h3>based on predictors</h3>
+<h3>Based on Predictors</h3>
 <p>If we manage to get a unsupervised learning prediction, the maxDissim function is a splitting good way using a maximum dissimilarity approach. About the method:</p>
 <blockquote>
 <p>Suppose there is a data set A with m samples and a larger data set B with n samples. We may want to create a sub–sample from B that is diverse when compared to A. To do this, for each sample in B, the function calculates the m dissimilarities between each point in A. The most dissimilar point in B is added to A and the process continues.</p>
@@ -2908,9 +3000,9 @@ set.seed(5)
 startSet &lt;- sample(1:dim(testing)[1], 5)
 samplePool &lt;- testing[-startSet,]
 start &lt;- testing[startSet,]
-newSamp &lt;- maxDissim(start, samplePool, n = 20)
-
-plot(testing[-newSamp,], 
+newSamp &lt;- maxDissim(start, samplePool, n = 20)</code></pre>
+<p>result of the splitting:</p>
+<pre class="r"><code>plot(testing[-newSamp,], 
           col = &quot;darkgrey&quot;)
 points(start, pch = 16, cex = .7)
      
@@ -2923,7 +3015,7 @@ points(start, pch = 16, cex = .7)
 <p>More maxDissim methods, please check this <a href="http://rismyhammer.com/ml/Pre-Processing.html">article</a>’s Splitting Based on Predictors part.</p>
 </div>
 <div id="time-serias-data-splitting" class="section level3">
-<h3>time serias data splitting</h3>
+<h3>Time Serias Data Splitting</h3>
 <p><code>createTimeSlices()</code> is the sister function of <code>createDataPartition()</code> to handle time serias data. Three argument of the function is:</p>
 <ul>
 <li><code>initialWindow</code>: the initial number of consecutive values in each training set sample</li>
@@ -2945,33 +3037,264 @@ plsFitTime &lt;- train(unemploy ~ pce + pop + psavert, data = economics, method 
 <table>
 <thead>
 <tr class="header">
-<th>problem category</th>
+<th>situation category</th>
 <th>function</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>categorical/dichotomous variables</td>
-<td>dummyVars(),data.table()</td>
+<td><code>dummyVars()</code>,<code>data.table()</code></td>
 </tr>
 <tr class="even">
 <td>unbalance</td>
-<td>nearZeroVar(),preProcess(df,method = c(“center”, “scale”))</td>
+<td><code>nearZeroVar()</code>,<code>preProcess(df,method = c(&quot;center&quot;, &quot;scale&quot;))</code></td>
 </tr>
 <tr class="odd">
 <td>missing value</td>
-<td>preProcess(df,method = c(“center”, “scale”)/“knnImpute”)</td>
+<td><code>preProcess(df,method = c(&quot;center&quot;, &quot;scale&quot;)/&quot;knnImpute&quot;)</code></td>
 </tr>
 <tr class="even">
 <td>too much predictors</td>
-<td>preProcess(df, method = “BoxCox”/“pca”)</td>
+<td><code>preProcess(df, method = &quot;BoxCox&quot;/&quot;pca&quot;)</code></td>
 </tr>
 <tr class="odd">
 <td>class distance</td>
-<td>classDist()</td>
+<td><code>classDist()</code></td>
 </tr>
 </tbody>
 </table>
+<p>As you can see, there are a lot of situations that might causes model prediction fail, and there are more solution to fix the situations you face. No matter how unique you are getting the data set problems, <strong>stable, numerical, centralized and no missing</strong> data set may lead a better result of model.</p>
+<div id="preprocess-function-set" class="section level3">
+<h3><code>preProcess()</code> Function Set</h3>
+<p>Package caret provised a useful function,<code>preProcess()</code>,to handle the preprocessing’s situations.</p>
+<p>Function preProcess contain two parts: <code>preProcess()</code>procession and <code>predict.preProcess()</code>procession. <code>preProcess()</code>estimates the required parameters for each operation and <code>predict.preProcess()</code> is used to apply them to specific data sets. This function can also be interfaces when calling the train function.</p>
+<p><code>preProcValues &lt;- preProcess(dataToHandle, method = c(),...other Arguments)</code> <code>dataTransformed &lt;- predict(preProcValues, dataToHandle)</code></p>
+<p>Specific example:</p>
+<pre class="r"><code>data(oil)
+
+inTrain &lt;- sample(seq(along = fattyAcids), length(fattyAcids)*0.7)
+
+training &lt;- fattyAcids[inTrain,]
+str(training)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    4 obs. of  7 variables:
+##  $ Palmitic  : num  9.8 11.5 12.2 9.7
+##  $ Stearic   : num  4.2 5.2 5 5.2
+##  $ Oleic     : num  43 35 31.1 31
+##  $ Linoleic  : num  39.2 47.2 50.5 52.7
+##  $ Linolenic : num  2.4 0.2 0.3 0.4
+##  $ Eicosanoic: num  0.4 0.4 0.4 0.4
+##  $ Eicosenoic: num  0.5 0.1 0.1 0.1</code></pre>
+<pre class="r"><code>preProcValues &lt;- preProcess(training, method = c(&quot;center&quot;, &quot;scale&quot;))
+
+trainTransformed &lt;- predict(preProcValues, training)
+str(trainTransformed)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    4 obs. of  7 variables:
+##  $ Palmitic  : num  -0.802 0.562 1.123 -0.883
+##  $ Stearic   : num  -1.47 0.63 0.21 0.63
+##  $ Oleic     : num  1.41565 -0.00444 -0.69673 -0.71448
+##  $ Linoleic  : num  -1.3862 -0.0338 0.524 0.8959
+##  $ Linolenic : num  1.495 -0.593 -0.498 -0.404
+##  $ Eicosanoic: num  0 0 0 0
+##  $ Eicosenoic: num  1.5 -0.5 -0.5 -0.5</code></pre>
+<p>The list of function preProcess methods:</p>
+<ul>
+<li><strong>range</strong>: Normalize values so it ranges between 0 and 1</li>
+<li><strong>center</strong>: Subtract Mean</li>
+<li><strong>scale</strong>: Divide by standard deviation</li>
+<li><strong>BoxCox</strong>: Remove skewness leading to normality. Values must be &gt; 0</li>
+<li><strong>YeoJohnson</strong>: Like BoxCox, but works for negative values.</li>
+<li><strong>expoTrans</strong>: Exponential transformation, works for negative values.</li>
+<li><strong>pca</strong>: Replace with principal components</li>
+<li><strong>ica</strong>: Replace with independent components</li>
+<li><strong>spatialSign</strong>: Project the data to a unit circle</li>
+</ul>
+<p>More information about how function preProcess is used, you can find in <code>??preProcess</code> and this <a href="http://rismyhammer.com/ml/Pre-Processing.html#split-data">article</a></p>
+</div>
+<div id="other-preprocessing-function" class="section level3">
+<h3>Other preprocessing function</h3>
+<div id="turning-numerical" class="section level4">
+<h4>Turning Numerical</h4>
+<p>There are two methods to deal with the categorical or dichotomous variables:</p>
+<div id="recode-the-categorical-variable-as-numeric" class="section level5">
+<h5>Recode the Categorical Variable as Numeric</h5>
+<pre class="r"><code>data(&quot;Zoo&quot;)
+Zoo$animalNames &lt;- rownames(Zoo)
+
+#categorical variable
+unique(Zoo$type)</code></pre>
+<pre><code>## [1] mammal        fish          bird          mollusc.et.al insect       
+## [6] amphibian     reptile      
+## Levels: mammal bird reptile fish amphibian insect mollusc.et.al</code></pre>
+<pre class="r"><code>## recode the categorical variable as numeric
+value= unique(Zoo$type)
+zoo &lt;- setDT(Zoo)[,type:=as.character(type)][.(type = value,to = 1:length(value)),on = &quot;type&quot;,type :=i.to]
+unique(zoo$type)</code></pre>
+<pre><code>## [1] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; &quot;5&quot; &quot;6&quot; &quot;7&quot;</code></pre>
+</div>
+<div id="dummyvars-in-caret" class="section level5">
+<h5><code>dummyVars()</code> in Caret</h5>
+<pre class="r"><code>#dichotomous variable
+## dummyVars() in caret
+head(model.matrix(type ~ ., data = zoo[,c(1:4,17)]))</code></pre>
+<pre><code>##   (Intercept) hairTRUE feathersTRUE eggsTRUE milkTRUE
+## 1           1        1            0        0        1
+## 2           1        1            0        0        1
+## 3           1        0            0        1        0
+## 4           1        1            0        0        1
+## 5           1        1            0        0        1
+## 6           1        1            0        0        1</code></pre>
+<pre class="r"><code>dummies &lt;- dummyVars(type ~ ., data = zoo[,c(1:4,17)])
+head(predict(dummies, newdata = zoo))</code></pre>
+<pre><code>##   hairFALSE hairTRUE feathersFALSE feathersTRUE eggsFALSE eggsTRUE
+## 1         0        1             1            0         1        0
+## 2         0        1             1            0         1        0
+## 3         1        0             1            0         0        1
+## 4         0        1             1            0         1        0
+## 5         0        1             1            0         1        0
+## 6         0        1             1            0         1        0
+##   milkFALSE milkTRUE
+## 1         0        1
+## 2         0        1
+## 3         1        0
+## 4         0        1
+## 5         0        1
+## 6         0        1</code></pre>
+</div>
+<div id="dummy_cols-in-fastdummies" class="section level5">
+<h5><code>dummy_cols()</code> in FastDummies</h5>
+<p>About the function usage, you find more info in the <a href="https://cran.r-project.org/web/packages/fastDummies/vignettes/making-dummy-variables.html">article</a>.</p>
+<pre class="r"><code>## dummyVars() in caret
+data(&quot;Zoo&quot;)
+Zoo$animalNames &lt;- rownames(Zoo)
+
+zooDummy &lt;- dummy_cols(Zoo[,c(1:4,17)])
+knitr::kable(head(zooDummy)) </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">hair</th>
+<th align="left">feathers</th>
+<th align="left">eggs</th>
+<th align="left">milk</th>
+<th align="left">type</th>
+<th align="right">type_mammal</th>
+<th align="right">type_fish</th>
+<th align="right">type_bird</th>
+<th align="right">type_mollusc.et.al</th>
+<th align="right">type_insect</th>
+<th align="right">type_amphibian</th>
+<th align="right">type_reptile</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">mammal</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">mammal</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">fish</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">mammal</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">mammal</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">mammal</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="removing-correlated" class="section level4">
+<h4>Removing Correlated</h4>
+<p><code>findCorrelation()</code> is the tool to find the independences in model, that are be correlated with each other. Based on the result, you can remove or reduce the level of correlation between the independences.</p>
+<p>check the correlated situation of the independences:</p>
+<pre class="r"><code>data(Zoo)
+descrCor &lt;- cor(Zoo[,-17])
+summary(descrCor[upper.tri(descrCor)])</code></pre>
+<pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+## -0.938848 -0.221702  0.019510 -0.002832  0.208124  0.878503</code></pre>
+<p>set a cutoff line and find the independences above:</p>
+<pre class="r"><code>CUTOFF &lt;- 0.85 
+cor_matrix &lt;- cor(Zoo[,-17]) 
+cor_high &lt;- findCorrelation(cor_matrix, CUTOFF)
+high_cor_remove &lt;- row.names(cor_matrix)[cor_high] 
+high_cor_remove</code></pre>
+<pre><code>## [1] &quot;milk&quot;</code></pre>
+<pre class="r"><code>#removingCorZoo &lt;- Zoo[,-high_cor_remove]</code></pre>
+</div>
+</div>
 </div>
 
 

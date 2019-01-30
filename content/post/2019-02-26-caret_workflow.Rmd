@@ -16,12 +16,14 @@ knitr::opts_chunk$set(
 ```
 
 ```{r message=FALSE, warning=FALSE}
+library(knitr)
 library(caret)
 library(DiagrammeR)#for the flowchart
 library(DescTools)# for summary of data
 library(proxy)#maxDissim
 library(mlbench)#data zoo
 library(data.table)
+library(fastDummies) #for dummy variables
 
 options(scipen=8)
 
@@ -44,7 +46,7 @@ All tools in caret can be classified in the [ducument](https://topepo.github.io/
 > - model tuning using resampling
 > - variable importance estimation
 
-Link to the crutial function in each part, all the part of caret workflow is:
+Link to the crucial function in each part, all the part of caret workflow is:
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -58,7 +60,7 @@ M[Modeling]
 M_E[Model Evaluation]
 
 D_Es("featureplot()<br>dotPlot()<br>lift()<br>plotClassProbs()")
-Ps("nearZeroVar()<br>findCorrelation()<br>findLinearCombos()<br>preprocess()")
+Ps("preProcess()<br>nearZeroVar()<br>findCorrelation()<br>findLinearCombos()")
 D_Ss("createDataPartition()<br>createTimeSlices()")
 Ms("train()<br>trainControl()")
 M_Es("confusionMatrix()<br>resample()<br>postResample()")
@@ -94,7 +96,14 @@ By the way,as I said in foreword, this post would like more pay attention on the
 
 More specific matter of data splitting, you can find on the [document](http://topepo.github.io/caret/data-splitting.html) and the this article [Preprocessign Data with caret](http://rismyhammer.com/ml/Pre-Processing.html)
 
-### based on outcome
+situation | splitting mathods
+----------|------------------
+supervised learning|`createDataPartition()`
+unsupervised learning | `maxDissim()`
+time serias | `trainControl(method = "timeslice"...)`
+
+
+### Based on Outcome
 
 `createDataPartition()` is the splitting function that data set has clear dependent variables, which means it's fitted for supervised learning. `createDataPartition()`is the one of the most useful feature function of caret package, which makes data splitting to be more orderly and approachable.
 
@@ -109,7 +118,7 @@ trainIndex <- createDataPartition(scat$Species, p = .8,
                                   list = FALSE, 
                                   times = 1)
 #the distribution of dependent variables
-Desc(scat$Species)[[1]][["freq"]]
+knitr::kable(Desc(scat$Species)[[1]][["freq"]]) 
 ```
 
 ```{r}
@@ -118,11 +127,11 @@ Desc(scat$Species)[[1]][["freq"]]
 scatTrain <- scat[ trainIndex,]
 scatTest  <- scat[-trainIndex,]
 
-Desc(scatTrain$Species)[[1]][["freq"]]
+knitr::kable(Desc(scatTrain$Species)[[1]][["freq"]])
 
 ```
 
-### based on predictors
+### Based on Predictors
 If we manage to get a unsupervised learning prediction, the maxDissim function is a splitting good way using a maximum dissimilarity approach. About the method:
 
 >Suppose there is a data set A with m samples and a larger data set B with n samples. We may want to create a sub–sample from B that is diverse when compared to A. To do this, for each sample in B, the function calculates the m dissimilarities between each point in A. The most dissimilar point in B is added to A and the process continues.
@@ -159,7 +168,7 @@ points(start, pch = 16, cex = .7)
 More maxDissim methods, please check this [article](http://rismyhammer.com/ml/Pre-Processing.html)'s Splitting Based on Predictors part.
 
 
-### time serias data splitting
+### Time Serias Data Splitting
 
 `createTimeSlices()` is the sister function of `createDataPartition()` to handle time serias data. Three argument of the function is:
 
@@ -185,18 +194,66 @@ plsFitTime <- train(unemploy ~ pce + pop + psavert, data = economics, method = "
 This part is based on the conclution of your data exploration. You need to consider what situation of your data that you need to deal with before starting build your model. According to the situation of the function facing to, preprocessing function of caret can be sorted as:
 
 
-problem category|function
+situation category|function
 ----------|--------
-categorical/dichotomous variables| dummyVars(),data.table()
-unbalance| nearZeroVar(),preProcess(df,method = c("center", "scale"))
-missing value | preProcess(df,method = c("center", "scale")/"knnImpute")
-too much predictors| preProcess(df, method = "BoxCox"/"pca")
-class distance | classDist()
+categorical/dichotomous variables| `dummyVars()`,`data.table()`
+unbalance| `nearZeroVar()`,`preProcess(df,method = c("center", "scale"))`
+missing value | `preProcess(df,method = c("center", "scale")/"knnImpute")`
+too much predictors| `preProcess(df, method = "BoxCox"/"pca")`
+class distance | `classDist()`
+
+As you can see, there are a lot of situations that might causes model prediction fail, and there are more solution to fix the situations you face. No matter how unique you are getting the data set problems, **stable, numerical, centralized and no missing** data set may lead a better result of model. 
+
+### `preProcess()` Function Set
+
+Package caret provised a useful function,`preProcess()`,to handle the preprocessing's situations. 
+
+Function preProcess contain two parts: `preProcess()`procession and `predict.preProcess()`procession. `preProcess()`estimates the required parameters for each operation and `predict.preProcess()` is used to apply them to specific data sets. This function can also be interfaces when calling the train function.
+
+`preProcValues <- preProcess(dataToHandle, method = c(),...other Arguments)`
+`dataTransformed <- predict(preProcValues, dataToHandle)`
+
+Specific example:
+
+```{r}
+data(oil)
+
+inTrain <- sample(seq(along = fattyAcids), length(fattyAcids)*0.7)
+
+training <- fattyAcids[inTrain,]
+str(training)
+
+preProcValues <- preProcess(training, method = c("center", "scale"))
+
+trainTransformed <- predict(preProcValues, training)
+str(trainTransformed)
+
+```
 
 
-### dummy variables
+The list of function preProcess methods:
+
+- **range**: Normalize values so it ranges between 0 and 1
+- **center**: Subtract Mean
+- **scale**: Divide by standard deviation
+- **BoxCox**: Remove skewness leading to normality. Values must be > 0
+- **YeoJohnson**: Like BoxCox, but works for negative values.
+- **expoTrans**: Exponential transformation, works for negative values.
+- **pca**: Replace with principal components
+- **ica**: Replace with independent components
+- **spatialSign**: Project the data to a unit circle
+
+More information about how function preProcess is used, you can find in `??preProcess` and this [article](http://rismyhammer.com/ml/Pre-Processing.html#split-data)
+
+
+### Other preprocessing function
+
+#### Turning Numerical 
 
 There are two methods to deal with the categorical or dichotomous variables:
+
+
+##### Recode the Categorical Variable as Numeric
 
 ```{r}
 
@@ -209,21 +266,57 @@ unique(Zoo$type)
 value= unique(Zoo$type)
 zoo <- setDT(Zoo)[,type:=as.character(type)][.(type = value,to = 1:length(value)),on = "type",type :=i.to]
 unique(zoo$type)
-names(zoo)
-
-#dichotomous variable
-
-head(model.matrix(type ~ ., data = zoo[,c(1:4,17)]))
-
-dummies <- dummyVars(type ~ ., data = zoo[,c(1:4,17)])
-head(predict(dummies, newdata = zoo))
 
 ```
 
+##### `dummyVars()` in Caret
 
+```{r}
+#dichotomous variable
+## dummyVars() in caret
+head(model.matrix(type ~ ., data = zoo[,c(1:4,17)]),4)
 
+dummies <- dummyVars(type ~ ., data = zoo[,c(1:4,17)])
+head(predict(dummies, newdata = zoo),4)
+```
 
+##### `dummy_cols()` in FastDummies
 
+About the function usage, you find more info in the [article](https://cran.r-project.org/web/packages/fastDummies/vignettes/making-dummy-variables.html).
+
+```{r}
+## dummyVars() in caret
+data("Zoo")
+Zoo$animalNames <- rownames(Zoo)
+
+zooDummy <- dummy_cols(Zoo[,c(1:4,17)])
+head(zooDummy,4)
+```
+
+#### Removing Correlated 
+
+`findCorrelation()` is the tool to find the independences in model, that are be correlated with each other. Based on the result, you can remove or reduce the level of correlation between the independences.
+
+check the correlated situation of the independences:
+
+```{r}
+data(Zoo)
+descrCor <- cor(Zoo[,-17])
+summary(descrCor[upper.tri(descrCor)])
+```
+
+set a cutoff line and find the independences above:
+
+```{r}
+CUTOFF <- 0.85 
+cor_matrix <- cor(Zoo[,-17]) 
+cor_high <- findCorrelation(cor_matrix, CUTOFF)
+high_cor_remove <- row.names(cor_matrix)[cor_high] 
+high_cor_remove
+#removingCorZoo <- Zoo[,-high_cor_remove]
+```
+
+## Basic Model Training
 
 
 
