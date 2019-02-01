@@ -52,7 +52,7 @@
   <h1> Workflow with Caret </h1>
 
   <div id=sub-header>
-    pauke · 2019/01/31 · 3009 words ·  15 minute(s) read · 
+    pauke · 2019/01/31 · 3079 words ·  15 minute(s) read · 
   <i data-feather="tag"></i>
   
   
@@ -75,6 +75,47 @@
 <script src="../../rmarkdown-libs/chromatography/chromatography.js"></script>
 <script src="../../rmarkdown-libs/DiagrammeR-binding/DiagrammeR.js"></script>
 
+<div id="TOC">
+<ul>
+<li><a href="#foreword">Foreword</a></li>
+<li><a href="#structure">Structure</a></li>
+<li><a href="#data-splitting">Data Splitting</a><ul>
+<li><a href="#based-on-outcome">Based on Outcome</a></li>
+<li><a href="#based-on-predictors">Based on Predictors</a></li>
+<li><a href="#time-serias-data-splitting">Time Serias Data Splitting</a></li>
+</ul></li>
+<li><a href="#preprocessing">Preprocessing</a><ul>
+<li><a href="#preprocess-function-set"><code>preProcess()</code> Function Set</a></li>
+<li><a href="#other-preprocessing-function">Other preprocessing function</a><ul>
+<li><a href="#turning-numerical">Turning Numerical</a><ul>
+<li><a href="#recode-the-categorical-variable-as-numeric">Recode the Categorical Variable as Numeric</a></li>
+<li><a href="#dummyvars-in-caret"><code>dummyVars()</code> in Caret</a></li>
+<li><a href="#dummy_cols-in-fastdummies"><code>dummy_cols()</code> in FastDummies</a></li>
+</ul></li>
+<li><a href="#removing-correlated">Removing Correlated</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#basic-model-training">Basic Model Training</a><ul>
+<li><a href="#quick-example">Quick example</a></li>
+<li><a href="#backbone-of-the-model">Backbone of the model</a></li>
+<li><a href="#subside-of-model-train">Subside of Model Train</a><ul>
+<li><a href="#resampling-options">Resampling Options</a></li>
+<li><a href="#performance-metrics">Performance Metrics</a></li>
+<li><a href="#grid-search">Grid Search</a></li>
+<li><a href="#subsampling">Subsampling</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#after-trainging">After Trainging</a><ul>
+<li><a href="#quick-example-1">Quick example</a></li>
+<li><a href="#variable-importance">Variable Importance</a></li>
+<li><a href="#measure-perfomance">Measure Perfomance</a><ul>
+<li><a href="#regression">Regression</a></li>
+<li><a href="#predicted-classes">Predicted Classes</a></li>
+<li><a href="#class-probabilities">Class Probabilities</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
 
 <p>All the packages needed in here:</p>
 <pre class="r"><code>library(knitr)

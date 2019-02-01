@@ -7,6 +7,10 @@ categories:
   - R
   - 汉语
 tags: ["time_series","随机数"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 5
 ---
 
 ```{r setup, include=FALSE}

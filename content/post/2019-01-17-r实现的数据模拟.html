@@ -7,9 +7,32 @@ categories:
   - R
   - 汉语
 tags: ["time_series","随机数"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 5
 ---
 
 
+<div id="TOC">
+<ul>
+<li><a>数据模拟</a><ul>
+<li><a>促销与销量数据模拟</a></li>
+<li><a>交易和满意度数据模拟</a><ul>
+<li><a>设定观察数量</a></li>
+<li><a>销量数据模拟</a></li>
+<li><a>满意度数据模拟</a></li>
+</ul></li>
+<li><a>时间序列数据模拟</a><ul>
+<li><a href="#-random-walk-process">随机游走进程 Random Walk process模拟</a></li>
+<li><a href="#-maq">移动平均 MA(q)模拟</a></li>
+<li><a href="#ar1">AR(1)模拟</a></li>
+<li><a href="#arma11-process-">ARMA(1,1) process 模拟</a></li>
+</ul></li>
+<li><a>总结</a></li>
+</ul></li>
+</ul>
+</div>
 
 <div class="section level2">
 <h2>数据模拟</h2>
@@ -141,9 +164,9 @@ qry$distance_to_store &lt;- exp(rnorm(n = n.qry, mean = 0.2, sd = 1.5))#确保�
 <pre class="r"><code>qry$online_visit &lt;- rnbinom(n.qry, 0.4, mu = 10 +ifelse(qry$email == &quot;ja&quot;,10,0)
                             -0.6*(qry$age- median(qry$age))) #网店访问次数，该变量符合负二项分布，我们设定留了邮箱的比没留的高10次，通过ifelse根据邮箱是否有取值；同时，也设定年轻用户访问频率更高，设定该用户年龄和中位数的差值来区别</code></pre>
 <pre><code>## Warning in rnbinom(n.qry, 0.4, mu = 10 + ifelse(qry$email == &quot;ja&quot;, 10, 0)
-## - : NAs produced</code></pre>
+## - : 产生了NA</code></pre>
 <pre class="r"><code>qry$online_trans &lt;- rbinom(n.qry,size = qry$online_visit, prob = 0.4)#交易次数，设定为访问数量的40%</code></pre>
-<pre><code>## Warning in rbinom(n.qry, size = qry$online_visit, prob = 0.4): NAs produced</code></pre>
+<pre><code>## Warning in rbinom(n.qry, size = qry$online_visit, prob = 0.4): 产生了NA</code></pre>
 <pre class="r"><code>qry$online_spend &lt;- exp(rnorm(n.qry,mean = 10, sd = 0.5)) * qry$online_trans # 以rnorm生产单词消费金额，并获得总花费。
 
 qry$store_trans &lt;- rnbinom(n.qry, size = 5, mu = 3/sqrt(qry$distance_to_store))
@@ -173,7 +196,7 @@ summary(stsf)</code></pre>
 ##  Max.   :5.000   Max.   :5.000</code></pre>
 <pre class="r"><code>### 针对可能存在的问卷数据无回应而缺失的情况，模拟无回应问卷
 no_response &lt;- as.logical(rbinom(n.qry, size = 1, prob = qry$age/100)) # 假设年龄越大，回应问卷可能性越低</code></pre>
-<pre><code>## Warning in rbinom(n.qry, size = 1, prob = qry$age/100): NAs produced</code></pre>
+<pre><code>## Warning in rbinom(n.qry, size = 1, prob = qry$age/100): 产生了NA</code></pre>
 <pre class="r"><code>stsf[no_response] &lt;- NA
 
 
@@ -201,10 +224,10 @@ for (i in 2:length(Z)){
 
 # 作图
 ts.plot(X, main = &quot;Random walk process&quot;)</code></pre>
-<p><img src="/post/2019-01-17-r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="/post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code># 随机游走的差值
 ts.plot(diff(X))</code></pre>
-<p><img src="/post/2019-01-17-r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<p><img src="/post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
 </div>
 <div id="-maq" class="section level4">
 <h4>移动平均 MA(q)模拟</h4>
@@ -219,7 +242,7 @@ for (i in 2:length(Z)) {
 
 # 作图
 ts.plot(X, main = &quot;Moving Average or order 1 process&quot;)</code></pre>
-<p><img src="/post/2019-01-17-r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="/post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="ar1" class="section level4">
 <h4>AR(1)模拟</h4>
@@ -239,7 +262,7 @@ for (i in 2:length(Z)) {
 
 # 作图
 ts.plot(X)</code></pre>
-<p><img src="/post/2019-01-17-r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="arma11-process-" class="section level4">
 <h4>ARMA(1,1) process 模拟</h4>
@@ -254,7 +277,7 @@ for (i in 2:length(Z)) {
 
 # 进程作图
 ts.plot(X, main = &quot;ARMA(1,1) process&quot;)</code></pre>
-<p><img src="/post/2019-01-17-r%E5%AE%9E%E7%8E%B0%E7%9A%84%E6%95%B0%E6%8D%AE%E6%A8%A1%E6%8B%9F_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="/post/2019-01-17-r实现的数据模拟_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 <div class="section level3">

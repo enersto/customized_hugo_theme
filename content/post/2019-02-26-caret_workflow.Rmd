@@ -6,18 +6,17 @@ categories:
   - R
   - english
 tags: ["caret","machine learning"]
-output: 
-  html_document:
-  toc: true
-  toc_float: true
-  toc_depth: 6
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 5
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 	echo = TRUE,
 	message = FALSE,
-	warning = FALSE
+	warning =FALSE
 )
 ```
 
