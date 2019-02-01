@@ -21,6 +21,15 @@
     </item>
     
     <item>
+      <title>Caret</title>
+      <link>/tags/caret/</link>
+      <pubDate>Thu, 31 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/caret/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Data.table</title>
       <link>/tags/data.table/</link>
       <pubDate>Mon, 29 Jan 2018 00:00:00 +0000</pubDate>
@@ -53,6 +62,15 @@
       <pubDate>Fri, 18 Jan 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/hugo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Machine Learning</title>
+      <link>/tags/machine-learning/</link>
+      <pubDate>Thu, 31 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/machine-learning/</guid>
       <description></description>
     </item>
     

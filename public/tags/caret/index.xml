@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Caret on IFF自留地</title>
+    <link>/tags/caret/</link>
+    <description>Recent content in Caret on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 31 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/caret/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Workflow with Caret</title>
+      <link>/post/2019-02-26-caret_workflow/</link>
+      <pubDate>Thu, 31 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2019-02-26-caret_workflow/</guid>
+      <description>All the packages needed in here:
+library(knitr)library(caret)library(DiagrammeR)#for the flowchartlibrary(DescTools)# for summary of datalibrary(proxy)#maxDissimlibrary(mlbench)#data zoolibrary(data.table)library(fastDummies) #for dummy variablesoptions(scipen=8)ForewordThis is a workflow about caret, which is a creating predicted models collecting toolkit framework, integrating all activities related to model development from other R packages. Caret can be also treated as a tool to get started or get familiar with machine learning, especially in supervised and unsupervised learning part that is good at.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  
+
+  <link rel="icon" type="image/png" href="../../favicon.png">
+
+  <title>
+    
+    
+     Workflow with Caret 
+    
+    &lt;script src="https://identity.netlify.com/v1/netlify-identity-widget.js">&lt;/script>
+  </title>
+  <link rel="canonical" href="../../post/2019-02-26-caret_workflow/">
+
+  <link rel="stylesheet" href="../../css/fonts.css" />
+  <link rel="stylesheet" href="../../css/style.css" />
+
+  <link rel="stylesheet" href="../../css/tomorrow.css" rel="stylesheet" id="theme-stylesheet">
+  <script src="../../js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  
+</head>
+
+<body>
+<section id=nav>
+  <h1><a href="../../">IFF自留地</a></h1>
+  <h3><a href="../../">Initiative, Freiheit, Fortschritt</a></h3>
+  <ul>
+    
+    <li><a href="../../">Home</a></li>
+    
+    <li><a href="../../categories/">Categories</a></li>
+    
+    <li><a href="../../tags/">Tags</a></li>
+    
+    <li><a href="../../about/">About</a></li>
+    
+  </ul>
+</section>
+
+
+<section id=content>
+  <h1> Workflow with Caret </h1>
+
+  <div id=sub-header>
+    pauke · 2019/01/31 · 3009 words ·  15 minute(s) read · 
+  <i data-feather="tag"></i>
+  
+  
+  <a class="btn btn-sm btn-outline-dark tag-btn" href="../../tags/caret">caret</a>
+  
+  
+  <a class="btn btn-sm btn-outline-dark tag-btn" href="../../tags/machine-learning">machine learning</a>
+  
+
+  </div>
+
+  <div class="entry-content">
+    
+<script src="../../rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="../../rmarkdown-libs/d3/d3.min.js"></script>
+<script src="../../rmarkdown-libs/dagre/dagre-d3.min.js"></script>
+<link href="../../rmarkdown-libs/mermaid/dist/mermaid.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/mermaid/dist/mermaid.slim.min.js"></script>
+<link href="../../rmarkdown-libs/DiagrammeR-styles/styles.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/chromatography/chromatography.js"></script>
+<script src="../../rmarkdown-libs/DiagrammeR-binding/DiagrammeR.js"></script>
+
+
+<p>All the packages needed in here:</p>
+<pre class="r"><code>library(knitr)
+library(caret)
+library(DiagrammeR)#for the flowchart
+library(DescTools)# for summary of data
+library(proxy)#maxDissim
+library(mlbench)#data zoo
+library(data.table)
+library(fastDummies) #for dummy variables
+
+options(scipen=8)</code></pre>
+<div id="foreword" class="section level2">
+<h2>Foreword</h2>
+<p>This is a workflow about <a href="https://topepo.github.io/caret/">caret</a>, which is a creating predicted models collecting toolkit framework, integrating all activities related to model development from other R packages. Caret can be also treated as a tool to get started or get familiar with machine learning, especially in supervised and unsupervised learning part that is good at.</p>
+<p>The article is the usual thought of using caret and machine learning, more focusing on general use situation. And I’ll try to offer a holistic point of machine learning, the straight using examples and the way to find more concrete field. That means I would not present the specific algorithms, tuning methods or fitted fields.</p>
+</div>
+<div id="structure" class="section level2">
+<h2>Structure</h2>
+<p>All tools in caret can be classified in the <a href="https://topepo.github.io/caret/">ducument</a> like this:</p>
+<blockquote>
+<ul>
+<li>data splitting</li>
+<li>pre-processing(depending on data set situation)</li>
+<li>feature selection</li>
+<li>model tuning using resampling</li>
+<li>variable importance estimation and the model measuring</li>
+</ul>
+</blockquote>
+<p>Link to the crucial function in each part, all the part of caret workflow is:</p>
+<div id="htmlwidget-1" style="width:950px;height:500px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"diagram":"\ngraph LR\nD_E[Data Exploration/Visualization]\nP[Preprocessing]\nD_S[Data Splitting]\nM[Modeling]\nM_E[Model Evaluation]\nRetune[Turn Parameter]\n\nD_Es(\"featureplot()<br>dotPlot()<br>lift()<br>plotClassProbs()\")\nPs(\"preProcess()<br>nearZeroVar()<br>findCorrelation()<br>findLinearCombos()\")\nD_Ss(\"createDataPartition()<br>createTimeSlices()\")\nMs(\"train()<br>trainControl()\")\nM_Es(\"confusionMatrix()<br>resample()<br>postResample()\")\nFinishs(fit the final model with<br> optimal parameter set)\n\n\nD_E --> D_S \nD_S --> P  \nP --> M\nM --tuning or parameters <br> set changing--> M_E\nM_E -- \"if largest performance value <br>or smallest mean squared error\"--> Finish\nM_E -- \"if not enough good\"--> Retune\nRetune --> M\n\n\nD_E --- D_Es\nP --- Ps\nD_S --- D_Ss\nM --- Ms\nM_E --- M_Es\nFinish --- Finishs\n\nclassDef default fill:#ffffe6,stroke:#333,stroke-width:2px\n\nstyle D_E stroke-width:4px\nstyle P stroke-width:4px,stroke-dasharray: 5, 5\nstyle D_S stroke-width:4px\nstyle M stroke-width:4px\nstyle M_E stroke-width:4px\nstyle Finish stroke-width:4px\nstyle Retune stroke-width:4px\n\n"},"evals":[],"jsHooks":[]}</script>
+<p>By the way,as I said in foreword, this post would like more pay attention on the process of caret using. The part of data exploration is deeply dependent on the familiarity about the data you get to deal with, and can be replaced by another professional packages. If you are more interesting on the visualization tools of caret, just jump to this <a href="http://topepo.github.io/caret/visualizations.html">chapter</a>.</p>
+</div>
+<div id="data-splitting" class="section level2">
+<h2>Data Splitting</h2>
+<p>More specific matter of data splitting, you can find on the <a href="http://topepo.github.io/caret/data-splitting.html">document</a> and the this article <a href="http://rismyhammer.com/ml/Pre-Processing.html">Preprocessign Data with caret</a></p>
+<table>
+<thead>
+<tr class="header">
+<th>situation</th>
+<th>splitting mathods</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>supervised learning</td>
+<td><code>createDataPartition()</code></td>
+</tr>
+<tr class="even">
+<td>unsupervised learning</td>
+<td><code>maxDissim()</code></td>
+</tr>
+<tr class="odd">
+<td>time serias</td>
+<td><code>trainControl(method = &quot;timeslice&quot;...)</code></td>
+</tr>
+</tbody>
+</table>
+<div id="based-on-outcome" class="section level3">
+<h3>Based on Outcome</h3>
+<p><code>createDataPartition()</code> is the splitting function that data set has clear dependent variables, which means it’s fitted for supervised learning. <code>createDataPartition()</code>is the one of the most useful feature function of caret package, which makes data splitting to be more orderly and approachable.</p>
+<p>This method can generate balant data split. When the dependent variables are factor variables, the splitting will based on the distribution of factors.</p>
+<pre class="r"><code>data(scat)
+#set seed and create splitting index
+set.seed(3456)
+trainIndex &lt;- createDataPartition(scat$Species, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+#the distribution of dependent variables
+knitr::kable(Desc(scat$Species)[[1]][[&quot;freq&quot;]]) </code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">level</th>
+<th align="right">freq</th>
+<th align="right">perc</th>
+<th align="right">cumfreq</th>
+<th align="right">cumperc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">bobcat</td>
+<td align="right">57</td>
+<td align="right">0.5181818</td>
+<td align="right">57</td>
+<td align="right">0.5181818</td>
+</tr>
+<tr class="even">
+<td align="left">coyote</td>
+<td align="right">28</td>
+<td align="right">0.2545455</td>
+<td align="right">85</td>
+<td align="right">0.7727273</td>
+</tr>
+<tr class="odd">
+<td align="left">gray_fox</td>
+<td align="right">25</td>
+<td align="right">0.2272727</td>
+<td align="right">110</td>
+<td align="right">1.0000000</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#splitting
+
+scatTrain &lt;- scat[ trainIndex,]
+scatTest  &lt;- scat[-trainIndex,]
+
+knitr::kable(Desc(scatTrain$Species)[[1]][[&quot;freq&quot;]])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">level</th>
+<th align="right">freq</th>
+<th align="right">perc</th>
+<th align="right">cumfreq</th>
+<th align="right">cumperc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">bobcat</td>
+<td align="right">46</td>
+<td align="right">0.5168539</td>
+<td align="right">46</td>
+<td align="right">0.5168539</td>
+</tr>
+<tr class="even">
+<td align="left">coyote</td>
+<td align="right">23</td>
+<td align="right">0.2584270</td>
+<td align="right">69</td>
+<td align="right">0.7752809</td>
+</tr>
+<tr class="odd">
+<td align="left">gray_fox</td>
+<td align="right">20</td>
+<td align="right">0.2247191</td>
+<td align="right">89</td>
+<td align="right">1.0000000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="based-on-predictors" class="section level3">
+<h3>Based on Predictors</h3>
+<p>If we manage to get a unsupervised learning prediction, the maxDissim function is a splitting good way using a maximum dissimilarity approach. About the method:</p>
+<blockquote>
+<p>Suppose there is a data set A with m samples and a larger data set B with n samples. We may want to create a sub–sample from B that is diverse when compared to A. To do this, for each sample in B, the function calculates the m dissimilarities between each point in A. The most dissimilar point in B is added to A and the process continues.</p>
+</blockquote>
+<p>In a short, sampling out A as the start set, and getting the final set against start set by largest distance.</p>
+<pre class="r"><code>data(cars)
+
+testing &lt;- scale(cars[, c(&quot;Price&quot;, &quot;Mileage&quot;)])
+set.seed(5)
+## A random sample of 5 data points
+startSet &lt;- sample(1:dim(testing)[1], 5)
+samplePool &lt;- testing[-startSet,]
+start &lt;- testing[startSet,]
+newSamp &lt;- maxDissim(start, samplePool, n = 20)</code></pre>
+<p>result of the splitting:</p>
+<pre class="r"><code>plot(testing[-newSamp,], 
+          col = &quot;darkgrey&quot;)
+points(start, pch = 16, cex = .7)
+     
+     for(i in seq(along = newSamp))
+          points(
+               samplePool[newSamp[i],1], 
+               samplePool[newSamp[i],2], 
+               pch = paste(i), col = &quot;darkred&quot;)</code></pre>
+<p><img src="../../post/2019-02-26-caret_workflow_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>More maxDissim methods, please check this <a href="http://rismyhammer.com/ml/Pre-Processing.html">article</a>’s Splitting Based on Predictors part.</p>
+</div>
+<div id="time-serias-data-splitting" class="section level3">
+<h3>Time Serias Data Splitting</h3>
+<p><code>createTimeSlices()</code> is the sister function of <code>createDataPartition()</code> to handle time serias data. Three argument of the function is:</p>
+<ul>
+<li><code>initialWindow</code>: the initial number of consecutive values in each training set sample</li>
+<li><code>horizon</code>: The number of consecutive values in test set sample</li>
+<li><code>fixedWindow</code>: A logical: if FALSE, the training set always start at the first sample and the training set size will vary over data splits.</li>
+</ul>
+<p>The example of the function usage is also in this <a href="http://rismyhammer.com/ml/Pre-Processing.html">articles</a>’s Time Series Data Splitting part.</p>
+<pre class="r"><code>data(economics)
+# which is often used in the `trainControl()` set
+myTimeControl &lt;- trainControl(method = &quot;timeslice&quot;, initialWindow = 36, horizon = 12, fixedWindow = TRUE)
+
+plsFitTime &lt;- train(unemploy ~ pce + pop + psavert, data = economics, method = &quot;pls&quot;,
+                    preProc = c(&quot;center&quot;, &quot;scale&quot;), trControl = myTimeControl)</code></pre>
+</div>
+</div>
+<div id="preprocessing" class="section level2">
+<h2>Preprocessing</h2>
+<p>This part is based on the conclution of your data exploration. You need to consider what situation of your data that you need to deal with before starting build your model. According to the situation of the function facing to, preprocessing function of caret can be sorted as:</p>
+<table>
+<thead>
+<tr class="header">
+<th>situation category</th>
+<th>function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>categorical/dichotomous variables</td>
+<td><code>dummyVars()</code>,<code>data.table()</code></td>
+</tr>
+<tr class="even">
+<td>unbalance</td>
+<td><code>preProcess(df,method = c(&quot;center&quot;, &quot;scale&quot;))</code>,<code>nearZeroVar()</code></td>
+</tr>
+<tr class="odd">
+<td>missing value</td>
+<td><code>preProcess(df,method = c(&quot;center&quot;, &quot;scale&quot;)/&quot;knnImpute&quot;)</code></td>
+</tr>
+<tr class="even">
+<td>too much predictors</td>
+<td><code>preProcess(df, method = &quot;BoxCox&quot;/&quot;pca&quot;)</code></td>
+</tr>
+<tr class="odd">
+<td>class distance</td>
+<td><code>classDist()</code></td>
+</tr>
+</tbody>
+</table>
+<p>As you can see, there are a lot of situations that might causes model prediction fail, and there are more solution to fix the situations you face. No matter how unique you are getting the data set problems, <strong>stable, numerical, centralized and no missing</strong> data set may lead a better result of model.</p>
+<div id="preprocess-function-set" class="section level3">
+<h3><code>preProcess()</code> Function Set</h3>
+<p>Package caret provised a useful function,<code>preProcess()</code>,to handle the preprocessing’s situations.</p>
+<p>Function preProcess contain two parts: <code>preProcess()</code>procession and <code>predict.preProcess()</code>procession. <code>preProcess()</code>estimates the required parameters for each operation and <code>predict.preProcess()</code> is used to apply them to specific data sets. This function can also be interfaces when calling the train function.</p>
+<p><code>preProcValues &lt;- preProcess(dataToHandle, method = c(),...other Arguments)</code>
+<code>dataTransformed &lt;- predict(preProcValues, dataToHandle)</code></p>
+<p>Specific example:</p>
+<pre class="r"><code>data(oil)
+
+inTrain &lt;- sample(seq(along = fattyAcids), length(fattyAcids)*0.7)
+
+training &lt;- fattyAcids[inTrain,]
+str(training)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    4 obs. of  7 variables:
+##  $ Palmitic  : num  9.8 11.5 12.2 9.7
+##  $ Stearic   : num  4.2 5.2 5 5.2
+##  $ Oleic     : num  43 35 31.1 31
+##  $ Linoleic  : num  39.2 47.2 50.5 52.7
+##  $ Linolenic : num  2.4 0.2 0.3 0.4
+##  $ Eicosanoic: num  0.4 0.4 0.4 0.4
+##  $ Eicosenoic: num  0.5 0.1 0.1 0.1</code></pre>
+<pre class="r"><code>preProcValues &lt;- preProcess(training, method = c(&quot;center&quot;, &quot;scale&quot;))
+
+trainTransformed &lt;- predict(preProcValues, training)
+str(trainTransformed)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    4 obs. of  7 variables:
+##  $ Palmitic  : num  -0.802 0.562 1.123 -0.883
+##  $ Stearic   : num  -1.47 0.63 0.21 0.63
+##  $ Oleic     : num  1.41565 -0.00444 -0.69673 -0.71448
+##  $ Linoleic  : num  -1.3862 -0.0338 0.524 0.8959
+##  $ Linolenic : num  1.495 -0.593 -0.498 -0.404
+##  $ Eicosanoic: num  0 0 0 0
+##  $ Eicosenoic: num  1.5 -0.5 -0.5 -0.5</code></pre>
+<p>The list of function preProcess methods:</p>
+<ul>
+<li><code>center</code>,<code>scale</code>, and <code>range</code> to normalize predictors.</li>
+<li><code>BoxCox</code>, <code>YeoJohnson</code>, or <code>expoTrans</code> to transform predictors.</li>
+<li><code>knnImpute</code>, <code>bagImpute</code>, or <code>medianImpute</code> to impute.</li>
+<li><code>corr</code>, <code>nzv</code>, <code>zv</code>, and <code>conditionalX</code> to filter.</li>
+<li><code>pca</code>, <code>ica</code>, or <code>spatialSign</code> to transform groups.</li>
+</ul>
+<p>More information about how function preProcess is used, you can find in <code>??preProcess</code> and this <a href="http://rismyhammer.com/ml/Pre-Processing.html#split-data">article</a></p>
+</div>
+<div id="other-preprocessing-function" class="section level3">
+<h3>Other preprocessing function</h3>
+<div id="turning-numerical" class="section level4">
+<h4>Turning Numerical</h4>
+<p>There are two methods to deal with the categorical or dichotomous variables:</p>
+<div id="recode-the-categorical-variable-as-numeric" class="section level5">
+<h5>Recode the Categorical Variable as Numeric</h5>
+<pre class="r"><code>data(&quot;Zoo&quot;)
+Zoo$animalNames &lt;- rownames(Zoo)
+
+#categorical variable
+unique(Zoo$type)</code></pre>
+<pre><code>## [1] mammal        fish          bird          mollusc.et.al insect       
+## [6] amphibian     reptile      
+## Levels: mammal bird reptile fish amphibian insect mollusc.et.al</code></pre>
+<pre class="r"><code>## recode the categorical variable as numeric
+value= unique(Zoo$type)
+zoo &lt;- setDT(Zoo)[,type:=as.character(type)][.(type = value,to = 1:length(value)),on = &quot;type&quot;,type :=i.to]
+unique(zoo$type)</code></pre>
+<pre><code>## [1] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; &quot;5&quot; &quot;6&quot; &quot;7&quot;</code></pre>
+</div>
+<div id="dummyvars-in-caret" class="section level5">
+<h5><code>dummyVars()</code> in Caret</h5>
+<pre class="r"><code>#dichotomous variable
+## dummyVars() in caret
+head(model.matrix(type ~ ., data = zoo[,c(1:4,17)]),4)</code></pre>
+<pre><code>##   (Intercept) hairTRUE feathersTRUE eggsTRUE milkTRUE
+## 1           1        1            0        0        1
+## 2           1        1            0        0        1
+## 3           1        0            0        1        0
+## 4           1        1            0        0        1</code></pre>
+<pre class="r"><code>dummies &lt;- dummyVars(type ~ ., data = zoo[,c(1:4,17)])
+head(predict(dummies, newdata = zoo),4)</code></pre>
+<pre><code>##   hairFALSE hairTRUE feathersFALSE feathersTRUE eggsFALSE eggsTRUE
+## 1         0        1             1            0         1        0
+## 2         0        1             1            0         1        0
+## 3         1        0             1            0         0        1
+## 4         0        1             1            0         1        0
+##   milkFALSE milkTRUE
+## 1         0        1
+## 2         0        1
+## 3         1        0
+## 4         0        1</code></pre>
+</div>
+<div id="dummy_cols-in-fastdummies" class="section level5">
+<h5><code>dummy_cols()</code> in FastDummies</h5>
+<p>About the function usage, you find more info in the <a href="https://cran.r-project.org/web/packages/fastDummies/vignettes/making-dummy-variables.html">article</a>.</p>
+<pre class="r"><code>## dummyVars() in caret
+data(&quot;Zoo&quot;)
+Zoo$animalNames &lt;- rownames(Zoo)
+
+zooDummy &lt;- dummy_cols(Zoo[,c(1:4,17)])
+head(zooDummy,4)</code></pre>
+<pre><code>##    hair feathers  eggs  milk   type type_mammal type_fish type_bird
+## 1  TRUE    FALSE FALSE  TRUE mammal           1         0         0
+## 2  TRUE    FALSE FALSE  TRUE mammal           1         0         0
+## 3 FALSE    FALSE  TRUE FALSE   fish           0         1         0
+## 4  TRUE    FALSE FALSE  TRUE mammal           1         0         0
+##   type_mollusc.et.al type_insect type_amphibian type_reptile
+## 1                  0           0              0            0
+## 2                  0           0              0            0
+## 3                  0           0              0            0
+## 4                  0           0              0            0</code></pre>
+</div>
+</div>
+<div id="removing-correlated" class="section level4">
+<h4>Removing Correlated</h4>
+<p><code>findCorrelation()</code> is the tool to find the independences in model, that are be correlated with each other. Based on the result, you can remove or reduce the level of correlation between the independences.</p>
+<p>check the correlated situation of the independences:</p>
+<pre class="r"><code>data(Zoo)
+descrCor &lt;- cor(Zoo[,-17])
+summary(descrCor[upper.tri(descrCor)])</code></pre>
+<pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+## -0.938848 -0.221702  0.019510 -0.002832  0.208124  0.878503</code></pre>
+<p>set a cutoff line and find the independences above:</p>
+<pre class="r"><code>CUTOFF &lt;- 0.85 
+cor_matrix &lt;- cor(Zoo[,-17]) 
+cor_high &lt;- findCorrelation(cor_matrix, CUTOFF)
+high_cor_remove &lt;- row.names(cor_matrix)[cor_high] 
+high_cor_remove</code></pre>
+<pre><code>## [1] &quot;milk&quot;</code></pre>
+<pre class="r"><code>#removingCorZoo &lt;- Zoo[,-high_cor_remove]</code></pre>
+</div>
+</div>
+</div>
+<div id="basic-model-training" class="section level2">
+<h2>Basic Model Training</h2>
+<div id="quick-example" class="section level3">
+<h3>Quick example</h3>
+<pre class="r"><code>#data splitting
+library(caret)
+set.seed(127)
+inTraining &lt;- createDataPartition(Zoo$type, p = .75, list = FALSE)
+training &lt;- Zoo[ inTraining,]
+testing  &lt;- Zoo[-inTraining,]
+
+#set train control
+set.seed(127)
+fitControl &lt;- trainControl(## 10-fold CV
+                           method = &quot;repeatedcv&quot;,
+                           number = 10,
+                           ## repeated ten times
+                           repeats = 10)
+
+metric &lt;- &quot;Accuracy&quot;
+set.seed(127)
+mtry &lt;- floor(sqrt(ncol(training)))
+tunegrid &lt;- expand.grid(.mtry=mtry)
+rf_default &lt;- train(type~., data=training, 
+                    method=&quot;rf&quot;, metric=metric, 
+                    tuneGrid=tunegrid, 
+                    trControl=fitControl)
+rf_default</code></pre>
+<pre><code>## Random Forest 
+## 
+## 77 samples
+## 16 predictors
+##  7 classes: &#39;mammal&#39;, &#39;bird&#39;, &#39;reptile&#39;, &#39;fish&#39;, &#39;amphibian&#39;, &#39;insect&#39;, &#39;mollusc.et.al&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold, repeated 10 times) 
+## Summary of sample sizes: 70, 70, 68, 71, 70, 69, ... 
+## Resampling results:
+## 
+##   Accuracy   Kappa    
+##   0.9465437  0.9302012
+## 
+## Tuning parameter &#39;mtry&#39; was held constant at a value of 4</code></pre>
+</div>
+<div id="backbone-of-the-model" class="section level3">
+<h3>Backbone of the model</h3>
+<p>As you can see in the quick example, the <code>train()</code> is the center of the whole model training(About the origin of the function, <a href="http://www.jstatsoft.org/article/view/v028i05/v28i05.pdf">there</a> is an illastration).</p>
+<p>The basic systax of the function <code>train()</code></p>
+<p><code>train(y ~ x1 + x2, data = dat, ...)</code>
+<code>train(x = predictor_df, y = outcome_vector, ...)</code>
+<code>train(recipe_object, data = dat, ...</code></p>
+<p>Except rfe, sbf, gafs, and safs only have the x/y interface, most basic part of the train consists:</p>
+<ul>
+<li><p><strong>x</strong>: a matrix or data frame of predictors. Currently, the function only accepts numeric values (i.e., no factors or character variables). In some cases, the model.matrix function may be needed to generate a data frame or matrix of purely numeric data.</p></li>
+<li><p><strong>y</strong>: a numeric or factor vector of outcomes. The function determines the type of problem (classification or regression) from the type of the response given in this argument.</p></li>
+<li><p><strong>method</strong>: a character string specifying the type of model to be used.</p></li>
+</ul>
+<p><code>train(y ~ ., data = dat, method = &quot;rf&quot;)</code></p>
+</div>
+<div id="subside-of-model-train" class="section level3">
+<h3>Subside of Model Train</h3>
+<p><code>trainControl()</code> and <code>expand.grid</code> are most often used option to specify the train model, and both of them can be an arguments in <code>train()</code> or as an independent parameters outside.</p>
+<div id="resampling-options" class="section level4">
+<h4>Resampling Options</h4>
+<p>To choose a resampling method:</p>
+<p><code>trainControl(method = &lt;method&gt;, &lt;options&gt;)</code></p>
+<p>Methods and options are:</p>
+<ul>
+<li><strong>“cv”</strong> for K-fold cross-validation (<code>number</code> sets the # folds).</li>
+<li><strong>“repeatedcv”</strong> for repeated cross-validation (<code>repeats</code> for # repeats).</li>
+<li><strong>“boot”</strong> for bootstrap (<code>number</code>sets the iterations).</li>
+<li><strong>“LGOCV”</strong> for leave-group-out (<code>number</code> and <code>p</code> are options).</li>
+<li><strong>“LOO”</strong> for leave-one-out cross-validation.</li>
+<li><strong>“oob”</strong> for out-of-bag resampling (only for some models).</li>
+<li><strong>“timeslice”</strong> for time-series data (options are initialWindow, horizon, fixedWindow, and skip).</li>
+</ul>
+</div>
+<div id="performance-metrics" class="section level4">
+<h4>Performance Metrics</h4>
+<p>To choose how to summarize a model, argument <code>metric</code> in <code>trainControl()</code>can be used to determine which is the best settings.</p>
+<p>The methods of metric:</p>
+<ul>
+<li><strong>Accuracy and Kappa</strong>, default for binary and multi-class classification datasets;</li>
+<li><strong>RMSE and R^2</strong>, by defaut for regression datasets;</li>
+<li><strong>ROC (AUC, Sensitivity and Specificity)</strong>,only suitable for binary classification;</li>
+<li><strong>LogLoss</strong> to evaluate binary classification.</li>
+</ul>
+<p>The usage example of matrics is in this <a href="https://machinelearningmastery.com/machine-learning-evaluation-metrics-in-r/">article</a>.</p>
+<p>More specific metrics, argument <code>summaryFunction</code> is another option:</p>
+<p><code>trainControl(summaryFunction = &lt;R function&gt;, classProbs = &lt;logical&gt;)</code></p>
+<p>summaryFunction options:</p>
+<p>defaultSummary (for accuracy, RMSE, etc), twoClassSummary(for ROC curves), and prSummary (for information retrieval). For the last two functions, the option classProbs must be set to TRUE.</p>
+</div>
+<div id="grid-search" class="section level4">
+<h4>Grid Search</h4>
+<p>To let train determine the values of the tuning parameter(s), the <code>tuneLength</code> option controls how many values per tuning parameter to evaluate. <code>tuneLength</code> is an integer denoting the amount of granularity in the tuning parameter grid. By default, this argument is the number of levels for each tuning parameters that should be generated by train.
+About the tuneLength usage, this <a href="https://stackoverflow.com/questions/38859705/r-understanding-caret-traintunelength-and-svm-methods-from-kernlab">post</a> is also helpful.</p>
+<p>Or use tuneGrid argument:</p>
+<p><code>grid &lt;- expand.grid(alpha = c(0.1, 0.5, 0.9), lambda = c(0.001, 0.01))</code></p>
+<p><code>train(x = x, y = y, method = &quot;glmnet&quot;,tuneGrid = grid)</code></p>
+</div>
+<div id="subsampling" class="section level4">
+<h4>Subsampling</h4>
+<p><code>sampling</code>is an argument to fix the large class imbalance situation. More information about class imbalance situation, please check this <a href="https://www.r-bloggers.com/handling-class-imbalance-with-r-and-caret-an-introduction/">article</a></p>
+<p><code>trainControl(sampling = &quot;down&quot;)</code></p>
+</div>
+</div>
+</div>
+<div id="after-trainging" class="section level2">
+<h2>After Trainging</h2>
+<div id="quick-example-1" class="section level3">
+<h3>Quick example</h3>
+<pre class="r"><code>#preperation of data
+data(oil)
+fattyAcids &lt;- cbind(fattyAcids,oilType)
+fattyAcids &lt;- setDT(fattyAcids)[,oilType:= 
+                                  plyr::mapvalues(oilType,c(&quot;A&quot;, &quot;B&quot;,&quot;C&quot;,&quot;D&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;),
+                                         c(&quot;pumpkin&quot;,&quot;sunflower&quot;,&quot;peanut&quot;,
+                                           &quot;olive&quot;,&quot;soybean&quot;,&quot;rapeseed&quot;,&quot;corn&quot;) )]
+
+#splitting and training of data
+set.seed(127)
+inTraining &lt;- createDataPartition(fattyAcids$oilType, p = .75, list = FALSE)
+training &lt;- fattyAcids[ inTraining,]
+testing  &lt;- fattyAcids[-inTraining,]
+
+bootControl &lt;- trainControl(number = 100)
+set.seed(127)
+svmFit &lt;- train(oilType~., training, 
+                method = &quot;svmRadial&quot;, 
+                tuneLength = 5,
+                preProc = c(&quot;center&quot;, &quot;scale&quot;),
+                trControl = bootControl, 
+                scaled = FALSE)
+#model result
+svmFit</code></pre>
+<pre><code>## Support Vector Machines with Radial Basis Function Kernel 
+## 
+## 76 samples
+##  7 predictor
+##  7 classes: &#39;pumpkin&#39;, &#39;sunflower&#39;, &#39;peanut&#39;, &#39;olive&#39;, &#39;soybean&#39;, &#39;rapeseed&#39;, &#39;corn&#39; 
+## 
+## Pre-processing: centered (7), scaled (7) 
+## Resampling: Bootstrapped (100 reps) 
+## Summary of sample sizes: 76, 76, 76, 76, 76, 76, ... 
+## Resampling results across tuning parameters:
+## 
+##   C     Accuracy   Kappa    
+##   0.25  0.7176957  0.5943687
+##   0.50  0.8104877  0.7349879
+##   1.00  0.8579955  0.8035367
+##   2.00  0.8776568  0.8316650
+##   4.00  0.8783515  0.8326465
+## 
+## Tuning parameter &#39;sigma&#39; was held constant at a value of 0.6214939
+## Accuracy was used to select the optimal model using the largest value.
+## The final values used for the model were sigma = 0.6214939 and C = 4.</code></pre>
+<pre class="r"><code>#the most optimal model 
+svmFit$finalModel</code></pre>
+<pre><code>## Support Vector Machine object of class &quot;ksvm&quot; 
+## 
+## SV type: C-svc  (classification) 
+##  parameter : cost C = 4 
+## 
+## Gaussian Radial Basis kernel function. 
+##  Hyperparameter : sigma =  0.621493850140727 
+## 
+## Number of Support Vectors : 42 
+## 
+## Objective Function Value : -8.1084 -2.3739 -3.5996 -4.6413 -4.047 -2.2094 -2.0987 -2.9949 -2.8532 -3.309 -1.9504 -1.9688 -1.8899 -2.0968 -1.424 -2.5877 -3.0436 -1.7919 -2.8221 -1.8403 -1.8965 
+## Training error : 0</code></pre>
+<pre class="r"><code>#variable importance
+svmImp &lt;- varImp(svmFit, scale = FALSE)
+plot(svmImp)</code></pre>
+<p><img src="../../post/2019-02-26-caret_workflow_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code>#model result measure
+svmType &lt;- predict(svmFit, newdata = testing)
+confusionMatrix(data = svmType, testing$oilType)</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##            Reference
+## Prediction  pumpkin sunflower peanut olive soybean rapeseed corn
+##   pumpkin         9         0      0     0       0        0    0
+##   sunflower       0         6      0     0       0        0    0
+##   peanut          0         0      0     0       0        0    0
+##   olive           0         0      0     1       0        0    0
+##   soybean         0         0      0     0       2        0    0
+##   rapeseed        0         0      0     0       0        2    0
+##   corn            0         0      0     0       0        0    0
+## 
+## Overall Statistics
+##                                       
+##                Accuracy : 1           
+##                  95% CI : (0.8316, 1) 
+##     No Information Rate : 0.45        
+##     P-Value [Acc &gt; NIR] : 0.0000001159
+##                                       
+##                   Kappa : 1           
+##  Mcnemar&#39;s Test P-Value : NA          
+## 
+## Statistics by Class:
+## 
+##                      Class: pumpkin Class: sunflower Class: peanut
+## Sensitivity                    1.00              1.0            NA
+## Specificity                    1.00              1.0             1
+## Pos Pred Value                 1.00              1.0            NA
+## Neg Pred Value                 1.00              1.0            NA
+## Prevalence                     0.45              0.3             0
+## Detection Rate                 0.45              0.3             0
+## Detection Prevalence           0.45              0.3             0
+## Balanced Accuracy              1.00              1.0            NA
+##                      Class: olive Class: soybean Class: rapeseed
+## Sensitivity                  1.00            1.0             1.0
+## Specificity                  1.00            1.0             1.0
+## Pos Pred Value               1.00            1.0             1.0
+## Neg Pred Value               1.00            1.0             1.0
+## Prevalence                   0.05            0.1             0.1
+## Detection Rate               0.05            0.1             0.1
+## Detection Prevalence         0.05            0.1             0.1
+## Balanced Accuracy            1.00            1.0             1.0
+##                      Class: corn
+## Sensitivity                   NA
+## Specificity                    1
+## Pos Pred Value                NA
+## Neg Pred Value                NA
+## Prevalence                     0
+## Detection Rate                 0
+## Detection Prevalence           0
+## Balanced Accuracy             NA</code></pre>
+</div>
+<div id="variable-importance" class="section level3">
+<h3>Variable Importance</h3>
+<blockquote>
+<ul>
+<li>For most classification models, each predictor will have a separate variable importance for each class.</li>
+<li>All measures of importance are scaled to have a maximum value of 100, unless the scale argument of varImp.train is set to FALSE</li>
+</ul>
+</blockquote>
+<p>About the specific metrics of importance,please visit this <a href="http://topepo.github.io/caret/variable-importance.html#model-specific-metrics">part</a>.</p>
+</div>
+<div id="measure-perfomance" class="section level3">
+<h3>Measure Perfomance</h3>
+<p>About the specific methods of measuring,please visit this <a href="http://topepo.github.io/caret/measuring-performance.html">part</a>.</p>
+<div id="regression" class="section level4">
+<h4>Regression</h4>
+<p><code>postResample(pred = modelFit, obs = testing$y)</code></p>
+<p>Example:</p>
+<pre class="r"><code>library(mlbench)
+data(BostonHousing)
+
+set.seed(280)
+bh_index &lt;- createDataPartition(BostonHousing$medv, p = .75, list = FALSE)
+bh_tr &lt;- BostonHousing[ bh_index, ]
+bh_te &lt;- BostonHousing[-bh_index, ]
+
+set.seed(7279)
+lm_fit &lt;- train(medv ~ . + rm:lstat,
+                data = bh_tr, 
+                method = &quot;lm&quot;)
+bh_pred &lt;- predict(lm_fit, bh_te)
+
+lm_fit</code></pre>
+<pre><code>## Linear Regression 
+## 
+## 381 samples
+##  13 predictor
+## 
+## No pre-processing
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 381, 381, 381, 381, 381, 381, ... 
+## Resampling results:
+## 
+##   RMSE      Rsquared   MAE     
+##   4.284876  0.7778135  2.955764
+## 
+## Tuning parameter &#39;intercept&#39; was held constant at a value of TRUE</code></pre>
+<pre class="r"><code>postResample(pred = bh_pred, obs = bh_te$medv)</code></pre>
+<pre><code>##      RMSE  Rsquared       MAE 
+## 4.4412987 0.7781877 3.0926842</code></pre>
+</div>
+<div id="predicted-classes" class="section level4">
+<h4>Predicted Classes</h4>
+<p><code>confusionMatrix(testPred,testing$obs)</code></p>
+</div>
+<div id="class-probabilities" class="section level4">
+<h4>Class Probabilities</h4>
+<p><code>twoClassSummary(testing, lev = levels(testing$obs))</code></p>
+</div>
+</div>
+</div>
+
+  </div>
+
+
+  
+  
+  
+
+ 
+
+  <div id=links>
+    
+      <a class="basic-alignment left" href="../../post/2019-01-22-%E6%9C%AB%E4%B8%96%E9%A2%98%E6%9D%90%E6%96%87%E6%9C%AC%E5%8F%91%E5%BE%AE%E4%BF%A1/">&laquo; 末世题材文本发微</a>
+    
+    
+  </div>
+</section>
+
+
+
+<section id="comments">
+
+<span id="/post/2019-02-26-caret_workflow/" class="leancloud_visitors" data-flag-title="Workflow with Caret">
+    <span class="post-meta-item-text">read number: </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+</span>
+<div id="vcomments"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script type="text/javascript">
+   new Valine({
+        el: '#vcomments' ,
+        appId: 'yjXDgIm4adLfC65VUSshkA1W-gzGzoHsz',
+        appKey: '81KLyE7xLDCR0ExKcEib8qjv',
+        notify:  false , 
+        verify:  false , 
+        avatar:'mm', 
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        visitor:  true 
+    });
+</script>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+      
+      
+      if (window.location.hostname == "localhost")
+                return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'pauke-live';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+<footer class="footer">
+  <ul class="footer-links">
+    <li>
+      <a href="https://gohugo.io/" class="footer-links-kudos">Build with <img src="../../images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+    </li>
+  </ul>
+</footer>
+
+</div>
+
+
+
+<script src="../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-132686713-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+</body>
+</html>
+

@@ -8,6 +8,11 @@
   </url>
   
   <url>
+    <loc>/post/2019-02-26-caret_workflow/</loc>
+    <lastmod>2019-01-31T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/post/2019-01-22-%E6%9C%AB%E4%B8%96%E9%A2%98%E6%9D%90%E6%96%87%E6%9C%AC%E5%8F%91%E5%BE%AE%E4%BF%A1/</loc>
     <lastmod>2019-01-22T00:00:00+00:00</lastmod>
   </url>
@@ -49,6 +54,12 @@
   </url>
   
   <url>
+    <loc>/tags/caret/</loc>
+    <lastmod>2019-01-31T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/categories/</loc>
     <priority>0</priority>
   </url>
@@ -67,7 +78,7 @@
   
   <url>
     <loc>/categories/english/</loc>
-    <lastmod>2019-01-18T00:00:00+00:00</lastmod>
+    <lastmod>2019-01-31T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -96,6 +107,12 @@
   </url>
   
   <url>
+    <loc>/tags/machine-learning/</loc>
+    <lastmod>2019-01-31T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/tags/markdown/</loc>
     <lastmod>2019-01-18T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -103,7 +120,7 @@
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2019-01-22T00:00:00+00:00</lastmod>
+    <lastmod>2019-01-31T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -115,7 +132,7 @@
   
   <url>
     <loc>/categories/r/</loc>
-    <lastmod>2019-01-17T00:00:00+00:00</lastmod>
+    <lastmod>2019-01-31T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
