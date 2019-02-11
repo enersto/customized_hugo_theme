@@ -2,7 +2,7 @@
 
 <section id=content>
   <h1>{{ if .Params.heading }} {{ .Params.heading }} {{ else }} {{ .Title }} {{ end }}</h1>
-
+  <h3>{{.Description}}</h3>
   <div id=sub-header>
     {{ .Params.author }} · {{ .Date.Format (.Site.Params.dateform | default "2006/01/02") }} · {{ .WordCount }} words ·  {{ .ReadingTime }} minute(s) read · {{ partial "tags.html" . }}
   </div>
