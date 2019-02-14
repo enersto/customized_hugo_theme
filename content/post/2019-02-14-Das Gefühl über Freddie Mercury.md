@@ -14,3 +14,6 @@ Ja, ich gebe zu, dass ich große Einfluss aus dem Film, [Bohemian_Rhapsody](http
 
 Das Gefühl kommt meist von der Lieder, die ich gehört habe,sowie *We Are the Champions*, *We Will Rock You* . Ich hatte diesmal keine Ahnung von der Sänger, und habe es einfach als normale Popsongs behandelt. Es ist wirklich für die junge und kraftvolle Situation geeignet, wie die meisten Rock Musik. Wegen des Mangels über den Hintergrund ist es noch chaotischer für mich.
 
+## Pulsierende und aufschlußreich
+
+Vom frühen Lied, *Bohemian Rapsody*, bis zur Späteren, *Radio Ga Ga*,  
