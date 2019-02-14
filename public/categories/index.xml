@@ -11,6 +11,15 @@
     
     
     <item>
+      <title>Deutsch</title>
+      <link>/categories/deutsch/</link>
+      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/deutsch/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>English</title>
       <link>/categories/english/</link>
       <pubDate>Thu, 31 Jan 2019 00:00:00 +0000</pubDate>
@@ -43,6 +52,15 @@
       <pubDate>Wed, 02 Jan 2019 00:00:00 +0000</pubDate>
       
       <guid>/categories/r_package/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tagsbuch</title>
+      <link>/categories/tagsbuch/</link>
+      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/tagsbuch/</guid>
       <description></description>
     </item>
     
