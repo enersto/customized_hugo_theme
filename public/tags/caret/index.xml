@@ -17,7 +17,7 @@
       <pubDate>Thu, 31 Jan 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/2019-02-26-caret_workflow/</guid>
-      <description>ForewordStructureData SplittingBased on OutcomeBased on PredictorsTime Serias Data SplittingPreprocessingpreProcess() Function SetOther preprocessing functionTurning NumericalRecode the Categorical Variable as NumericdummyVars() in Caretdummy_cols() in FastDummiesRemoving CorrelatedBasic Model TrainingQuick exampleBackbone of the modelSubside of Model TrainResampling OptionsPerformance MetricsGrid SearchSubsamplingAfter TraingingQuick exampleVariable ImportanceMeasure PerfomanceRegressionPredicted ClassesClass ProbabilitiesAll the packages needed in here:</description>
+      <description>Foreword Structure Data Splitting Based on Outcome Based on Predictors Time Serias Data Splitting  Preprocessing preProcess() Function Set Other preprocessing function Turning Numerical Recode the Categorical Variable as Numeric dummyVars() in Caret dummy_cols() in FastDummies  Removing Correlated   Basic Model Training Quick example Backbone of the model Subside of Model Train Resampling Options Performance Metrics Grid Search Subsampling   After Trainging Quick example Variable Importance Measure Perfomance Regression Predicted Classes Class Probabilities     All the packages needed in here:</description>
     </item>
     
   </channel>
