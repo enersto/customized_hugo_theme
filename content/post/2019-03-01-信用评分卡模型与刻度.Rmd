@@ -6,3 +6,15 @@ slug: 信用评分卡模型与刻度
 categories: []
 tags: []
 ---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r include=FALSE}
+library(gpairs)
+
+```
+
