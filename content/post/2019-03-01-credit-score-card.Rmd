@@ -34,31 +34,32 @@ options(scipen = 8)
 loan = fread("C:/Users/pauke/Downloads/loan.csv")
 ```
 
-该数据集没有日常意义的y变量为loan_status，
+该数据集结果变量y为loan_status，其基本情况为：
 ```{r}
-dev.off()
+
 Desc(loan$loan_status)
 
 ```
 
+可以看出，该变量不是一般意义的good、bad的y变量。为了更好、更准确的建立模型，根据该数据集的说明，可归类为：
 
 ```{r}
 
-loan <- loan[,loan_condition := 
+loan <- loan[,y := 
                        ifelse(loan_status %in% c("Charged Off", "Default", 
                                                  "Does not meet the credit policy. Status:Charged Off", 
                                                  "In Grace Period","Late (16-30 days)", 
                                                  "Late (31-120 days)"),"bad","good")]
-loan <- loan[,loan_condition:= factor(loan_condition,levels = c("good","bad"))]
+loan <- loan[,y := factor(y,levels = c("good","bad"))]
+Desc(loan$y)
 
 ```
 
 
 ## 变量筛选
 
-基于[Credit Risk Modelling [EDA & Classification]](https://www.kaggle.com/ionaskel/credit-risk-modelling-eda-classification)和[Lending Club Loan Analysis](https://www.kaggle.com/janiobachmann/lending-club-risk-analysis-and-metrics)这两篇文章的结论，结合日常业务经验，考虑选择以下变量构成最后的模型：
+基于[Credit Risk Modelling [EDA & Classification]](https://www.kaggle.com/ionaskel/credit-risk-modelling-eda-classification)和[Lending Club Loan Analysis](https://www.kaggle.com/janiobachmann/lending-club-risk-analysis-and-metrics)这两篇文章的结论，结合日常业务经验。考虑选择以下变量构成最后的模型：
 
-* loan_status,
 * loan_amnt , 
 * int_rate , 
 * grade , 
@@ -69,15 +70,32 @@ loan <- loan[,loan_condition:= factor(loan_condition,levels = c("good","bad"))]
 * dti,
 * purpose
 
-在探索性分析结论和日常经验之外，scorecard::var_filter函数提供了变量粗筛功能可供参考，其设定为删除信息值<0.02、缺失率>95%、单类别比例>95%的变量。
+关于这些变量的具体分布情况，此处就不赘述，可参考以上提到的两篇文章。
+
+此外，scorecard包提供了一个变量粗筛var_filter函数可供参考，其设定为删除信息值<0.02、缺失率>95%、单类别比例>95%的变量。
 
 ```{r}
-loan_selected <- loan[,c("loan_status","loan_amnt","int_rate","dti",
-                         "purpose","term","annual_inc","home_ownership","emp_length","grade","loan_condition")]
-loan_selected <- var_filter(loan,y = "loan_condition")
+loan_selected <- loan[,c("loan_amnt","int_rate","dti",
+                         "purpose","term","annual_inc","home_ownership","emp_length","grade","y")]
+loan_m <- var_filter(loan_selected,y = "y")
 names(loan_selected)
 
 ```
+
+通过对之前选出来的变量进行检验，可以发现只有「emp_length」变量没有通过筛选。进一步看这个变量的具体情况：
+
+```{r}
+
+Desc(emp_length ~ y,loan_selected)
+
+ivs <- iv(loan_selected, y = "y")
+```
+
+
+「emp_length」在缺失率>95%、单类别比例>95%这两条上都没有满足，
+
+
+
 
 
 
