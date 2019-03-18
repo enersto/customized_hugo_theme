@@ -25,7 +25,7 @@ library(DescTools)
 * [Lending Club Loan Analysis](https://www.kaggle.com/janiobachmann/lending-club-risk-analysis-and-metrics)
 * [Credit Risk Modelling [EDA & Classification]](https://www.kaggle.com/ionaskel/credit-risk-modelling-eda-classification)
 
-同时，本文在评分卡构建部分使用[scorecard包](https://cran.r-project.org/package=scorecard)完成。
+同时，本文在评分卡构建部分使用[scorecard包](https://cran.r-project.org/package=scorecard)完成，具体使用案例也可参见[这个演示](http://shichen.name/slide/20171115scorecard/#1)。
 
 ## 数据准备
 数据集可由[Lending Club Loan Data](https://www.kaggle.com/wendykan/lending-club-loan-data)获得。
@@ -51,7 +51,7 @@ loan <- loan[,y :=
                                                  "In Grace Period","Late (16-30 days)", 
                                                  "Late (31-120 days)"),"bad","good")]
 loan <- loan[,y := factor(y,levels = c("good","bad"))]
-Desc(loan$y)
+knitr::kable(Desc(loan$y)[[1]][["freq"]])
 
 ```
 
@@ -86,16 +86,109 @@ names(loan_selected)
 
 ```{r}
 
-Desc(emp_length ~ y,loan_selected)
+Desc(loan_selected$emp_length)
 
 ivs <- iv(loan_selected, y = "y")
+ivs[variable=="emp_length",]
+
 ```
 
 
-「emp_length」在缺失率>95%、单类别比例>95%这两条上都没有满足，
+「emp_length」在缺失率>95%、单类别比例>95%这两条上都没有问题，但其信息值（Information Value, IV）却低于0.02，可排除出建模变量队列。关于信息值的具体含义，可参看?iv。
+
+## WOE分箱
+
+```{r}
+
+bin <- woebin(loan_m, y = "y",method = "chimerge")
+
+#分箱和具体的切分情况
+bin$annual_inc
+
+```
+
+
+scorecard包有具体的展示分享状况的绘图工具：
+```{r}
+woebin_plot(bin$loan_amnt)
+```
+
+通过基于绘图工具给出的图，可以依据以下使用要点对自动产生的分享方案进行检视：
+
+> * 坏客户率或者WOE值趋势线，最多不超过一个拐点，最好是单调的
+> * 每个分箱的样本数量占比最好大于5%
+
+验视数据及所有字段后，发现仅有loan_amnt字段的分箱还有待改进，scorecard包提供了手动调节的工具：
+
+```{r}
+
+break_adj = list(
+  loan_amnt=c(8500,14000,20500))
+
+bins_adj = woebin(
+  loan_m, y="y", 
+  breaks_list=break_adj, 
+  print_step=0)
+
+woebin_plot(bins_adj$loan_amnt)
+```
+
+
+## 分割建模数据集
+
+使用caret的切分工具，获得训练集的坏贷款比例与总体基本一致。
+```{r}
+set.seed(6715)
+trainIndex <- createDataPartition(loan_m$y, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+loan_mTrain <- loan_m[ trainIndex,]
+loan_mTest  <- loan_m[-trainIndex,]
+
+knitr::kable(Desc(loan_mTrain$y)[[1]][["freq"]])
+
+```
+
+最终woe分箱后的训练集和测试集：
+
+```{r}
+
+train_woe = woebin_ply(
+  loan_mTrain, bins_adj)
+
+test_woe = woebin_ply(
+  loan_mTest, bins_adj)
+
+```
+
+
+## 模型建立预评估
+
+### 模型建立
+
+此处使用机器学习框架[H2O包](http://docs.h2o.ai/h2o/latest-stable/h2o-docs/booklets/RBooklet.pdf)来完成建模,
+
+
+```{r}
+
+# glm ------
+m1 = glm( y ~ ., family = "binomial", data = train_woe)
+# summary(m1)
+# Select a formula-based model by AIC
+m_step = step(m1, direction="both", trace = FALSE)
+m2 = eval(m_step$call)
+summary(m2)$coefficients
+
+```
+
+### 变量重要度
+
+```{r}
+
+library(data.table)
+varimp = data.table(h2o.varimp(fit))[names!=""][!is.na(coefficients) & coefficients > 0]
+var_sel3 = c(varimp$names, "y")
 
 
 
-
-
-
+```
