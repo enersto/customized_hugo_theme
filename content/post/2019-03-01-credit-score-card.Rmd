@@ -166,10 +166,16 @@ test_woe = woebin_ply(
 
 ### 模型建立
 
-此处使用机器学习框架[H2O包](http://docs.h2o.ai/h2o/latest-stable/h2o-docs/booklets/RBooklet.pdf)来完成建模,
-
 
 ```{r}
+fitControl <- trainControl(## 10-fold CV
+  method = "cv",
+  number = 10,
+  savePredictions = TRUE
+)
+
+m_glm= train( y ~ ., data=train_woe,method="glm",family="binomial",
+             trControl=fitControl)
 
 # glm ------
 m1 = glm( y ~ ., family = "binomial", data = train_woe)
