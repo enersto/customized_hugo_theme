@@ -96,13 +96,26 @@ ivs[variable=="emp_length",]
 
 「emp_length」在缺失率>95%、单类别比例>95%这两条上都没有问题，但其信息值（Information Value, IV）却低于0.02，可排除出建模变量队列。关于信息值的具体含义，可参看?iv。
 
+
+为之后建模效率考虑，原数据88.73万的量，
+
+```{r}
+
+trainIndex <- createDataPartition(loan_m$y, p = .13, 
+                                  list = FALSE, 
+                                  times = 1)
+loan_mp <- loan_m[trainIndex,]
+
+```
+
+
 ## WOE分箱
 
 ```{r}
 
-bin <- woebin(loan_m, y = "y",method = "chimerge")
+bin <- woebin(loan_mp, y = "y",method = "chimerge")
 
-#分箱和具体的切分情况
+#分箱和具体的切分情况示例
 bin$annual_inc
 
 ```
@@ -126,7 +139,7 @@ break_adj = list(
   loan_amnt=c(8500,14000,20500))
 
 bins_adj = woebin(
-  loan_m, y="y", 
+  loan_mp, y="y", 
   breaks_list=break_adj, 
   print_step=0)
 
@@ -139,11 +152,11 @@ woebin_plot(bins_adj$loan_amnt)
 使用caret的切分工具，获得训练集的坏贷款比例与总体基本一致。
 ```{r}
 set.seed(6715)
-trainIndex <- createDataPartition(loan_m$y, p = .8, 
+trainIndex <- createDataPartition(loan_mp$y, p = .8, 
                                   list = FALSE, 
                                   times = 1)
-loan_mTrain <- loan_m[ trainIndex,]
-loan_mTest  <- loan_m[-trainIndex,]
+loan_mTrain <- loan_mp[ trainIndex,]
+loan_mTest  <- loan_mp[-trainIndex,]
 
 knitr::kable(Desc(loan_mTrain$y)[[1]][["freq"]])
 
@@ -168,33 +181,38 @@ test_woe = woebin_ply(
 
 
 ```{r}
-fitControl <- trainControl(## 10-fold CV
-  method = "cv",
-  number = 10,
-  savePredictions = TRUE
-)
 
-m_glm= train( y ~ ., data=train_woe,method="glm",family="binomial",
-             trControl=fitControl)
 
-# glm ------
-m1 = glm( y ~ ., family = "binomial", data = train_woe)
-# summary(m1)
-# Select a formula-based model by AIC
-m_step = step(m1, direction="both", trace = FALSE)
-m2 = eval(m_step$call)
-summary(m2)$coefficients
+fitControl <- trainControl(method='cv', number=3, returnResamp='none', 
+                           summaryFunction = twoClassSummary, classProbs = TRUE)
 
+
+# 1,0的y值模式在caret里无法进行
+train_woe <- train_woe[,y := ifelse(y ==1,"good","bad")]
+test_woe <- test_woe[,y := ifelse(y ==1,"good","bad")]
+
+# glm
+
+m_glm <- train(y ~ ., data=train_woe,method="glm",family="binomial",
+             trControl=fitControl,metric = "ROC")
+summary(m_glm)
+
+# gbm (Gradient Boosting Machine)
+m_gbm <- train(y ~ ., data=train_woe,method="gbm",
+             trControl=fitControl,metric = "ROC")
+
+summary(m_gbm)
+m_gbm
 ```
 
 ### 变量重要度
 
 ```{r}
 
-library(data.table)
-varimp = data.table(h2o.varimp(fit))[names!=""][!is.na(coefficients) & coefficients > 0]
-var_sel3 = c(varimp$names, "y")
+predi_glm <- predict(m_glm,test_woe,type = "prob")
 
+predi_gbm <- predict(m_gbm,test_woe,type = "prob")
 
+result <- resamples(list(m_glm,m_gbm))
 
 ```
