@@ -53,6 +53,9 @@ loan <- loan[,y :=
 loan <- loan[,y := factor(y,levels = c("good","bad"))]
 knitr::kable(Desc(loan$y)[[1]][["freq"]])
 
+names(loan)
+Desc(out_prncp ~ y,loan)
+
 ```
 
 
@@ -60,15 +63,15 @@ knitr::kable(Desc(loan$y)[[1]][["freq"]])
 
 基于[Credit Risk Modelling [EDA & Classification]](https://www.kaggle.com/ionaskel/credit-risk-modelling-eda-classification)和[Lending Club Loan Analysis](https://www.kaggle.com/janiobachmann/lending-club-risk-analysis-and-metrics)这两篇文章的结论，结合日常业务经验。考虑选择以下变量构成最后的模型：
 
-* loan_amnt , 
-* int_rate , 
-* grade , 
-* emp_length , 
-* home_ownership , 
-* annual_inc , 
-* term,
-* dti,
-* purpose
+* loan_amnt , 贷款总额
+* int_rate , 利率
+* revol_bal , 复贷额
+* emp_length , 工作时长
+* home_ownership , 房产情况
+* annual_inc , 年收入
+* term, 期限
+* dti, 收入负债比
+* purpose 目的
 
 关于这些变量的具体分布情况，此处就不赘述，可参考以上提到的两篇文章。
 
@@ -76,9 +79,9 @@ knitr::kable(Desc(loan$y)[[1]][["freq"]])
 
 ```{r}
 loan_selected <- loan[,c("loan_amnt","int_rate","dti",
-                         "purpose","term","annual_inc","home_ownership","emp_length","grade","y")]
+                         "purpose","term","annual_inc","home_ownership","emp_length","revol_bal","y")]
 loan_m <- var_filter(loan_selected,y = "y")
-names(loan_selected)
+names(loan_m)
 
 ```
 
@@ -101,7 +104,7 @@ ivs[variable=="emp_length",]
 
 ```{r}
 
-trainIndex <- createDataPartition(loan_m$y, p = .13, 
+trainIndex <- createDataPartition(loan_m$y, p = .15, 
                                   list = FALSE, 
                                   times = 1)
 loan_mp <- loan_m[trainIndex,]
@@ -152,7 +155,7 @@ woebin_plot(bins_adj$loan_amnt)
 使用caret的切分工具，获得训练集的坏贷款比例与总体基本一致。
 ```{r}
 set.seed(6715)
-trainIndex <- createDataPartition(loan_mp$y, p = .8, 
+trainIndex <- createDataPartition(loan_mp$y, p = .85, 
                                   list = FALSE, 
                                   times = 1)
 loan_mTrain <- loan_mp[ trainIndex,]
@@ -172,6 +175,7 @@ train_woe = woebin_ply(
 test_woe = woebin_ply(
   loan_mTest, bins_adj)
 
+
 ```
 
 
@@ -183,25 +187,31 @@ test_woe = woebin_ply(
 ```{r}
 
 
-fitControl <- trainControl(method='cv', number=3, returnResamp='none', 
-                           summaryFunction = twoClassSummary, classProbs = TRUE)
-
-
 # 1,0的y值模式在caret里无法进行
 train_woe <- train_woe[,y := ifelse(y ==1,"good","bad")]
 test_woe <- test_woe[,y := ifelse(y ==1,"good","bad")]
 
 # glm
 
+glmControl <- trainControl(method='cv', number=3, returnResamp='none', 
+                           summaryFunction = twoClassSummary, classProbs = TRUE)
+
 m_glm <- train(y ~ ., data=train_woe,method="glm",family="binomial",
-             trControl=fitControl,metric = "ROC")
+             trControl=glmControl, metric = "ROC")
 summary(m_glm)
 
 # gbm (Gradient Boosting Machine)
-m_gbm <- train(y ~ ., data=train_woe,method="gbm",
-             trControl=fitControl,metric = "ROC")
 
-summary(m_gbm)
+rfControl <- trainControl(method = "cv", number = 3, repeats = 2,
+ classProbs = TRUE, summaryFunction = twoClassSummary)
+
+rfGrid <- expand.grid(mtry = seq(from = 3, to = 18, by = 3))
+
+m_gbm <- train(y ~ ., data=train_woe,method="gbm",
+             trControl=rfControl,metric = "ROC")
+
+
+summary(m_rf)
 m_gbm
 ```
 
@@ -213,6 +223,14 @@ predi_glm <- predict(m_glm,test_woe,type = "prob")
 
 predi_gbm <- predict(m_gbm,test_woe,type = "prob")
 
-result <- resamples(list(m_glm,m_gbm))
+
+twoClassSummary(test_woe, lev = levels(test_woe$y))
+
+
+result <- resamples(list(glm = m_glm,rf = m_rf))
+
+result$values
+bwplot(result, metric="Sens")
+bwplot(result, metric="ROC")
 
 ```
