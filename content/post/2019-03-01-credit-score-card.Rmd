@@ -53,9 +53,6 @@ loan <- loan[,y :=
 loan <- loan[,y := factor(y,levels = c("good","bad"))]
 knitr::kable(Desc(loan$y)[[1]][["freq"]])
 
-names(loan)
-Desc(out_prncp ~ y,loan)
-
 ```
 
 
@@ -104,7 +101,7 @@ ivs[variable=="emp_length",]
 
 ```{r}
 
-trainIndex <- createDataPartition(loan_m$y, p = .15, 
+trainIndex <- createDataPartition(loan_m$y, p = .1, 
                                   list = FALSE, 
                                   times = 1)
 loan_mp <- loan_m[trainIndex,]
@@ -186,51 +183,87 @@ test_woe = woebin_ply(
 
 ```{r}
 
+m_glm <- glm(y ~.,train_woe,family = "binomial")
+
+
+library(randomForest)
+m_rf <- randomForest(y ~.,train_woe,ntree = 100)
+
+summary(m_glm)
+
 
 # 1,0的y值模式在caret里无法进行
-train_woe <- train_woe[,y := ifelse(y ==1,"good","bad")]
-test_woe <- test_woe[,y := ifelse(y ==1,"good","bad")]
+train_woe <- train_woe[,y := ifelse(y ==1,"bad","good")][,y := factor(y,levels = c("good","bad"))]
+test_woe <- test_woe[,y := ifelse(y ==1,"bad","good")][,y := factor(y,levels = c("good","bad"))]
+
+
+
+
+library(pROC)
+modelControl <- trainControl(method = "repeatedcv", number = 5, repeats = 2,
+                           classProbs = TRUE, summaryFunction = twoClassSummary,
+                           seeds = nn.seeds)
+
 
 # glm
 
-glmControl <- trainControl(method='cv', number=3, returnResamp='none', 
-                           summaryFunction = twoClassSummary, classProbs = TRUE)
-
-m_glm <- train(y ~ ., data=train_woe,method="glm",family="binomial",
-             trControl=glmControl, metric = "ROC")
+set.seed(6517)
+m_glm <- train(y ~ ., data=train_woe,method="glm",family=binomial(link='logit'),
+             trControl=modelControl, metric = "ROC")
 summary(m_glm)
 
-# gbm (Gradient Boosting Machine)
 
-rfControl <- trainControl(method = "cv", number = 3, repeats = 2,
- classProbs = TRUE, summaryFunction = twoClassSummary)
-
+# rf
 rfGrid <- expand.grid(mtry = seq(from = 3, to = 18, by = 3))
-
-m_gbm <- train(y ~ ., data=train_woe,method="gbm",
-             trControl=rfControl,metric = "ROC")
-
-
+set.seed(6517)
+m_rf <- train(train_woe[, -1], train_woe$y, 
+                  method="rf",
+                  ntree=100, 
+                  na.action=na.omit,
+                  tuneGrid = rfGrid,
+                  trControl= modelControl)
 summary(m_rf)
+
+# gbm (Gradient Boosting Machine)
+set.seed(6517)
+m_gbm <- train(y ~ ., data=train_woe,method="gbm",
+             trControl=modelControl,metric = "ROC")
+
+
+summary(m_gbm)
 m_gbm
 ```
 
-### 变量重要度
+### 模型评估
 
 ```{r}
 
-predi_glm <- predict(m_glm,test_woe,type = "prob")
 
-predi_gbm <- predict(m_gbm,test_woe,type = "prob")
+result <- resamples(list(glm = m_glm,rf = m_rf,gbm = m_gbm))
 
-
-twoClassSummary(test_woe, lev = levels(test_woe$y))
-
-
-result <- resamples(list(glm = m_glm,rf = m_rf))
-
-result$values
 bwplot(result, metric="Sens")
-bwplot(result, metric="ROC")
+
+
+# predicted proability
+train_pred = predict(m_rf, train_woe)
+test_pred = predict(m_rf, test_woe)
+Desc(test_pred)
+
+Desc(train_pred)
+train_pred = predict(m_glm, train_woe)
+test_pred = predict(m_glm, test_woe)
+
+
+test_pred = predict(m_glm,  test_woe)
+
+test_pred = predict(m_glm,  test_woe)
+unique(test_pred)
+# performance 
+perf_train = perf_eva(train_woe$y, train_pred)
+
+
+library(pROC)
+auc <- roc(test_woe[,c("y")], test_pred)
+
 
 ```
