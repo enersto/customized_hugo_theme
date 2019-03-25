@@ -1,11 +1,14 @@
 ---
 title: 信用评分卡模型与刻度建立
-author: ''
-date: '2019-03-01'
+author: 'pauke'
+date: '2019-03-25'
 slug: 信用评分卡模型与刻度
-categories: []
-tags: []
-
+categories: ["R","汉语"]
+tags: ["credit_scorecard","glm"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 5
 ---
 
 
@@ -50,7 +53,7 @@ loan <- loan[,y :=
                                                  "Does not meet the credit policy. Status:Charged Off", 
                                                  "In Grace Period","Late (16-30 days)", 
                                                  "Late (31-120 days)"),"bad","good")]
-loan <- loan[,y := factor(y,levels = c("good","bad"))]
+loan <- loan[,y := factor(y,levels = c("bad","good"))]
 knitr::kable(Desc(loan$y)[[1]][["freq"]])
 
 ```
@@ -97,14 +100,15 @@ ivs[variable=="emp_length",]
 「emp_length」在缺失率>95%、单类别比例>95%这两条上都没有问题，但其信息值（Information Value, IV）却低于0.02，可排除出建模变量队列。关于信息值的具体含义，可参看?iv。
 
 
-为之后建模效率考虑，原数据88.73万的量，
+原数据88.73万的量，显得过于冗杂，本文为之后建模效率考虑，从中等比抽取对应的样本作为本次接下来建模所有数据。
 
 ```{r}
 
-trainIndex <- createDataPartition(loan_m$y, p = .1, 
+trainIndex <- createDataPartition(loan_m$y, p = .08, 
                                   list = FALSE, 
                                   times = 1)
 loan_mp <- loan_m[trainIndex,]
+Desc(loan_m$y)
 
 ```
 
@@ -179,91 +183,75 @@ test_woe = woebin_ply(
 ## 模型建立预评估
 
 ### 模型建立
-
+glm模型不同类型都带入进行尝试，从而能够选出更好的模型。相关的介绍可以参阅[此处](https://community.alteryx.com/t5/Alteryx-Knowledge-Base/Selecting-a-Logistic-Regression-Model-Type-Logit-Probit-or/ta-p/111269)。
 
 ```{r}
 
-m_glm <- glm(y ~.,train_woe,family = "binomial")
+mlog_logit <- glm(y ~.,family = binomial(link = logit), data = train_woe)
+mlog_probit <- glm(y ~.,family = binomial(link = probit), data = train_woe)
+mlog_cloglog <- glm(y ~.,family = binomial(link = cloglog), data = train_woe)
 
 
-library(randomForest)
-m_rf <- randomForest(y ~.,train_woe,ntree = 100)
-
-summary(m_glm)
-
-
-# 1,0的y值模式在caret里无法进行
-train_woe <- train_woe[,y := ifelse(y ==1,"bad","good")][,y := factor(y,levels = c("good","bad"))]
-test_woe <- test_woe[,y := ifelse(y ==1,"bad","good")][,y := factor(y,levels = c("good","bad"))]
-
-
-
-
-library(pROC)
-modelControl <- trainControl(method = "repeatedcv", number = 5, repeats = 2,
-                           classProbs = TRUE, summaryFunction = twoClassSummary,
-                           seeds = nn.seeds)
-
-
-# glm
-
-set.seed(6517)
-m_glm <- train(y ~ ., data=train_woe,method="glm",family=binomial(link='logit'),
-             trControl=modelControl, metric = "ROC")
-summary(m_glm)
-
-
-# rf
-rfGrid <- expand.grid(mtry = seq(from = 3, to = 18, by = 3))
-set.seed(6517)
-m_rf <- train(train_woe[, -1], train_woe$y, 
-                  method="rf",
-                  ntree=100, 
-                  na.action=na.omit,
-                  tuneGrid = rfGrid,
-                  trControl= modelControl)
-summary(m_rf)
-
-# gbm (Gradient Boosting Machine)
-set.seed(6517)
-m_gbm <- train(y ~ ., data=train_woe,method="gbm",
-             trControl=modelControl,metric = "ROC")
-
-
-summary(m_gbm)
-m_gbm
 ```
+
+此外，其他还可以用到的模型还可参考以下文章：
+
+* [讨论二项式数据不平衡问题的解决方法和相应模型]](https://shiring.github.io/machine_learning/2017/04/02/unbalanced)
+
+
 
 ### 模型评估
 
 ```{r}
-
-
-result <- resamples(list(glm = m_glm,rf = m_rf,gbm = m_gbm))
-
-bwplot(result, metric="Sens")
-
-
-# predicted proability
-train_pred = predict(m_rf, train_woe)
-test_pred = predict(m_rf, test_woe)
-Desc(test_pred)
-
-Desc(train_pred)
-train_pred = predict(m_glm, train_woe)
-test_pred = predict(m_glm, test_woe)
-
-
-test_pred = predict(m_glm,  test_woe)
-
-test_pred = predict(m_glm,  test_woe)
-unique(test_pred)
-# performance 
-perf_train = perf_eva(train_woe$y, train_pred)
-
+#根据不同类型的预测
+pred_logit <- predict(mlog_logit, newdata = test_woe, type = "response")
+pred_probit <- predict(mlog_probit, newdata = test_woe, type = "response")
+pred_cloglog <- predict(mlog_cloglog, newdata = test_woe, type = "response")
 
 library(pROC)
-auc <- roc(test_woe[,c("y")], test_pred)
+roc_logit <- roc(test_woe[,y], pred_logit)
+roc_probit <- roc(test_woe[,y], pred_probit)
+roc_cloglog <- roc(test_woe[,y], pred_cloglog)
 
+roc_logit
+roc_probit
+roc_cloglog
 
 ```
+
+可以看出三类逻辑回归函数的ROC值不存在明显区别，且基本达到可用的范围内（大于0.7）。此处选用针对不平衡数据的mlog_cloglog作为进一步操作的模型。
+
+## 评分刻度建立
+
+scorecard包提供了适用于glm的评分卡输出函数scorecard::scorecard。
+
+```{r}
+
+card = scorecard(bins_adj, mlog_cloglog) 
+card[["annual_inc"]]
+
+```
+
+通过输出的评分卡输出对应的分数。
+
+```{r}
+train_score = scorecard_ply(loan_mTrain, card, only_total_score=F, print_step=0) 
+test_score = scorecard_ply(loan_mTest, card, only_total_score=F, print_step=0) 
+```
+
+同时还有稳定性指数（population stability index, PSI）函数
+
+```{r}
+
+psi <- perf_psi(
+  score = list(train = train_score, test = test_score),
+  label = list(train = loan_mTrain$y, test = loan_mTest$y) )
+
+knitr::kable(psi$psi)
+
+psi$pic$score
+
+```
+
+
+
