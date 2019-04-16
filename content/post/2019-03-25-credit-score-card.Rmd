@@ -1,0 +1,257 @@
+---
+title: 信用评分卡模型与刻度建立
+author: 'pauke'
+date: '2019-03-25'
+slug: 信用评分卡模型与刻度
+categories: ["R","汉语"]
+tags: ["credit_scorecard","glm"]
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 5
+---
+
+
+```{r include=FALSE}
+library(data.table)
+library(scorecard)
+library(caret)
+library(DescTools)
+```
+
+以R为工具展开的信用评分卡模型讨论并不少见，一方面，逻辑回归模型作为基础工具，已经有不少包将使用过程打磨的逞心如意；另一方面，R中丰富的机器学习分类算法，也为评分卡模型提供了更为多样的选择。
+
+同时，现有的讨论也存在一个明显问题，多数讨论仅停留在如何根据算法构造出模型，并基于一般模型的评价方式，评价选择出一个适用性和有效性兼具的模型。但着墨于模型与最终可用评分卡之间的文章依然鲜少可见，使用选出的模型产出评分卡刻度表似乎成为可有可无的步骤，而对于一般评分卡模型稳定性的评价也无从谈起。因此，本文将会重点讨论，由模型选出到最终评分卡建立过程，以及一个模型向最终评分卡转化过程中需要注意的点和使用工具的讨论。
+
+本文使用[Lending Club Loan Data](https://www.kaggle.com/wendykan/lending-club-loan-data)作为案例数据，该数据集的探索性分析已有很多不错的kernel完成了，本文仅作简单介绍，就不再敷言全程。具体内容可参看以下kernel：
+
+* [Lending Club Loan Analysis](https://www.kaggle.com/janiobachmann/lending-club-risk-analysis-and-metrics)
+* [Credit Risk Modelling [EDA & Classification]](https://www.kaggle.com/ionaskel/credit-risk-modelling-eda-classification)
+
+同时，本文在评分卡构建部分使用[scorecard包](https://cran.r-project.org/package=scorecard)完成，具体使用案例也可参见[这个演示](http://shichen.name/slide/20171115scorecard/#1)。
+
+## 数据准备
+数据集可由[Lending Club Loan Data](https://www.kaggle.com/wendykan/lending-club-loan-data)获得。
+```{r include=FALSE}
+options(scipen = 8)
+loan = fread("C:/Users/pauke/Downloads/loan.csv")
+```
+
+该数据集结果变量y为loan_status，其基本情况为：
+```{r}
+
+Desc(loan$loan_status)
+
+```
+
+可以看出，该变量不是一般意义的good、bad的y变量。为了更好、更准确的建立模型，根据该数据集的说明，可归类为：
+
+```{r}
+
+loan <- loan[,y := 
+                       ifelse(loan_status %in% c("Charged Off", "Default", 
+                                                 "Does not meet the credit policy. Status:Charged Off", 
+                                                 "In Grace Period","Late (16-30 days)", 
+                                                 "Late (31-120 days)"),"bad","good")]
+loan <- loan[,y := factor(y,levels = c("bad","good"))]
+knitr::kable(Desc(loan$y)[[1]][["freq"]])
+
+```
+
+
+## 变量筛选
+
+基于[Credit Risk Modelling [EDA & Classification]](https://www.kaggle.com/ionaskel/credit-risk-modelling-eda-classification)和[Lending Club Loan Analysis](https://www.kaggle.com/janiobachmann/lending-club-risk-analysis-and-metrics)这两篇文章的结论，结合日常业务经验。考虑选择以下变量构成最后的模型：
+
+* loan_amnt , 贷款总额
+* int_rate , 利率
+* revol_bal , 复贷额
+* emp_length , 工作时长
+* home_ownership , 房产情况
+* annual_inc , 年收入
+* term, 期限
+* dti, 收入负债比
+* purpose 目的
+
+关于这些变量的具体分布情况，此处就不赘述，可参考以上提到的两篇文章。
+
+此外，scorecard包提供了一个变量粗筛var_filter函数可供参考，其设定为删除信息值<0.02、缺失率>95%、单类别比例>95%的变量。
+
+```{r}
+loan_selected <- loan[,c("loan_amnt","int_rate","dti",
+                         "purpose","term","annual_inc","home_ownership","emp_length","revol_bal","y")]
+loan_m <- var_filter(loan_selected,y = "y")
+names(loan_m)
+
+```
+
+通过对之前选出来的变量进行检验，可以发现只有「emp_length」变量没有通过筛选。进一步看这个变量的具体情况：
+
+```{r}
+
+Desc(loan_selected$emp_length)
+
+ivs <- iv(loan_selected, y = "y")
+ivs[variable=="emp_length",]
+
+```
+
+
+「emp_length」在缺失率>95%、单类别比例>95%这两条上都没有问题，但其信息值（Information Value, IV）却低于0.02，可排除出建模变量队列。关于信息值的具体含义，可参看?iv。
+
+
+原数据88.73万的量，显得过于冗杂，本文为之后建模效率考虑，从中等比抽取对应的样本作为本次接下来建模所有数据。
+
+```{r}
+
+trainIndex <- createDataPartition(loan_m$y, p = .08, 
+                                  list = FALSE, 
+                                  times = 1)
+loan_mp <- loan_m[trainIndex,]
+Desc(loan_m$y)
+
+```
+
+
+## WOE分箱
+
+```{r}
+
+bin <- woebin(loan_mp, y = "y",method = "chimerge")
+
+#分箱和具体的切分情况示例
+bin$annual_inc
+
+```
+
+
+scorecard包有具体的展示分享状况的绘图工具：
+```{r}
+woebin_plot(bin$loan_amnt)
+```
+
+通过基于绘图工具给出的图，可以依据以下使用要点对自动产生的分享方案进行检视：
+
+> * 坏客户率或者WOE值趋势线，最多不超过一个拐点，最好是单调的
+> * 每个分箱的样本数量占比最好大于5%
+
+验视数据及所有字段后，发现仅有loan_amnt字段的分箱还有待改进，scorecard包提供了手动调节的工具：
+
+```{r}
+
+break_adj = list(
+  loan_amnt=c(8500,14000,20500))
+
+bins_adj = woebin(
+  loan_mp, y="y", 
+  breaks_list=break_adj, 
+  print_step=0)
+
+woebin_plot(bins_adj$loan_amnt)
+```
+
+
+## 分割建模数据集
+
+使用caret的切分工具，获得训练集的坏贷款比例与总体基本一致。
+```{r}
+set.seed(6715)
+trainIndex <- createDataPartition(loan_mp$y, p = .85, 
+                                  list = FALSE, 
+                                  times = 1)
+loan_mTrain <- loan_mp[ trainIndex,]
+loan_mTest  <- loan_mp[-trainIndex,]
+
+knitr::kable(Desc(loan_mTrain$y)[[1]][["freq"]])
+
+```
+
+最终woe分箱后的训练集和测试集：
+
+```{r}
+
+train_woe = woebin_ply(
+  loan_mTrain, bins_adj)
+
+test_woe = woebin_ply(
+  loan_mTest, bins_adj)
+
+
+```
+
+
+## 模型建立预评估
+
+### 模型建立
+glm模型不同类型都带入进行尝试，从而能够选出更好的模型。相关的介绍可以参阅[此处](https://community.alteryx.com/t5/Alteryx-Knowledge-Base/Selecting-a-Logistic-Regression-Model-Type-Logit-Probit-or/ta-p/111269)。
+
+```{r}
+
+mlog_logit <- glm(y ~.,family = binomial(link = logit), data = train_woe)
+mlog_probit <- glm(y ~.,family = binomial(link = probit), data = train_woe)
+mlog_cloglog <- glm(y ~.,family = binomial(link = cloglog), data = train_woe)
+
+
+```
+
+此外，其他还可以用到的模型还可参考以下文章：
+
+* [讨论二项式数据不平衡问题的解决方法和相应模型]](https://shiring.github.io/machine_learning/2017/04/02/unbalanced)
+
+
+
+### 模型评估
+
+```{r}
+#根据不同类型的预测
+pred_logit <- predict(mlog_logit, newdata = test_woe, type = "response")
+pred_probit <- predict(mlog_probit, newdata = test_woe, type = "response")
+pred_cloglog <- predict(mlog_cloglog, newdata = test_woe, type = "response")
+
+library(pROC)
+roc_logit <- roc(test_woe[,y], pred_logit)
+roc_probit <- roc(test_woe[,y], pred_probit)
+roc_cloglog <- roc(test_woe[,y], pred_cloglog)
+
+roc_logit
+roc_probit
+roc_cloglog
+
+```
+
+可以看出三类逻辑回归函数的ROC值不存在明显区别，且基本达到可用的范围内（大于0.7）。此处选用针对不平衡数据的mlog_cloglog作为进一步操作的模型。
+
+## 评分刻度建立
+
+scorecard包提供了适用于glm的评分卡输出函数scorecard::scorecard。
+
+```{r}
+
+card = scorecard(bins_adj, mlog_cloglog) 
+card[["annual_inc"]]
+
+```
+
+通过输出的评分卡输出对应的分数。
+
+```{r}
+train_score = scorecard_ply(loan_mTrain, card, only_total_score=F, print_step=0) 
+test_score = scorecard_ply(loan_mTest, card, only_total_score=F, print_step=0) 
+```
+
+同时还有稳定性指数（population stability index, PSI）函数
+
+```{r}
+
+psi <- perf_psi(
+  score = list(train = train_score, test = test_score),
+  label = list(train = loan_mTrain$y, test = loan_mTest$y) )
+
+knitr::kable(psi$psi)
+
+psi$pic$score
+
+```
+
+
+

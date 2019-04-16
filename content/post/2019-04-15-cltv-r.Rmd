@@ -1,0 +1,60 @@
+---
+title: 用户生命周期价值（CLTV）计算：R的方法
+author: 'pauke'
+date: '2019-04-15'
+slug: cltv-r
+categories:
+  - R
+  - tool
+tags:
+  - cltv
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning =FALSE
+)
+```
+
+## CLTV定义
+
+
+
+
+## 数据介绍和处理
+
+### 数据导入
+```{r message=FALSE, warning=FALSE}
+options(scipen=8)
+library(data.table)
+library(anytime)
+library(kableExtra)
+
+
+dt <- fread("~/Desktop/NeuerArbeit/CDNOW_master.txt")
+setnames(dt,c("id","date","numberOfBuying","account"))
+dt <-  dt[,date := anydate(date)]
+
+kable(dt[sample(.N,6)])
+
+```
+
+### 各变量情况
+
+```{r message=FALSE, warning=FALSE}
+
+library(DescTools)
+library(ggplot2)
+plot(Desc(dt$date)[[1]][["freq"]][,1:2])
+
+```
+
+
+
+
+
+
+
+
