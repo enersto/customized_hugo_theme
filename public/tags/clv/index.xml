@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Clv on IFF自留地</title>
+    <link>/tags/clv/</link>
+    <description>Recent content in Clv on IFF自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 15 Apr 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/clv/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>用户生命周期价值（CLV）计算：R的方法</title>
+      <link>/post/cltv-r/</link>
+      <pubDate>Mon, 15 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/cltv-r/</guid>
+      <description>CLV定义 数据介绍和处理 数据导入 各变量情况 模型搭建 数据准备 RFM各项指数情况 新近度 Recency 消费频次 Frequency 消费金额 Monetary CLV函数 CLV定义 客户生命周期价值</description>
+    </item>
+    
+  </channel>
+</rss>

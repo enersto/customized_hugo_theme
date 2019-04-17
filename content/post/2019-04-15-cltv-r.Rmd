@@ -1,5 +1,5 @@
 ---
-title: 用户生命周期价值（CLTV）计算：R的方法
+title: 用户生命周期价值（CLV）计算：R的方法
 author: 'pauke'
 date: '2019-04-15'
 slug: cltv-r
@@ -7,37 +7,44 @@ categories:
   - R
   - tool
 tags:
-  - cltv
+  - clv
+output:
+  blogdown::html_page:
+    toc: true
+    toc_depth: 5
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-	echo = TRUE,
-	message = FALSE,
-	warning =FALSE
-)
+options(scipen=8)
 ```
 
-## CLTV定义
+## CLV定义
 
+客户生命周期价值（CLV，Customer Lifetime Value）是运营中，以尽一切可能延长用户的生命周期，并且在生命周期中尽一切可能产生商业价值为目标的考察指标。CLV是基于认为客户具有新增期、成长期、成熟期、衰退期、流失期等不同期间的客户生命周期（CLT）理论抽象和量化的结果。
 
+具体而言，本文通过使用基于**新近度 Recency**, **消费频次 Frequency**, 和 **消费金额 Monetary** 构成的Logistic回归模型，预测每个未来采购周期时间内客户的留存率，进而计算客户的CLV。
+
+本文主要受到[Customer Lifetime Value (CLV)](https://rpubs.com/hoakevinquach/Customer-Lifetime-Value-CLV) 和[Calculating Customer Lifetime Value (CLV) with Recency, Frequency, and Monetary (RFM)](https://github.com/rtheman/CLV/blob/master/2_Code/RFM_v0.2.R)两篇文章启发，对计算过程以data.table的方式进行重写，来展现R在CLV计算的可能性和方法。
 
 
 ## 数据介绍和处理
 
+本文使用数据时来源于[CDNOW](http://brucehardie.com/datasets/)，该数据集包含CDNOW自1997年第一季度至1998年6月底23,570名个人组成的全部购买历史。
+
+这里[Notes on the CDNOW Master Data Set](http://brucehardie.com/notes/026/) 有更为具体的数据来源和内容情况说明。
+
 ### 数据导入
 ```{r message=FALSE, warning=FALSE}
-options(scipen=8)
 library(data.table)
 library(anytime)
 library(kableExtra)
 
 
 dt <- fread("~/Desktop/NeuerArbeit/CDNOW_master.txt")
-setnames(dt,c("id","date","numberOfBuying","account"))
+setnames(dt,c("id","date","numberOfBuying","amount"))
 dt <-  dt[,date := anydate(date)]
 
-kable(dt[sample(.N,6)])
+knitr::kable(dt[sample(.N,6)])
 
 ```
 
@@ -46,13 +53,216 @@ kable(dt[sample(.N,6)])
 ```{r message=FALSE, warning=FALSE}
 
 library(DescTools)
-library(ggplot2)
 plot(Desc(dt$date)[[1]][["freq"]][,1:2])
+```
+主要的交易发生在97年1月~97年4月间。
+
+```{r}
+Desc(dt$amount)
+```
+
+平均消费35元，但中值25元，说明存在明显的极大值拉升了整体平均消费金额，但超过半数的消费者仍然是在25元以下的消费额。
+
+
+
+## 模型搭建
+
+### 数据准备
+
+```{r}
+####################数据准备函数
+require(data.table)
+getDataFrame <- function(dt,startDate,endDate,id="id",date="date",amount="amount"){
+
+newdt <- setDT(dt)[date >= startDate & date <= endDate,][order(-date)]
+#选取每个人最近的交易时间
+dateRecency <- newdt[,Recency:= endDate - date][newdt[, .I[Recency == min(Recency)], 
+                                                           by = id]$V1][,c(1:2,5)]
+dateRecency <- unique(dateRecency)
+
+#汇总每个人的交易次数
+newdt <- newdt[,.(Frequency= .N,Monetary = sum(amount)), by = id]
+
+#合并最终数据
+newdt <- dateRecency[newdt,on = id]
+
+return(newdt)
+
+} 
+```
+
+执行数据转换：
+
+```{r}
+# 设置历史时间段
+startDate_history <- as.Date("1997-01-01")
+endDate_history <- as.Date("1998-02-28")
+
+#  设置预测时间段
+startDate_forcast <- as.Date("1998-03-01")
+endDate_forcast <- as.Date("1998-04-30")
+
+
+## 历史数据转制
+
+history <- getDataFrame(dt,startDate_history,endDate_history)
+
+## 预测数据转制
+forcast <- getDataFrame(dt,startDate_forcast,endDate_forcast)
+
+
+# 将购买周期设定为60天/每周期，以便将Recency离散化 
+history <- history[,Recency:= as.numeric(Recency)][,Recency := Recency%/% 60]
+
+
+# 将用户消费金额Monetary以$10的方式离散化
+breaks<-seq(0,round(max(history$Monetary)+9),by=10)
+history <- history[,Monetary := as.numeric(cut(Monetary,breaks,labels=FALSE))]
+
+
+#为RFM模型添加一个是否购买的字段
+
+history <- history[,Buy:= ifelse(id %in% forcast$id,1,0)]
+
+train<-history
+
+```
+
+### RFM各项指数情况
+
+```{r}
+####################RFM购买概率函数
+require(data.table)
+getPercentages <- function(dt,colNames){
+
+Var<-c(colNames,"Buy")
+a <- dt[,..Var]
+a <- a[,.(account = .N),by = Var][,Percentage := prop.table(account), by = colNames]
+b <- a[Buy == 1, -3][,-2]
+
+return(b)
+}
+
+```
+
+#### 新近度 Recency
+
+```{r}
+# 基于Recency的购买概率
+colNames<-c("Recency")
+p<-getPercentages(train,colNames)
+
+# get the Buy ~ Recency model
+r.glm=glm(Percentage~Recency,family=quasibinomial(link='logit'),data=p)
+p_r<-p
+
+plot(p_r$Recency,p_r$Percentage*100,xlab="新近度",ylab="购买概率(%)",
+     family = "思源宋体 CN")
+lines(lowess(p_r$Recency,p_r$Percentage*100),col="blue",lty=2)
+
 
 ```
 
 
+#### 消费频次 Frequency
 
+```{r}
+# 基于Recency的购买概率
+colNames<-c("Frequency")
+p<-getPercentages(train,colNames)
+
+# get the Buy ~ Frequency model
+f.glm=glm(Percentage~Frequency,family=quasibinomial(link='logit'),data=p)
+p_f<-p
+
+plot(p_f$Frequency,p_f$Percentage*100,xlab="消费频次",ylab="购买概率(%)",
+     family = "思源宋体 CN")
+lines(lowess(p_f$Frequency,p_f$Percentage*100),col="blue",lty=2)
+
+Desc(train$Frequency)
+
+```
+
+
+#### 消费金额 Monetary
+
+```{r}
+# 基于Recency的购买概率
+colNames<-c("Monetary")
+p<-getPercentages(train,colNames)
+
+# get the Buy ~ Frequency model
+m.glm=glm(Percentage~Monetary,family=quasibinomial(link='logit'),data=p)
+p_m<-p
+
+plot(p_m$Monetary,p_m$Percentage*100,xlab="消费金额",ylab="购买概率(%)",
+     family = "思源宋体 CN")
+lines(lowess(p_m$Monetary,p_m$Percentage*100),col="blue",lty=2)
+
+```
+
+
+### CLV函数
+
+![](data:image/png;base64,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)
+
+
+具体的CLV函数构成
+
+* r, 新近度时段, 本例: r=0
+
+* f, 消费频次,本例: f=1
+
+* m, 人均客户利润
+
+* n, 近期同类消费频次和时间的人数
+
+* cost, 每个购买期间对每个将来潜在客户是否购买的成本
+
+* periods, 客户流失前停留时间段
+
+* dr, 折扣力度
+
+* pModel, 基于最近消费时段、频次或金额的购买概率预测模型
+
+历史值获得的clv预测模型：
+
+```{r}
+model<-glm(Buy~Recency+Frequency,family=quasibinomial(link='logit'),data=train)
+pred<-predict(model,data.frame(Recency=c(0),Frequency=c(1)),type='response')
+```
+
+
+```{r}
+####################RFM购买概率函数
+getCLV<-function(r,f,m,n,cost,periods,dr,pModel){
+
+	df<-data.frame(period=c(0),r=c(r),f=c(f),n=c(n),value=c(0))
+
+	for(i in 1:periods){
+		backstep<-df[df$period==i-1,]
+		nrow<-nrow(backstep)
+		for(j in 1:nrow){
+			r<-backstep[j,]$r
+			f<-backstep[j,]$f
+			n<-backstep[j,]$n
+			p<-predict(pModel,data.frame(Recency=r,Frequency=f),type='response')[1]
+			buyers<-n*p
+			df<-rbind(df,c(i,0,f+1,buyers,buyers*(m-cost) / (1+dr)^i))
+			df<-rbind(df,c(i,r+1,f,n-buyers,(n-buyers)*(-cost)  / (1+dr)^i ))
+		}
+	}
+
+	return(sum(df$value))
+
+}
+
+
+## 此处以R=0,F=2,平均利润 m=100,折扣率 dr=0.02 , 停留期间 periods = 3 来示范CLV值
+v<-getCLV(0,2,100,1,0,3,0.02,model)
+v
+
+```
 
 
 
